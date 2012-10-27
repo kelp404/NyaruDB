@@ -18,7 +18,7 @@ Collection is like Table of sql database.
 ##Schema
 Schema of NyaruDB is not like Schema of sql database.
 
-When you want to search data by a field, you should create a schema. If you want to search data by 'email', you should create a 'email' schema before search.
+When you want to search data by a field, you should create a schema. If you want to search data by 'email', you should create a 'email' schema before searching.
 
 
 
