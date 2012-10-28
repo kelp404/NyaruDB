@@ -99,6 +99,23 @@ static NyaruDB *_instance;
     }
 }
 
+// remove all database. if you init database error, maybe need to call this message.
++ (void)reset
+{
+    NSString *path = ((NSArray *)NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)).lastObject;
+    NSString *databasePath = [path stringByAppendingPathComponent:NyaruDBNProduct];
+    
+    if([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:databasePath error:&error];
+        if (error) {
+            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+        }
+    }
+    
+    _instance = nil;
+}
+
 
 #pragma mark - Init
 - (id)init

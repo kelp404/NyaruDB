@@ -21,6 +21,7 @@
 @property (strong, nonatomic, readonly) NSString *databasePath;
 
 + (id)sharedInstance;
++ (void)reset;
 
 - (NSDictionary *)allCollections;
 - (NyaruCollection *)collectionForName:(NSString *)name;
