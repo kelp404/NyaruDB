@@ -47,8 +47,8 @@
  ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
  
  Attention:
-    limit of name of field is 255
-    limit of datas is 4 byte 4,294,967,295
+    limit length of name of field is 255
+    limit of datas is 4,294,967,295
     limit of document size is 4G
     key is unique and it is NSString
     key does not provide searching by query
