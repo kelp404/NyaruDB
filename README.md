@@ -31,8 +31,8 @@ Document is data in the Collection.
 In the document, there is a member named 'key'. Key is unique and datatype is NSString.
 If the document is no 'key' when inserting, it will be automatically generated.
 
-+ Normal Field Datatype: `NSNull`, `NSNumber (true: 1, false: 0)`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`
-+ Schema Datatype: `NSNull`, `NSNumber (true: 1, false: 0)`, `NSDate`, `NSString`
++ Normal Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`
++ Schema Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`
 
 
 
@@ -50,6 +50,7 @@ NyaruDB *db = [NyaruDB sharedInstance];
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
 [collection createSchema:@"email"];
 [collection createSchema:@"number"];
+[collection createSchema:@"date"];
 ```
 
 
@@ -70,10 +71,56 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
 
 ##Query
 ```objective-c
+NyaruQueryOperation
+    NyaruQueryEqual = 0,
+    NyaruQueryLess = 1,
+    NyaruQueryLessEqual = 2,
+    NyaruQueryGreater = 3,
+    NyaruQueryGreaterEqual = 4,
+    NyaruQueryLike = 5,		// only for NSString
+    NyaruQueryBeginningOf = 6,	// only for NSString
+    NyaruQueryEndOf = 7,	// only for NSString
+    NyaruQueryOrderASC = 8,
+    NyaruQueryOrderDESC = 9,
+    NyaruQueryUnequal = 10
+```
+
+```objective-c
+// search document the 'email' is equal to 'kelp@phate.org'
 NyaruDB *db = [NyaruDB sharedInstance];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
 NSArray *query = @[[NyaruQuery queryWithSchemaName:@"email" operation:NyaruQueryEqual value:@"kelp@phate.org"]];
+NSArray *documents = [collection documentsForNyaruQueries:query];
+for (NSMutableDictionary *document in documents) {
+    NSLog(@"%@", document);
+}
+```
+
+```objective-c
+// search document the 'date' is greater than now, and sort by date with DESC
+NyaruDB *db = [NyaruDB sharedInstance];
+
+NyaruCollection *collection = [db collectionForName:@"collectionName"];
+NSDate *date = [NSDate new];
+NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:date],
+                   [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC]];
+NSArray *documents = [collection documentsForNyaruQueries:query];
+for (NSMutableDictionary *document in documents) {
+    NSLog(@"%@", document);
+}
+```
+
+```objective-c
+// search document the 'number' is greater than 100 or equal to 100, or 'email' is equal to 'kelp@phate.org'
+// then sort by date with DESC
+NyaruDB *db = [NyaruDB sharedInstance];
+
+NyaruCollection *collection = [db collectionForName:@"collectionName"];
+NSDate *date = [NSDate new];
+NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreaterEqual value:@100],
+                   [NyaruQuery queryWithSchemaName:@"email" operation:NyaruQueryOrderDESC value:@"kelp@phate.org" appendWith:NYOr],
+                   [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC]];
 NSArray *documents = [collection documentsForNyaruQueries:query];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
