@@ -63,6 +63,58 @@
     [collection remove];
 }
 
+- (void)testDocumentForKey
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testDocumentForKey"];
+    [collection insertDocumentWithDictionary:@{@"key" : @"a00", @"data" : @"accuvally"}];
+    NSMutableDictionary *document = [collection documentForKey:@"a00"];
+    if ([document objectForKey:@"data"] == nil || ![[document objectForKey:@"data"] isEqualToString:@"accuvally"]) {
+        STFail(@"data should be accuvally");
+    }
+    [collection remove];
+}
+
+- (void)testSort
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testSort"];
+    [collection createSchema:@"number"];
+    [collection insertDocumentWithDictionary:@{@"number" : @100}];
+    [collection insertDocumentWithDictionary:@{@"number" : @200}];
+    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    
+    // desc
+    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderDESC]];
+    NSArray *documents = [collection documentsForNyaruQueries:query];
+    if (![@200 isEqualToNumber:[[documents objectAtIndex:0] objectForKey:@"number"]]) {
+        STFail(@"number should be 200");
+    }
+    if (![@100 isEqualToNumber:[[documents objectAtIndex:1] objectForKey:@"number"]]) {
+        STFail(@"number should be 100");
+    }
+    if (![@10 isEqualToNumber:[[documents objectAtIndex:2] objectForKey:@"number"]]) {
+        STFail(@"number should be 10");
+    }
+    
+    // asc
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderASC]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (![@10 isEqualToNumber:[[documents objectAtIndex:0] objectForKey:@"number"]]) {
+        STFail(@"number should be 10");
+    }
+    if (![@100 isEqualToNumber:[[documents objectAtIndex:1] objectForKey:@"number"]]) {
+        STFail(@"number should be 100");
+    }
+    if (![@200 isEqualToNumber:[[documents objectAtIndex:2] objectForKey:@"number"]]) {
+        STFail(@"number should be 200");
+    }
+    
+    [collection remove];
+}
+
 - (void)testAccessData
 {
     NyaruDB *db = [NyaruDB sharedInstance];
