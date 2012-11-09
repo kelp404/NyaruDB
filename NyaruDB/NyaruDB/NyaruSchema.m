@@ -115,6 +115,12 @@
         [_indexNil removeObject:target];
     }
 }
+- (void)removeAll
+{
+    [_indexKey removeAllObjects];
+    [_index removeAllObjects];
+    [_indexNil removeAllObjects];
+}
 
 #pragma mark get all keys/indexes
 - (NSMutableDictionary *)allKeys

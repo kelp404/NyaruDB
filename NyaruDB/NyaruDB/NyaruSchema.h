@@ -42,6 +42,7 @@
 
 // remove all keys/indexes with key
 - (void)removeForKey:(NSString *)key;
+- (void)removeAll;
 
 // all index key/index, key is only for unique
 - (NSMutableDictionary *)allKeys;

@@ -244,11 +244,28 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         return nil;
     }
 }
+- (NSUInteger)count
+{
+    NyaruSchema *schema = [_schema objectForKey:NyaruConfig.key];
+    return schema.allKeys.count;
+}
 - (NSUInteger)countForQueries:(NSArray *)query
 {
     NSArray *resultKeys = nyaruKeysForNyaruQueries(_schema, query);
     
     return resultKeys.count;
+}
+- (NSArray *)documents
+{
+    NSMutableArray *result = [NSMutableArray new];
+    
+    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+    for (NyaruKey *key in ((NyaruSchema *)[_schema objectForKey:NyaruConfig.key]).allKeys) {
+        [result addObject:documentForKey(key, fileDocument)];
+    }
+    [fileDocument closeFile];
+    
+    return result;
 }
 - (NSArray *)documentsForNyaruQueries:(NSArray *)query
 {
@@ -786,7 +803,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
 }
 
 #pragma mark Rmove
-- (void)removeDocumentForKey:(NSString *)key
+- (void)removeDocumentWithKey:(NSString *)key
 {
     NyaruKey *nyaruKey = [[_schema objectForKey:NyaruConfig.key] indexForKey:key];
     
@@ -815,6 +832,35 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
         dispatch_release(group);
     }
+}
+- (void)removeAllDocument
+{
+    // write data with GCD
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, _ioQueue, ^(void) {
+        [_clearedIndexBlock removeAllObjects];
+        for (NyaruSchema *schema in _schema.allValues) {
+            [schema removeAll];
+        }
+        
+        // remove files
+        [[NSFileManager defaultManager] removeItemAtPath:_documentFilePath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:_indexFilePath error:nil];
+        
+        // create files
+        NSError *error = nil;
+        NSString *header = NyaruFileHeader;
+        [header writeToFile:_documentFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+        }
+        [header writeToFile:_indexFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+        }
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    dispatch_release(group);
 }
 
 

@@ -58,7 +58,9 @@
  skip 0 and take 100 is default query.
 */
 - (NSMutableDictionary *)documentForKey:(NSString *)key;
+- (NSUInteger)count;
 - (NSUInteger)countForQueries:(NSArray *)query;
+- (NSArray *)documents;
 - (NSArray *)documentsForNyaruQueries:(NSArray *)query;
 - (NSArray *)documentsForNyaruQueries:(NSArray *)query skip:(NSUInteger)skip take:(NSUInteger)take;
 
@@ -72,6 +74,7 @@
 /*
  remove document
 */
-- (void)removeDocumentForKey:(NSString *)key;
+- (void)removeDocumentWithKey:(NSString *)key;
+- (void)removeAllDocument;
 
 @end
