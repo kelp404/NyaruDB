@@ -115,6 +115,42 @@
     [collection remove];
 }
 
+- (void)testDocuments
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testSort"];
+    [collection createSchema:@"number"];
+    [collection insertDocumentWithDictionary:@{@"number" : @100}];
+    [collection insertDocumentWithDictionary:@{@"number" : @200}];
+    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    
+    NSArray *documents = collection.documents;
+    for (NSMutableDictionary *document in documents) {
+        NSLog(@"%@", document);
+    }
+    
+    [collection remove];
+}
+
+- (void)testRemove
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testSort"];
+    [collection createSchema:@"number"];
+    [collection insertDocumentWithDictionary:@{@"number" : @100}];
+    [collection insertDocumentWithDictionary:@{@"number" : @200}];
+    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    
+    [collection removeAllDocument];
+    [collection insertDocumentWithDictionary:@{@"number" : @100}];
+    [collection insertDocumentWithDictionary:@{@"number" : @200}];
+    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    
+    [collection remove];
+}
+
 - (void)testAccessData
 {
     NyaruDB *db = [NyaruDB sharedInstance];

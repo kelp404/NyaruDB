@@ -260,8 +260,10 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
     NSMutableArray *result = [NSMutableArray new];
     
     NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
-    for (NyaruKey *key in ((NyaruSchema *)[_schema objectForKey:NyaruConfig.key]).allKeys) {
-        [result addObject:documentForKey(key, fileDocument)];
+    NSMutableDictionary *allKeys = ((NyaruSchema *)[_schema objectForKey:NyaruConfig.key]).allKeys;
+    for (NSString *key in allKeys.allKeys) {
+        NyaruKey *nyaruKey = [allKeys objectForKey:key];
+        [result addObject:documentForKey(nyaruKey, fileDocument)];
     }
     [fileDocument closeFile];
     
