@@ -102,6 +102,8 @@ static NyaruDB *_instance;
 // remove all database. if you init database error, maybe need to call this message.
 + (void)reset
 {
+    _instance = nil;
+    
     NSString *path = ((NSArray *)NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)).lastObject;
     NSString *databasePath = [path stringByAppendingPathComponent:NyaruDBNProduct];
     
@@ -112,8 +114,6 @@ static NyaruDB *_instance;
             @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
         }
     }
-    
-    _instance = nil;
 }
 
 
