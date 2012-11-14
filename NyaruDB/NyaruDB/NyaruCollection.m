@@ -310,9 +310,7 @@ BURST_LINK NSMutableDictionary *documentForKey(NyaruKey *nyaruKey, NSFileHandle 
         NSData *documentData = [fileDocument readDataOfLength:nyaruKey.documentLength];
         result = documentData.gunzippedData.mutableObjectFromJSONDataN;
     }
-    @catch (NSException *exception) {
-        
-    }
+    @catch (NSException *exception) { }
     
     return result;
 }
@@ -507,7 +505,7 @@ BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchem
     NSComparisonResult comp;
     id target;
     
-    while (upBound < downBound) {
+    while (upBound <= downBound) {
         target = ((NyaruIndex *)[pool objectAtIndex:targetIndex]).value;
         comp = compare(reference, target, schemaType);
         
