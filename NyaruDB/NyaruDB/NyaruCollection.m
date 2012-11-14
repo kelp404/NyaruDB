@@ -747,8 +747,8 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
                     [documentOffsetData getBytes:&documentOffset length:sizeof(documentOffset)];
                     [fileDocument seekToFileOffset:documentOffset];
                     
-                    // if reuse document block, just update document length in the .index file
-                    [fileIndex seekToFileOffset:indexOffset + 4];
+                    // if reuse document block, update index data
+                    [fileIndex seekToFileOffset:indexOffset];
                     
                     [_clearedIndexBlock removeObject:target];
                     break;
@@ -781,17 +781,10 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         [fileDocument writeData:docData];
         
         // write index
-        if (blockLength == documentLength) {
-            // new document block
-            NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
-            [indexData appendBytes:&documentLength length:sizeof(documentLength)];
-            [indexData appendBytes:&blockLength length:sizeof(blockLength)];
-            [fileIndex writeData:indexData];
-        }
-        else {
-            // reuse old document block
-            [fileIndex writeData:[NSData dataWithBytes:&documentLength length:sizeof(documentLength)]];
-        }
+        NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
+        [indexData appendBytes:&documentLength length:sizeof(documentLength)];
+        [indexData appendBytes:&blockLength length:sizeof(blockLength)];
+        [fileIndex writeData:indexData];
         
         // close files
         [fileDocument closeFile];
