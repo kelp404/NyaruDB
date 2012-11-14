@@ -53,7 +53,7 @@
     NyaruCollection *collection = [db createCollection:@"collection01"];
     [collection createSchema:@"email"];
     [collection createSchema:@"number"];
-    [collection insertDocumentWithDictionary:@{@"email": @"kelp@phate.org", @"name": @"Kelp"}];
+    [collection insertDocument:@{@"email": @"kelp@phate.org", @"name": @"Kelp"}];
     if (collection.allSchemas.count != 3 ||
         [collection.allSchemas objectForKey:@"email"] == nil ||
         [collection.allSchemas objectForKey:@"number"] == nil ||
@@ -68,7 +68,7 @@
     NyaruDB *db = [NyaruDB sharedInstance];
     
     NyaruCollection *collection = [db createCollection:@"testDocumentForKey"];
-    [collection insertDocumentWithDictionary:@{@"key" : @"a00", @"data" : @"accuvally"}];
+    [collection insertDocument:@{@"key" : @"a00", @"data" : @"accuvally"}];
     NSMutableDictionary *document = [collection documentForKey:@"a00"];
     if ([document objectForKey:@"data"] == nil || ![[document objectForKey:@"data"] isEqualToString:@"accuvally"]) {
         STFail(@"data should be accuvally");
@@ -82,9 +82,9 @@
     
     NyaruCollection *collection = [db createCollection:@"testSort"];
     [collection createSchema:@"number"];
-    [collection insertDocumentWithDictionary:@{@"number" : @100}];
-    [collection insertDocumentWithDictionary:@{@"number" : @200}];
-    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    [collection insertDocument:@{@"number" : @100}];
+    [collection insertDocument:@{@"number" : @200}];
+    [collection insertDocument:@{@"number" : @10}];
     
     // desc
     NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderDESC]];
@@ -121,9 +121,9 @@
     
     NyaruCollection *collection = [db createCollection:@"testSort"];
     [collection createSchema:@"number"];
-    [collection insertDocumentWithDictionary:@{@"number" : @100}];
-    [collection insertDocumentWithDictionary:@{@"number" : @200}];
-    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    [collection insertDocument:@{@"number" : @100}];
+    [collection insertDocument:@{@"number" : @200}];
+    [collection insertDocument:@{@"number" : @10}];
     
     NSArray *documents = collection.documents;
     for (NSMutableDictionary *document in documents) {
@@ -139,14 +139,14 @@
     
     NyaruCollection *collection = [db createCollection:@"testSort"];
     [collection createSchema:@"number"];
-    [collection insertDocumentWithDictionary:@{@"number" : @100}];
-    [collection insertDocumentWithDictionary:@{@"number" : @200}];
-    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    [collection insertDocument:@{@"number" : @100}];
+    [collection insertDocument:@{@"number" : @200}];
+    [collection insertDocument:@{@"number" : @10}];
     
     [collection removeAllDocument];
-    [collection insertDocumentWithDictionary:@{@"number" : @100}];
-    [collection insertDocumentWithDictionary:@{@"number" : @200}];
-    [collection insertDocumentWithDictionary:@{@"number" : @10}];
+    [collection insertDocument:@{@"number" : @100}];
+    [collection insertDocument:@{@"number" : @200}];
+    [collection insertDocument:@{@"number" : @10}];
     
     [collection remove];
 }
@@ -171,7 +171,7 @@
             @"date": date,
             @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
             @"number": [NSNumber numberWithInteger:random] };
-        [collection insertDocumentWithDictionary:document];
+        [collection insertDocument:document];
     }
     NSLog(@"insert 1k documents cost : %f ms", [count timeIntervalSinceNow] * -1000.0);
     

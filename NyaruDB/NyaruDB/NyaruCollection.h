@@ -69,7 +69,7 @@
  You could insert data with dictinoary.
  The data necessary includes the property(member) which name is "key".
 */
-- (NSMutableDictionary *)insertDocumentWithDictionary:(NSDictionary *)document;
+- (NSMutableDictionary *)insertDocument:(NSDictionary *)document;
 
 /*
  remove document

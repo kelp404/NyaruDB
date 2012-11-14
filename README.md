@@ -66,7 +66,7 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
     @"date": [NSDate date],
     @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
     @"number": @100 };
-[collection insertDocumentWithDictionary:document];
+[collection insertDocument:document];
 ```
 
 

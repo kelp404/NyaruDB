@@ -8,6 +8,7 @@
 
 #import "NyaruCollection.h"
 
+
 @interface NyaruCollection()
 BURST_LINK BOOL isNyaruHeaderOK(NSString *path);
 - (NSMutableDictionary *)loadSchema;
@@ -694,7 +695,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
 }
 
 #pragma mark Insert
-- (NSMutableDictionary *)insertDocumentWithDictionary:(NSDictionary *)document
+- (NSMutableDictionary *)insertDocument:(NSDictionary *)document
 {
     if (document == nil) {
         @throw [NSException exceptionWithName:NyaruDBNProduct reason:@"document could not be nil." userInfo:nil];
@@ -820,9 +821,9 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
                 [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
                 [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
                 [_clearedIndexBlock addObject:@{
-                        NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:nyaruKey.indexOffset],
-                        NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:nyaruKey.blockLength] }];
-            
+                 NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:nyaruKey.indexOffset],
+                 NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:nyaruKey.blockLength] }];
+                
                 for (NyaruSchema *schema in _schema.allValues) {
                     [schema removeForKey:key];
                 }
@@ -930,8 +931,8 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
         [[indexData subdataWithRange:NSMakeRange(4, 4)] getBytes:&documentLength length:sizeof(documentLength)];
         if (documentLength == 0) {
             [_clearedIndexBlock addObject:@{
-                    NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:indexOffset],
-                    NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:blockLength] }];
+             NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:indexOffset],
+             NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:blockLength] }];
             continue;
         }
         [[indexData subdataWithRange:NSMakeRange(0, 4)] getBytes:&documentOffset length:sizeof(documentOffset)];
