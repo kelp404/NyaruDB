@@ -517,7 +517,7 @@ BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchem
     NSComparisonResult comp;
     id target;
     
-    while (upBound <= downBound) {
+    while (upBound <= downBound && downBound != NSUIntegerMax) {
         target = ((NyaruIndex *)[pool objectAtIndex:targetIndex]).value;
         comp = compare(reference, target, schemaType);
         
