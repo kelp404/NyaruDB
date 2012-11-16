@@ -17,6 +17,7 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path);
 // load index while create a new schema
 - (void)loadIndexForSchema:(NyaruSchema *)schema;
 
+BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas);
 BURST_LINK NSMutableDictionary *documentForKey(NyaruKey *nyaruKey, NSFileHandle *fileDocument);
 BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArray *queries);
 BURST_LINK NSMutableArray *mapNyaruIndexForSort(NSMutableArray *allIndexes, NyaruQuery *query);
@@ -172,7 +173,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         return nil;
     }
     
-    NyaruSchema *lastSchema = _schema.allValues.lastObject;
+    NyaruSchema *lastSchema = getLastSchema(_schema);
     unsigned int previous = 0;
     if (lastSchema) {
         previous = lastSchema.offset;
@@ -185,6 +186,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
     
     if (lastSchema) {
         // update last schema's next offset
+        lastSchema.nextOffset = schema.offset;
         unsigned int offset = schema.offset;
         [file seekToFileOffset:lastSchema.offset + 4];
         [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
@@ -195,6 +197,16 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
     [self loadIndexForSchema:schema];
     
     return schema;
+}
+BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas)
+{
+    for (NyaruSchema *schema in allSchemas.allValues) {
+        if (schema.nextOffset == 0) {
+            return schema;
+        }
+    }
+    
+    return nil;
 }
 
 #pragma mark remove a schema
