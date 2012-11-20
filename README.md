@@ -129,6 +129,35 @@ for (NSMutableDictionary *document in documents) {
 ```
 
 
+##Delete Data
+```objective-c
+// delete data by key
+NyaruDB *db = [NyaruDB sharedInstance];
+// create collection
+NyaruCollection *collection = [db createCollection:@"testQuery00"];
+[collection insertDocument:@{@"number" : @100}];
+[collection insertDocument:@{@"number" : @200}];
+[collection insertDocument:@{@"number" : @10}];
+
+for (NSDictionary *document in [collection documents]) {
+    // remove data
+    [collection removeDocumentWithKey:[document objectForKey:@"key"]];
+}
+```
+```objective-c
+// delete all data
+NyaruDB *db = [NyaruDB sharedInstance];
+// create collection
+NyaruCollection *collection = [db createCollection:@"testQuery00"];
+[collection insertDocument:@{@"number" : @100}];
+[collection insertDocument:@{@"number" : @200}];
+[collection insertDocument:@{@"number" : @10}];
+
+// remove all documents
+[collection removeAllDocument];
+```
+
+
 
 ##Attention
 + limit length of name of field is 255

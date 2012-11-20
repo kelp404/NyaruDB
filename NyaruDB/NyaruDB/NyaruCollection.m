@@ -547,6 +547,9 @@ BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchem
             case NSOrderedAscending:
                 // reference is less than target
                 downBound = downBound == targetIndex ? --targetIndex : targetIndex;
+                if (downBound == NSUIntegerMax) {
+                    return NSMakeRange(NSUIntegerMax, 0);
+                }
                 break;
             case NSOrderedDescending:
                 // reference is greater than target
@@ -600,6 +603,11 @@ BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruS
 {
     NSMutableArray *result = [NSMutableArray new];
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
+    
+    if (equalRange.location == NSUIntegerMax) {
+        // no less data
+        return result;
+    }
     
     for (NSUInteger index = 0; index < equalRange.location; index++) {
         // add less datas

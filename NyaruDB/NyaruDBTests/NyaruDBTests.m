@@ -114,6 +114,52 @@
     
     [collection remove];
 }
+    
+- (void)testQuery00
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testQuery00"];
+    [collection createSchema:@"number"];
+    [collection insertDocument:@{@"number" : @100}];
+    [collection insertDocument:@{@"number" : @200}];
+    [collection insertDocument:@{@"number" : @10}];
+    
+    
+    // NyaruQueryGreater
+    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreater value:@0]];
+    NSArray *documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 3) { STFail(@"query failed"); }
+    
+    // NyaruQueryGreaterEqual
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreaterEqual value:@10]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 3) { STFail(@"query failed"); }
+    
+    // NyaruQueryLess
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLessEqual value:@100]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 2) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLessEqual value:@1000]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 3) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLess value:@1]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 0) { STFail(@"query failed"); }
+    
+    // NyaruQueryEqual
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@10]];
+    documents = [collection documentsForNyaruQueries:query];
+    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @10, @"query failed");
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@200]];
+    documents = [collection documentsForNyaruQueries:query];
+    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @200, @"query failed");
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@100]];
+    documents = [collection documentsForNyaruQueries:query];
+    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @100, @"query failed");
+    
+    [collection remove];
+}
 
 - (void)testDocuments
 {
