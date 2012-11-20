@@ -121,9 +121,9 @@
     
     NyaruCollection *collection = [db createCollection:@"testQuery00"];
     [collection createSchema:@"number"];
+    [collection insertDocument:@{@"number" : @10}];
     [collection insertDocument:@{@"number" : @100}];
     [collection insertDocument:@{@"number" : @200}];
-    [collection insertDocument:@{@"number" : @10}];
     
     
     // NyaruQueryGreater
@@ -131,10 +131,13 @@
     NSArray *documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 3) { STFail(@"query failed"); }
     
-    // NyaruQueryGreaterEqual
+    // NyaruQueryGreater
     query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreaterEqual value:@10]];
     documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 3) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreater value:@101]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 1) { STFail(@"query failed"); }
     
     // NyaruQueryLess
     query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLessEqual value:@100]];
