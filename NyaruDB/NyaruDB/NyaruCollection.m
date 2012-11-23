@@ -384,9 +384,17 @@ BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArr
     NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:schemaKey];
     
     // select operation
-    for (NSNumber *mapID in mapResult.allKeys) {
-        NSMutableArray *keys = [mapResult objectForKey:mapID];
-        NyaruQuery *query = [queries objectAtIndex:mapID.integerValue];
+    NSNumber *mapID = nil;
+    NSMutableArray *keys = nil;
+    NyaruQuery *query = nil;
+    for (NSUInteger index = 0; index < queries.count; index++) {
+        mapID = [NSNumber numberWithUnsignedInteger:index];
+        if ([mapResult objectForKey:mapID] == nil) {
+            // sort query
+            continue;
+        }
+        keys = [mapResult objectForKey:mapID];
+        query = [queries objectAtIndex:index];
         
         switch (query.appendWith) {
             case NYOr:
