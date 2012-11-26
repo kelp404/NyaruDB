@@ -164,6 +164,23 @@
     [collection remove];
 }
 
+- (void)testQuery01
+{
+    NyaruDB *db = [NyaruDB sharedInstance];
+    
+    NyaruCollection *collection = [db createCollection:@"testQuery01"];
+    [collection createSchema:@"number"];
+    
+    // NyaruQueryEqual
+    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLess value:@10]];
+    NSArray *documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 0) {
+        STFail(@"query failed");
+    }
+    
+    [collection remove];
+}
+
 - (void)testDocuments
 {
     NyaruDB *db = [NyaruDB sharedInstance];

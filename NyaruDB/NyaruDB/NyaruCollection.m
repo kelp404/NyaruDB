@@ -628,7 +628,7 @@ BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruS
     NSMutableArray *result = [NSMutableArray new];
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
     
-    if (equalRange.location == NSUIntegerMax) {
+    if (equalRange.location == NSUIntegerMax || equalRange.location == 0) {
         // no less data
         return result;
     }
