@@ -725,12 +725,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         case NyaruSchemaTypeNumber:
             return [(NSNumber *)value1 compare:value2];
         case NyaruSchemaTypeDate:
-            if (((NSDate *)value1).timeIntervalSince1970 == ((NSDate *)value2).timeIntervalSince1970)
-                return NSOrderedSame;
-            else if (((NSDate *)value1).timeIntervalSince1970 < ((NSDate *)value2).timeIntervalSince1970)
-                return NSOrderedAscending;
-            else
-                return NSOrderedDescending;
+            return [((NSDate *)value1) compare:value2];
         default:
             return NSOrderedAscending;
     }

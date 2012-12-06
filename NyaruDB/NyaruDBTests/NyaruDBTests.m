@@ -169,12 +169,20 @@
     NyaruDB *db = [NyaruDB sharedInstance];
     
     NyaruCollection *collection = [db createCollection:@"testQuery01"];
-    [collection createSchema:@"number"];
+    [collection createSchema:@"date"];
     
     // NyaruQueryEqual
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLess value:@10]];
+    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:@10]];
     NSArray *documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 0) {
+        STFail(@"query failed");
+    }
+    
+    [collection insertDocument:@{ @"date": [NSDate date] }];
+    [collection insertDocument:@{ @"date": [NSDate date] }];
+    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLessEqual value:[NSDate date]]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 2) {
         STFail(@"query failed");
     }
     
