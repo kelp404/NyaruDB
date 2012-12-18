@@ -178,7 +178,18 @@
         STFail(@"query failed");
     }
     
-    [collection insertDocument:@{ @"date": [NSDate date] }];
+    [collection insertDocument:@{ @"date": [NSDate dateWithTimeIntervalSince1970:1] }];
+    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:[NSDate dateWithTimeIntervalSince1970:0]]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 0) {
+        STFail(@"query failed");
+    }
+    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:[NSDate date]]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 1) {
+        STFail(@"query failed");
+    }
+    
     [collection insertDocument:@{ @"date": [NSDate date] }];
     query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLessEqual value:[NSDate date]]];
     documents = [collection documentsForNyaruQueries:query];

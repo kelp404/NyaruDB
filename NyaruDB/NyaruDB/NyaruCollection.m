@@ -590,6 +590,7 @@ BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchem
 BURST_LINK NSMutableArray *filterEqual(NSMutableArray *pool, id reference, NyaruSchemaType schemaType)
 {
     NSMutableArray *result = [NSMutableArray new];
+    if (pool.count == 0) { return result; }
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
     
     if (equalRange.length == 0) {
@@ -605,6 +606,7 @@ BURST_LINK NSMutableArray *filterEqual(NSMutableArray *pool, id reference, Nyaru
 BURST_LINK NSMutableArray *filterUnequal(NSMutableArray *pool, id reference, NyaruSchemaType schemaType)
 {
     NSMutableArray *result = [NSMutableArray new];
+    if (pool.count == 0) { return result; }
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
     
     if (equalRange.length == 0) {
@@ -626,21 +628,24 @@ BURST_LINK NSMutableArray *filterUnequal(NSMutableArray *pool, id reference, Nya
 BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual)
 {
     NSMutableArray *result = [NSMutableArray new];
+    if (pool.count == 0) { return result; }
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
+    // if there are no equal items then return final up bound, and length = 0;
     
-    if (pool.count == 0 || equalRange.location == NSUIntegerMax) {
+    if (equalRange.location == NSUIntegerMax) {
         // no less data
         return result;
     }
     
-    for (NSUInteger index = 0; index <= equalRange.location; index++) {
+    //&& index < pool.count
+    for (NSUInteger index = 0; index <= equalRange.location && index < pool.count; index++) {
         // add less datas
         [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
     }
     
     if (includeEqual && equalRange.length > 0) {
         // add equal datas
-        for (NSUInteger index = equalRange.location; index < equalRange.location + equalRange.length; index++) {
+        for (NSUInteger index = equalRange.location; index < equalRange.location + equalRange.length && index < pool.count; index++) {
             [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
         }
     }
@@ -650,6 +655,7 @@ BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruS
 BURST_LINK NSMutableArray *filterGreater(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual)
 {
     NSMutableArray *result = [NSMutableArray new];
+    if (pool.count == 0) { return result; }
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
     
     if (includeEqual && equalRange.length > 0) {
@@ -676,6 +682,7 @@ BURST_LINK NSMutableArray *filterGreater(NSMutableArray *pool, id reference, Nya
 BURST_LINK NSMutableArray *filterLike(NSMutableArray *pool, NSString *reference, NyaruSchemaType schemaType, NyaruQueryOperation operation)
 {
     NSMutableArray *result = [NSMutableArray new];
+    if (pool.count == 0) { return result; }
     NSRange target;
     
     switch (operation) {
