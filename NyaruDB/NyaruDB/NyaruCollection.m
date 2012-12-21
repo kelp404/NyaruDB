@@ -630,15 +630,13 @@ BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruS
     NSMutableArray *result = [NSMutableArray new];
     if (pool.count == 0) { return result; }
     NSRange equalRange = findEqualRange(pool, reference, schemaType);
-    // if there are no equal items then return final up bound, and length = 0;
     
-    if (equalRange.location == NSUIntegerMax) {
-        // no less data
-        return result;
-    }
+    // no less data
+    if (equalRange.location == NSUIntegerMax) { return result; }
     
     //&& index < pool.count
-    for (NSUInteger index = 0; index <= equalRange.location && index < pool.count; index++) {
+    NSUInteger max = equalRange.location < pool.count ? equalRange.location : pool.count - 1;
+    for (NSUInteger index = 0; index <= max; index++) {
         // add less datas
         [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
     }
