@@ -204,32 +204,68 @@
     NyaruDB *db = [NyaruDB sharedInstance];
     
     NyaruCollection *collection = [db createCollection:@"testQuery02"];
+    [collection createSchema:@"name"];
     [collection createSchema:@"date"];
+    
     
     // NyaruQueryEqual
     NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@10]];
     NSArray *documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 0) { STFail(@"query failed"); }
     
-    // insert
-    [collection insertDocument:@{ @"date": [NSDate dateWithTimeIntervalSince1970:1] }];
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:[NSDate dateWithTimeIntervalSince1970:0]]];
+    // insert 1, 2, 3
+    [collection insertDocument:@{ @"date": @1, @"name": @0 }];
+    [collection insertDocument:@{ @"date": @2, @"name": @0 }];
+    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
+    
+    // check great 0, 1, 3
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@0]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 3) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@1]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 2) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@2]];
     documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 1) { STFail(@"query failed"); }
     
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreaterEqual value:[NSDate dateWithTimeIntervalSince1970:1]]];
+    // remove 3
+    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryEqual value:@3]];
+    documents = [collection documentsForNyaruQueries:query];
+    [collection removeDocumentWithKey:[[documents lastObject] objectForKey:@"key"]];
+    
+    // insert 3
+    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
+    
+    // remove 3
+    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryEqual value:@3]];
+    documents = [collection documentsForNyaruQueries:query];
+    [collection removeDocumentWithKey:[[documents lastObject] objectForKey:@"key"]];
+    
+    // insert 3
+    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
+    
+    // check great 0, 1, 2, 3
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@0]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 3) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@1]];
+    documents = [collection documentsForNyaruQueries:query];
+    if (documents.count != 2) { STFail(@"query failed"); }
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@2]];
     documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 1) { STFail(@"query failed"); }
-    
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:[NSDate date]]];
+    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
+                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@3]];
     documents = [collection documentsForNyaruQueries:query];
     if (documents.count != 0) { STFail(@"query failed"); }
     
-    // insert
-    [collection insertDocument:@{ @"date": [NSDate date] }];
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:[NSDate dateWithTimeIntervalSince1970:0]]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 2) { STFail(@"query failed"); }
     
     [collection remove];
 }

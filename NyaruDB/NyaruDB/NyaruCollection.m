@@ -29,6 +29,7 @@ BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruS
 BURST_LINK NSMutableArray *filterGreater(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual);
 BURST_LINK NSMutableArray *filterLike(NSMutableArray *pool, NSString *reference, NyaruSchemaType schemaType, NyaruQueryOperation operation);
 BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType);
+BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 @end
 
 
@@ -730,10 +731,22 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
         case NyaruSchemaTypeNumber:
             return [(NSNumber *)value1 compare:value2];
         case NyaruSchemaTypeDate:
-            return [((NSDate *)value1) compare:value2];
+            return compareDate((NSDate *)value1, (NSDate *)value2);
         default:
             return NSOrderedAscending;
     }
+}
+BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
+{
+    NSInteger value1TimeInterval = value1.timeIntervalSince1970;
+    NSInteger value2TimeInterval = value2.timeIntervalSince1970;
+    
+    if (value1TimeInterval > value2TimeInterval)
+        return NSOrderedDescending;
+    else if (value1TimeInterval < value2TimeInterval)
+        return NSOrderedAscending;
+    else
+        return NSOrderedSame;
 }
 
 #pragma mark Insert
