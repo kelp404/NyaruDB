@@ -336,11 +336,6 @@ BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArr
     NSMutableDictionary *mapResultSort = [NSMutableDictionary new];
     NSInteger queryIndex = 0;
     
-    // search item with map reduce
-    dispatch_queue_t mapQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    dispatch_queue_t reduceQueue = dispatch_queue_create("nyarudb.reduce", NULL);
-    dispatch_group_t group = dispatch_group_create();
-    
     for (NyaruQuery *query in queries) {
         NyaruSchema *schema = [schemas objectForKey:query.schemaName];
         if (schemas == nil || schema.unique) {
@@ -351,32 +346,18 @@ BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArr
         
         if (query.operation == NyaruQueryOrderASC || query.operation == NyaruQueryOrderDESC) {
             // map ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-            NSNumber *index = [NSNumber numberWithInteger:queryIndex];
-            dispatch_group_async(group, mapQueue, ^{
-                NSMutableArray *result = mapNyaruIndexForSort(schema.allIndexes, query);
-                dispatch_group_async(group, reduceQueue, ^{
-                    [mapResultSort setObject:result forKey:index];
-                });
-            });
+            NSMutableArray *result = mapNyaruIndexForSort(schema.allIndexes, query);
+            [mapResultSort setObject:result forKey:[NSNumber numberWithInteger:queryIndex]];
         }
         else {
             // map ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-            NSNumber *index = [NSNumber numberWithInteger:queryIndex];
-            dispatch_group_async(group, mapQueue, ^{
-                NSMutableArray *result = mapNyaruIndex(schema, query);
-                dispatch_group_async(group, reduceQueue, ^{
-                    [mapResult setObject:result forKey:index];
-                });
-            });
+            NSMutableArray *result = mapNyaruIndex(schema, query);
+            [mapResult setObject:result forKey:[NSNumber numberWithInteger:queryIndex]];
         }
         queryIndex++;
     }
     
     // reduce ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-    dispatch_release(group);
-    dispatch_release(mapQueue);
-    dispatch_release(reduceQueue);
     NSMutableDictionary *schemaKey = ((NyaruSchema *)[schemas objectForKey:NyaruConfig.key]).allKeys;
     NSMutableDictionary *tempKeys = nil;
     
