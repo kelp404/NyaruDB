@@ -741,8 +741,7 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
     NSMutableDictionary *doc = [NSMutableDictionary dictionaryWithDictionary:document];
     if ([[doc objectForKey:NyaruConfig.key] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NyaruConfig.key]).length == 0) {
         CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-        NSString *key = (__bridge NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuid);
-        [doc setObject:key forKey:NyaruConfig.key];
+        [doc setObject:(__bridge NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuid) forKey:NyaruConfig.key];
         CFRelease(uuid);
     }
     
@@ -830,6 +829,7 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
     });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
     dispatch_release(group);
+    docData = nil;
     
     return doc;
 }
