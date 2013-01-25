@@ -741,7 +741,9 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
     NSMutableDictionary *doc = [NSMutableDictionary dictionaryWithDictionary:document];
     if ([[doc objectForKey:NyaruConfig.key] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NyaruConfig.key]).length == 0) {
         CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-        [doc setObject:(__bridge NSString *)CFUUIDCreateString(kCFAllocatorDefault, uuid) forKey:NyaruConfig.key];
+        CFStringRef cfId = CFUUIDCreateString(kCFAllocatorDefault, uuid);
+        [doc setObject:[NSString stringWithString:(__bridge NSString *)cfId] forKey:NyaruConfig.key];
+        CFRelease(cfId);
         CFRelease(uuid);
     }
     
