@@ -3,7 +3,6 @@
 //  NyaruDB
 //
 //  Created by Kelp on 12/9/3.
-//  Copyright (c) 2012 Accuvally Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
