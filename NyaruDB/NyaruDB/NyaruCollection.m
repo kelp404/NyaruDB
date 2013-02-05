@@ -44,7 +44,7 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
     if (self) {
         _schema = [NSMutableDictionary new];
         _clearedIndexBlock = [NSMutableArray new];
-        _ioQueue = dispatch_queue_create("accuvally.NyaruDB", NULL);
+        _ioQueue = dispatch_queue_create("NyaruDB", NULL);
     }
     return self;
 }

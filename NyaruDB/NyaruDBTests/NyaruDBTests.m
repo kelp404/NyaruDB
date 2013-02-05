@@ -67,10 +67,10 @@
     NyaruDB *db = [NyaruDB sharedInstance];
     
     NyaruCollection *collection = [db createCollection:@"testDocumentForKey"];
-    [collection insertDocument:@{@"key" : @"a00", @"data" : @"accuvally"}];
+    [collection insertDocument:@{@"key" : @"a00", @"data" : @"kelp"}];
     NSMutableDictionary *document = [collection documentForKey:@"a00"];
-    if ([document objectForKey:@"data"] == nil || ![[document objectForKey:@"data"] isEqualToString:@"accuvally"]) {
-        STFail(@"data should be accuvally");
+    if ([document objectForKey:@"data"] == nil || ![[document objectForKey:@"data"] isEqualToString:@"kelp"]) {
+        STFail(@"data should be kelp");
     }
     [collection remove];
 }

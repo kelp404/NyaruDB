@@ -681,7 +681,7 @@ static JKArray *_JKArrayCreate(id *objects, NSUInteger count, BOOL mutableCollec
     NSCParameterAssert((objects != NULL) && (_JKArrayClass != NULL) && (_JKArrayInstanceSize > 0UL));
     JKArray *array = NULL;
     if(JK_EXPECT_T((array = (JKArray *)calloc(1UL, _JKArrayInstanceSize)) != NULL)) { // Directly allocate the JKArray instance via calloc.
-        array->isa      = _JKArrayClass;
+        object_setClass(array, _JKArrayClass);
         array = [array initWithCount:count];
         if(array == NULL) { return(NULL); }
         if(JK_EXPECT_F((array->objects = (id *)malloc(sizeof(id) * array->capacity)) == NULL)) { [array autorelease]; return(NULL); }
@@ -942,7 +942,7 @@ static JKDictionary *_JKDictionaryCreate(id *keys, NSUInteger *keyHashes, id *ob
     NSCParameterAssert((keys != NULL) && (keyHashes != NULL) && (objects != NULL) && (_JKDictionaryClass != NULL) && (_JKDictionaryInstanceSize > 0UL));
     JKDictionary *dictionary = NULL;
     if(JK_EXPECT_T((dictionary = (JKDictionary *)calloc(1UL, _JKDictionaryInstanceSize)) != NULL)) { // Directly allocate the JKDictionary instance via calloc.
-        dictionary->isa      = _JKDictionaryClass;
+        object_setClass(dictionary, _JKDictionaryClass);
         dictionary = [dictionary initWithCapacity:_JKDictionaryCapacityForCount(count)];
         if(dictionary == NULL) { return(NULL); }
         

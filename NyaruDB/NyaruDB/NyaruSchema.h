@@ -13,7 +13,7 @@
 @interface NyaruSchema : NSObject {
     // index of schema of 'key'. If self.unique is YES then use this.
     // key: value of index key, value: NyaruKey
-    // key: ["kelp@accuvally.com", "00@accuvally.com"], value: [key object, key object, key object]
+    // key: ["key0", "key1"], value: [key object, key object, key object]
     NSMutableDictionary *_indexKey;
     
     // index of other schemas. If self.unique is NO then use this.

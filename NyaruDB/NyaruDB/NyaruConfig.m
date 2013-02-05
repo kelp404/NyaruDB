@@ -18,11 +18,16 @@ static NSString *_blockLength = @"bl";
     return _key;
 }
 
+/**
+ for Cleared Index Block
+ */
 + (NSString *)indexOffset
 {
     return _indexOffset;
 }
-
+/**
+ for Cleared Index Block
+ */
 + (NSString *)blockLength
 {
     return _blockLength;
