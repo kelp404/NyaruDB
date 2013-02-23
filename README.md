@@ -25,7 +25,7 @@ fetch 1k documents | 50 ms | 300 ms
 search documents in 1k <br/> documents for 10 times | 15.5 ms | 40 ms
 (this test is on iPhone4
 
-* Clear query syntax.  
+* Clean query syntax.  
 ```objective-c
 // where type == 1 order by update
 NSArray *documents = [[[collection where:@"type" equalTo:@1] orderBy:@"update"] fetch];
