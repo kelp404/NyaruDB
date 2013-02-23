@@ -746,9 +746,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, Nya
     }
     else {
         // ASC
-        for (NyaruIndex *index in schema.allNilIndexes) {
-            [result addObjectsFromArray:[[index keySet] allObjects]];
-        }
+        [result addObjectsFromArray:schema.allNilIndexes];
         for (NyaruIndex *index in schema.allNotNilIndexes) {
             [result addObjectsFromArray:[[index keySet] allObjects]];
         }
