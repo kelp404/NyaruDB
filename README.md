@@ -22,7 +22,7 @@ sqlite: NSDictionary <-- converter --> SQL <-- sqlite3 function --> File
 :---------:|:---------:|:---------:
 insert 1k documents | 15,800 ms <br/> 300 ms (async) | 36,500 ms
 fetch 1k documents | 50 ms | 300 ms
-search documents in 1k <br/> documents for 10 times | 15.5 ms | 40 ms
+search in 1k documents <br/> for 10 times | 15.5 ms | 40 ms
 (this test is on iPhone4
 
 * Clean query syntax.  
@@ -93,8 +93,8 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
 ```objective-c
 // search document the 'email' is equal to 'kelp@phate.org'
 NyaruDB *db = [NyaruDB instance];
-NyaruCollection *co = [db collectionForName:@"collectionName"];
 
+NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSArray *documents = [[co where:@"email" equalTo:@"kelp@phate.org"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);

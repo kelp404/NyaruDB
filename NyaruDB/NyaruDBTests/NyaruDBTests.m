@@ -106,11 +106,6 @@
     NyaruCollection *co = [db collectionForName:@"04"];
     [co createIndex:@"string"];
     
-    NSArray *documents = [[co where:@"email" equalTo:@"kelp@phate.org"] fetch];
-    for (NSMutableDictionary *document in documents) {
-        NSLog(@"%@", document);
-    }
-    
     for (NSInteger index = 0; index < 10; index++) {
         [co insert:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
     }
@@ -152,6 +147,103 @@
     STAssertEquals([co where:@"string" likeTo:@"c"].count, 0U, nil);
 }
 
+- (void)test05InsertAndQueryNumber
+{
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"05"];
+    NyaruCollection *co = [db collectionForName:@"05"];
+    [co createIndex:@"number"];
+    
+    for (NSInteger index = 0; index < 10; index++) {
+        [co insert:@{@"number": [NSNumber numberWithInteger:index], @"data": @"data00"}];
+    }
+    [co insert:@{@"number": @5, @"data": @"data00"}];
+    // count
+    STAssertEquals([co where:@"number" equalTo:@0].count, 1U, nil);
+    STAssertEquals([co where:@"number" equalTo:@5].count, 2U, nil);
+    STAssertEquals([co where:@"number" equalTo:@9].count, 1U, nil);
+    STAssertEquals([co where:@"number" equalTo:@10].count, 0U, nil);
+    STAssertEquals([co where:@"number" notEqualTo:@0].count, 10U, nil);
+    STAssertEquals([co where:@"number" notEqualTo:@5].count, 9U, nil);
+    STAssertEquals([co where:@"number" notEqualTo:@9].count, 10U, nil);
+    STAssertEquals([co where:@"number" notEqualTo:@10].count, 11U, nil);
+    
+    STAssertEquals([co where:@"number" greaterThan:@9].count, 0U, nil);
+    STAssertEquals([co where:@"number" greaterThan:@8].count, 1U, nil);
+    STAssertEquals([co where:@"number" greaterThan:@0].count, 10U, nil);
+    STAssertEquals([co where:@"number" greaterThan:@-1].count, 11U, nil);
+    STAssertEquals([co where:@"number" greaterEqualThan:@10].count, 0U, nil);
+    STAssertEquals([co where:@"number" greaterEqualThan:@9].count, 1U, nil);
+    STAssertEquals([co where:@"number" greaterEqualThan:@8].count, 2U, nil);
+    STAssertEquals([co where:@"number" greaterEqualThan:@0].count, 11U, nil);
+    STAssertEquals([co where:@"number" greaterEqualThan:@-1].count, 11U, nil);
+
+    STAssertEquals([co where:@"number" lessThan:@-1].count, 0U, nil);
+    STAssertEquals([co where:@"number" lessThan:@0].count, 0U, nil);
+    STAssertEquals([co where:@"number" lessThan:@1].count, 1U, nil);
+    STAssertEquals([co where:@"number" lessThan:@6].count, 7U, nil);
+    STAssertEquals([co where:@"number" lessThan:@9].count, 10U, nil);
+    STAssertEquals([co where:@"number" lessThan:@10].count, 11U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@-1].count, 0U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@0].count, 1U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@1].count, 2U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@6].count, 8U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@9].count, 11U, nil);
+    STAssertEquals([co where:@"number" lessEqualThan:@10].count, 11U, nil);
+}
+
+- (void)test06InsertAndQueryDate
+{
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"06"];
+    NyaruCollection *co = [db collectionForName:@"06"];
+    [co createIndex:@"date"];
+}
+
+- (void)test07InsertAndQueryNull
+{
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"07"];
+    NyaruCollection *co = [db collectionForName:@"07"];
+    [co createIndex:@"null"];
+}
+
+- (void)test08Order
+{
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"08"];
+    NyaruCollection *co = [db collectionForName:@"08"];
+    [co createIndex:@"number"];
+    
+    for (NSInteger index = 0; index < 32; index++) {
+        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
+        [co insert:@{@"number": [NSNull null]}];
+    }
+    NSNumber *previous = nil;
+    for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
+        if ([[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        
+        if (previous) {
+            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
+                STFail([NSString stringWithFormat:@"%@ --> %@", previous, [doc objectForKey:@"number"]]);
+            }
+        }
+        previous = [doc objectForKey:@"number"];
+    }
+    
+    previous = nil;
+    for (NSMutableDictionary *doc in [[co.all orderByDESC:@"number"] fetch]) {
+        if ([[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        
+        if (previous) {
+            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedAscending) {
+                STFail([NSString stringWithFormat:@"%@ --> %@", previous, [doc objectForKey:@"number"]]);
+            }
+        }
+        previous = [doc objectForKey:@"number"];
+    }
+}
+
 - (void)test20Speed
 {
     NyaruDB *db = [NyaruDB instance];
@@ -173,10 +265,10 @@
          @"updateTime": @""
          }];
     }
-    [collection waiteForWriting];
     NSLog(@"------------------------------------------------");
     NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
     NSLog(@"------------------------------------------------");
+    [collection waiteForWriting];
     
     timer = [NSDate date];
     collection.all.fetch;
