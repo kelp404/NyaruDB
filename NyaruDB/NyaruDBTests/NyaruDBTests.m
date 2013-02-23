@@ -6,9 +6,6 @@
 //
 
 #import "NyaruDBTests.h"
-#import "NyaruSchema.h"
-#import "NyaruIndex.h"
-#import "NyaruConfig.h"
 
 
 @implementation NyaruDBTests
@@ -18,18 +15,6 @@
     [super setUp];
     
     // Set-up code here.
-    @try {
-        NyaruDB *db = [NyaruDB instance];
-        STAssertNotNil(db, @"nil!!");
-        [db removeAllCollections];
-        NyaruCollection *collection = [db collectionForName:@"nya"];
-        STAssertNotNil(collection, @"nil!!");
-    }
-    @catch (NSException *exception) {
-        NSLog(@"error------------------------------");
-        NSLog(@"%@", exception.description);
-        STFail(@"execption");
-    }
 }
 
 - (void)tearDown
@@ -52,6 +37,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     NyaruCollection *collection = [db collectionForName:@"nya"];
+    [collection removeAll];
     STAssertEquals(collection.count, 0U, nil);
     
     // insert with key
@@ -198,14 +184,26 @@
     [db removeCollection:@"06"];
     NyaruCollection *co = [db collectionForName:@"06"];
     [co createIndex:@"date"];
+    
+    for (NSInteger index = 1; index <= 10; index++) {
+        [co insert:@{@"date": [NSDate dateWithTimeIntervalSince1970:index * 100]}];
+    }
+    for (NSUInteger index = 1; index <= 10; index++) {
+        NSDate *date = [NSDate dateWithTimeIntervalSince1970:index * 100];
+        STAssertEquals([[co where:@"date" equalTo:date] count], 1U, nil);
+        
+        date = [NSDate dateWithTimeIntervalSince1970:(index + 1) * 100];
+        STAssertEquals([[co where:@"date" lessThan:date] count], index, nil);
+    }
+    
+    STAssertEquals([[co where:@"date" greaterEqualThan:[NSDate dateWithTimeIntervalSince1970:0]] count], 10U, nil);
+    STAssertEquals([[co where:@"date" greaterEqualThan:[NSDate date]] count], 0U, nil);
+    STAssertEquals([[co where:@"date" lessThan:[NSDate date]] count], 10U, nil);
 }
 
-- (void)test07InsertAndQueryNull
+- (void)test07
 {
-    NyaruDB *db = [NyaruDB instance];
-    [db removeCollection:@"07"];
-    NyaruCollection *co = [db collectionForName:@"07"];
-    [co createIndex:@"null"];
+    
 }
 
 - (void)test08Order
@@ -217,11 +215,11 @@
     
     for (NSInteger index = 0; index < 32; index++) {
         [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
-        [co insert:@{@"number": [NSNull null]}];
+        [co insert:@{}];
     }
     NSNumber *previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
-        if ([[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
             if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
@@ -233,10 +231,42 @@
     
     previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderByDESC:@"number"] fetch]) {
-        if ([[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
             if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedAscending) {
+                STFail([NSString stringWithFormat:@"%@ --> %@", previous, [doc objectForKey:@"number"]]);
+            }
+        }
+        previous = [doc objectForKey:@"number"];
+    }
+}
+
+- (void)test09MixedQuery
+{
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"09"];
+    NyaruCollection *co = [db collectionForName:@"09"];
+    [co createIndex:@"number"];
+    [co createIndex:@"name"];
+    
+    for (NSInteger index = 0; index < 100; index++) {
+        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10],
+         @"name": @"Kelp"}];
+        [co insert:@{@"name": @"cc"}];
+    }
+    
+    NSNumber *previous = nil;
+    NSArray *documents = [[[[[co where:@"number" greaterEqualThan:@6] union:@"number" equalTo:@5] and:@"name" equalTo:@"kelp"] orderBy:@"number"] fetch];
+    STAssertEquals(documents.count > 0, true, nil);
+    for (NSMutableDictionary *doc in documents) {
+        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        
+        if (previous) {
+            if ([@4 compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
+                STFail([NSString stringWithFormat:@"4 --> %@", [doc objectForKey:@"number"]]);
+            }
+            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
                 STFail([NSString stringWithFormat:@"%@ --> %@", previous, [doc objectForKey:@"number"]]);
             }
         }
