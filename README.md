@@ -6,58 +6,77 @@ Kelp http://kelp.phate.org/ <br/>
 [MIT]: http://www.opensource.org/licenses/mit-license.php
 
 
-NyaruDB is a lite NoSQL database in Objective-C. It could be run on iOS.  
-It is a key-document NoSQL database. You could search data by a field of document.
+NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS.  
+It is a key-document NoSQL database. You could search data by a field of the document.
+
+##Feature
+* More quickly than sqlite.  
+NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize document.  
+And use memory cache and binary tree to optimize performance.
+```
+NoSQL with SQL:  
+NyaruDB: NSDictionary <-- JSONKit --> File  
+sqlite: NSDictionary <-- converter --> SQL <-- sqlite3 function --> File  
+```
+  　  |  NyaruDB  |  sqlite  
+:---------:|:---------:|:---------:
+insert 1k documents | 15,800 ms <br/> 300 ms (async) | 36,500 ms
+fetch 1k documents | 50 ms | 300 ms
+search documents in 1k <br/> documents for 10 times | 15.5 ms | 40 ms
+(this test is on iPhone4
+
+* Clear query syntax.  
+```objective-c
+// where type == 1 order by update
+NSArray *documents = [[[collection where:@"type" equalTo:@1] orderBy:@"update"] fetch];
+```
+
 
 
 
 ##Collection
-Collection is like Table of sql database.
+Collection is like Table of sql database.  
 
 
 
-##Schema
-Schema of NyaruDB is not like Schema of sql database.
-
-When you want to search data by a field, you should create a schema. If you want to search data by 'email', you should create a 'email' schema before searching.
+##Index
+When you want to search data by a field, you should create a index.  
+If you want to search data by 'email', you should create a 'email' index before searching.  
 
 
 
 ##Document
-Document is data in the Collection.
+Document is data in the collection.
 
-`Insert Data`: the datatype of document is NSDictionary.<br/>
-`Get Data`: the datatype of document is NSMutableDictionary.
+There is a member named 'key' in the document. Key is unique and datatype is NSString.  
+If the document has no 'key' when inserted, it will be automatically generated.  
 
-In the document, there is a member named 'key'. Key is unique and datatype is NSString.
-If the document is no 'key' when inserting, it will be automatically generated.
-
-+ Normal Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`
-+ Schema Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`
++ Normal Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`  
++ Index Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`  
 
 
 
 ##Create Collection
 ```objective-c
-NyaruDB *db = [NyaruDB sharedInstance];
-NyaruCollection *collectioin = [db createCollection:@"collectionName"];
+NyaruDB *db = [NyaruDB instance];
+NyaruCollection *collectioin = [db collectionForName:@"collectionName"];
 ```
 
 
-##Create Schema
+##Create Index
 ```objective-c
-NyaruDB *db = [NyaruDB sharedInstance];
+NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
-[collection createSchema:@"email"];
-[collection createSchema:@"number"];
-[collection createSchema:@"date"];
+[collection createIndex:@"email"];
+[collection createIndex:@"number"];
+[collection createIndex:@"date"];
 ```
 
 
 ##Insert Data
 ```objective-c
-NyaruDB *db = [NyaruDB sharedInstance];
+NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
 NSDictionary *document = @{ @"email": @"kelp@phate.org",
@@ -66,106 +85,63 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
     @"date": [NSDate date],
     @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
     @"number": @100 };
-[collection insertDocument:document];
+[collection insert:document];
 ```
 
 
-##Query
-```objective-c
-NyaruQueryOperation
-    NyaruQueryEqual = 0,
-    NyaruQueryLess = 1,
-    NyaruQueryLessEqual = 2,
-    NyaruQueryGreater = 3,
-    NyaruQueryGreaterEqual = 4,
-    NyaruQueryLike = 5,		// only for NSString
-    NyaruQueryBeginningOf = 6,	// only for NSString
-    NyaruQueryEndOf = 7,	// only for NSString
-    NyaruQueryOrderASC = 8,
-    NyaruQueryOrderDESC = 9,
-    NyaruQueryUnequal = 10
-```
-
+##Query    
 ```objective-c
 // search document the 'email' is equal to 'kelp@phate.org'
-NyaruDB *db = [NyaruDB sharedInstance];
+NyaruDB *db = [NyaruDB instance];
+NyaruCollection *co = [db collectionForName:@"collectionName"];
 
-NyaruCollection *collection = [db collectionForName:@"collectionName"];
-NSArray *query = @[[NyaruQuery queryWithSchemaName:@"email" operation:NyaruQueryEqual value:@"kelp@phate.org"]];
-NSArray *documents = [collection documentsForNyaruQueries:query];
+NSArray *documents = [[co where:@"email" equalTo:@"kelp@phate.org"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
+
 
 ```objective-c
 // search document the 'date' is greater than now, and sort by date with DESC
-NyaruDB *db = [NyaruDB sharedInstance];
+NyaruDB *db = [NyaruDB instance];
 
-NyaruCollection *collection = [db collectionForName:@"collectionName"];
-NSDate *date = [NSDate new];
-NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:date],
-                   [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC]];
-NSArray *documents = [collection documentsForNyaruQueries:query];
+NyaruCollection *co = [db collectionForName:@"collectionName"];
+NSDate *date = [NSDate date];
+NSArray *documents = [[[co where:@"date" greaterThan:date] orderByDESC:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
 
-```objective-c
-// search document the 'number' is greater than 100 or equal to 100, or 'email' is equal to 'kelp@phate.org'
-// then sort by date with DESC
-NyaruDB *db = [NyaruDB sharedInstance];
-
-NyaruCollection *collection = [db collectionForName:@"collectionName"];
-NSDate *date = [NSDate new];
-NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreaterEqual value:@100],
-                   [NyaruQuery queryWithSchemaName:@"email" operation:NyaruQueryOrderDESC value:@"kelp@phate.org" appendWith:NYOr],
-                   [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC]];
-NSArray *documents = [collection documentsForNyaruQueries:query];
-for (NSMutableDictionary *document in documents) {
-    NSLog(@"%@", document);
-}
-```
 
 
 ##Delete Data
 ```objective-c
 // delete data by key
-NyaruDB *db = [NyaruDB sharedInstance];
+NyaruDB *db = [NyaruDB instance];
 // create collection
-NyaruCollection *collection = [db createCollection:@"testQuery00"];
-[collection insertDocument:@{@"number" : @100}];
-[collection insertDocument:@{@"number" : @200}];
-[collection insertDocument:@{@"number" : @10}];
+NyaruCollection *co = [db collectionForName:@"collectionName"];
+[co createIndex:@"number"];
+[co insert:@{@"number" : @100}];
+[co insert:@{@"number" : @200}];
+[co insert:@{@"number" : @10}];
 
-for (NSDictionary *document in [collection documents]) {
-    // remove data
-    [collection removeDocumentWithKey:[document objectForKey:@"key"]];
-}
-```
-```objective-c
-// delete all data
-NyaruDB *db = [NyaruDB sharedInstance];
-// create collection
-NyaruCollection *collection = [db createCollection:@"testQuery00"];
-[collection insertDocument:@{@"number" : @100}];
-[collection insertDocument:@{@"number" : @200}];
-[collection insertDocument:@{@"number" : @10}];
-
-// remove all documents
-[collection removeAllDocument];
+// remove by query
+[[co where:@"number" equalTo:@10] remove];
+// remove all
+[[co all] remove];
 ```
 
 
 
 ##Attention
-+ limit length of name of field is 255
-+ limit of datas is 4,294,967,295
-+ limit of document size is 4G
++ limit length of field name is 255
++ limit of documents is 4,294,967,295
++ limit of document file size is 4G
 + key is unique and it is NSString
-+ key does not provide searching by query
++ key only provides `equalTo` search
 + key is case sensitive
 + index is case insensitive
-+ a field of data should be same data type which is schema
++ a field of the document should be same data type which is index
 + sort query allow only one

@@ -2,95 +2,81 @@
 //  NyaruCollection.m
 //  NyaruDB
 //
-//  Created by Kelp on 12/8/12.
+//  Created by Kelp on 2013/02/18.
+//
 //
 
 #import "NyaruCollection.h"
-
-
-@interface NyaruCollection()
-BURST_LINK BOOL isNyaruHeaderOK(NSString *path);
-- (NSMutableDictionary *)loadSchema;
-// load index while db init
-- (void)loadIndex;
-// load index while create a new schema
-- (void)loadIndexForSchema:(NyaruSchema *)schema;
-
-BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas);
-BURST_LINK NSMutableDictionary *documentForKey(NyaruKey *nyaruKey, NSFileHandle *fileDocument);
-BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArray *queries);
-BURST_LINK NSMutableArray *mapNyaruIndexForSort(NSMutableArray *allIndexes, NyaruQuery *query);
-BURST_LINK NSMutableArray *mapNyaruIndex(NyaruSchema *schema, NyaruQuery *query);
-BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchemaType schemaType);
-BURST_LINK NSMutableArray *filterEqual(NSMutableArray *pool, id reference, NyaruSchemaType schemaType);
-BURST_LINK NSMutableArray *filterUnequal(NSMutableArray *pool, id reference, NyaruSchemaType schemaType);
-BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual);
-BURST_LINK NSMutableArray *filterGreater(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual);
-BURST_LINK NSMutableArray *filterLike(NSMutableArray *pool, NSString *reference, NyaruSchemaType schemaType, NyaruQueryOperation operation);
-BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType);
-BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
-@end
+#import "NyaruConfig.h"
+#import "NyaruIndexBlock.h"
+#import "NyaruSchema.h"
+#import "NyaruKey.h"
+#import "NyaruIndex.h"
+#import "NyaruQuery.h"
+#import "NyaruQueryCell.h"
 
 
 @implementation NyaruCollection
 
 @synthesize name = _name;
 
-#pragma mark - ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
 #pragma mark - Init
-- (id)init
+/**
+ Get a NyaruCollection instance with collection name.
+ @param name collection name
+ @return NyaruCollection instance
+ */
+- (id)initWithName:(NSString *)name
 {
     self = [super init];
     if (self) {
-        _schema = [NSMutableDictionary new];
+        if (name == nil || name.length == 0) {
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"name is nil or empty." userInfo:nil]);
+        }
+        
+        _name = name;
+        _idCount = 0;
+        _accessQueue = dispatch_queue_create([[NSString stringWithFormat:@"NyaruDB.Access.%@", name] cStringUsingEncoding:NSUTF8StringEncoding], NULL);
+        _documentCache = [NSCache new];
+        [_documentCache setCountLimit:NYARU_CACHE_LIMIT];
         _clearedIndexBlock = [NSMutableArray new];
-        _ioQueue = dispatch_queue_create("NyaruDB", NULL);
     }
     return self;
 }
-
 
 #pragma mark - ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
 #pragma mark - Collection
 #pragma mark create a collection
 - (id)initWithNewCollectionName:(NSString *)name databasePath:(NSString *)databasePath
 {
-    self = [self init];
+    self = [self initWithName:name];
     if (self) {
-        if (name == nil || name.length == 0) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:@"name is nil or empty." userInfo:nil]);
-        }
+        _indexFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_INDEX];
+        _schemaFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_SCHEMA];
+        _documentFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_DOCUMENT];
         
-        _indexFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruIndexExtension];
-        _schemaFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruSchemaExtension];
-        _documentFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruDocumentExtension];
-        _name = name;
-        
-        // check all file exists
-        if ([[NSFileManager defaultManager] fileExistsAtPath:_documentFilePath] ||
-            [[NSFileManager defaultManager] fileExistsAtPath:_indexFilePath] ||
-            [[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath]) {
-            
-            return nil;
-        }
+        // check all file exists. if exist then delete it.
+        fileDelete(_documentFilePath);
+        fileDelete(_indexFilePath);
+        fileDelete(_schemaFilePath);
         
         // create collection file
         NSError *error = nil;
-        NSString *header = NyaruFileHeader;
-        [header writeToFile:_documentFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        [NYARU_HEADER writeToFile:_documentFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
         if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
         }
-        [header writeToFile:_schemaFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        [NYARU_HEADER writeToFile:_schemaFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
         if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
         }
-        [header writeToFile:_indexFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        [NYARU_HEADER writeToFile:_indexFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
         if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
         }
         
-        [self createSchema:NyaruConfig.key];
+        _schemas = [NSMutableDictionary new];
+        [self createIndex:NYARU_KEY];
     }
     return self;
 }
@@ -98,613 +84,898 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 #pragma mark load a collection
 - (id)initWithLoadCollectionName:(NSString *)name databasePath:(NSString *)databasePath
 {
-    self = [self init];
+    self = [self initWithName:name];
     if (self) {
-        _indexFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruIndexExtension];
-        _schemaFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruSchemaExtension];
-        _documentFilePath = [[databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruDocumentExtension];
-        _name = name;
+        _indexFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_INDEX];
+        _schemaFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_SCHEMA];
+        _documentFilePath = [[databasePath stringByAppendingPathComponent:_name] stringByAppendingPathExtension:NYARU_DOCUMENT];
         
         // check all file exists
-        if ([[NSFileManager defaultManager] fileExistsAtPath:_documentFilePath] &&
+        if (!([[NSFileManager defaultManager] fileExistsAtPath:_documentFilePath] &&
             [[NSFileManager defaultManager] fileExistsAtPath:_indexFilePath] &&
-            [[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath]) {
-            
-            // check file header
-            BOOL headerOK = isNyaruHeaderOK(_indexFilePath);
-            if (headerOK) {
-                headerOK = isNyaruHeaderOK(_schemaFilePath);
-            }
-            if (headerOK) {
-                headerOK = isNyaruHeaderOK(_documentFilePath);
-            }
-            if (!headerOK) {
-                // header error
-                return nil;
-            }
-            
-            // load schema
-            _schema = [self loadSchema];
-            [self loadIndex];
+            [[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath])) {
+            @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"file miss" userInfo:nil];
         }
-        else {
-            return nil;
+        
+        // check file header
+        if (!(isNyaruHeaderOK(_indexFilePath) &&
+              isNyaruHeaderOK(_schemaFilePath) &&
+              isNyaruHeaderOK(_documentFilePath))) {
+            // header error
+            @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"file header error" userInfo:nil];
         }
+        
+        // load schema
+        _schemas = loadSchema(_schemaFilePath);
+        loadIndex(_schemas, _clearedIndexBlock, _indexFilePath, _documentFilePath);
     }
     return self;
 }
 
-#pragma mark Remove a Collection
-- (void)remove
-{
-    if ([[NSFileManager defaultManager] fileExistsAtPath:_documentFilePath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:_documentFilePath error:nil];
-    }
-    if ([[NSFileManager defaultManager] fileExistsAtPath:_indexFilePath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:_indexFilePath error:nil];
-    }
-    if ([[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:_schemaFilePath error:nil];
-    }
-}
 
-
-#pragma mark - ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-#pragma mark - Schema
-#pragma mark get schemas
-- (NSDictionary *)allSchemas
+#pragma mark - Index
+- (NSArray *)allIndexes
 {
-    return _schema;
+    __block NSArray *result;
+    dispatch_sync(_accessQueue, ^{
+        result = _schemas.allKeys;
+    });
+    return result;
 }
-- (NyaruSchema *)schemaForName:(NSString *)name
+- (void)createIndex:(NSString *)indexName
 {
-    return [_schema objectForKey:name];
-}
-
-#pragma mark create a schema
-- (NyaruSchema *)createSchema:(NSString *)name
-{
-    if (name == nil || name.length == 0) {
-        return nil;
-    }
+    if (indexName == nil || indexName.length == 0) { return; }
     
-    // check exist
-    if ([_schema objectForKey:name]) {
-        return nil;
-    }
-    
-    NyaruSchema *lastSchema = getLastSchema(_schema);
-    unsigned int previous = 0;
-    if (lastSchema) {
-        previous = lastSchema.offset;
-    }
-    
-    NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
-    NyaruSchema *schema = [[NyaruSchema alloc] initWithName:name previousOffser:previous nextOffset:0];
-    schema.offset = [file seekToEndOfFile];
-    [file writeData:schema.dataFormate];
-    
-    if (lastSchema) {
-        // update last schema's next offset
-        lastSchema.nextOffset = schema.offset;
-        unsigned int offset = schema.offset;
-        [file seekToFileOffset:lastSchema.offset + 4];
-        [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
-    }
-    [file closeFile];
-    
-    [_schema setObject:schema forKey:schema.name];
-    [self loadIndexForSchema:schema];
-    
-    return schema;
-}
-BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas)
-{
-    for (NyaruSchema *schema in allSchemas.allValues) {
-        if (schema.nextOffset == 0) {
-            return schema;
+    dispatch_async(_accessQueue, ^{
+        // check exist
+        if ([_schemas objectForKey:indexName]) { return; }
+        
+        NyaruSchema *lastSchema = getLastSchema(_schemas);
+        unsigned int previous = 0;
+        if (lastSchema) {
+            previous = lastSchema.offsetInFile;
         }
-    }
-    
-    return nil;
-}
-
-#pragma mark remove a schema
-- (void)removeSchema:(NSString *)name
-{
-    if ([name isEqualToString:NyaruConfig.key]) {
-        @throw([NSException exceptionWithName:NyaruDBNProduct reason:@"schema 'key' could not be remove." userInfo:nil]);
-    }
-    
-    NyaruSchema *schema = [_schema objectForKey:name];
-    if (schema) {
+        
         NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
-        unsigned int offset;
-        if (schema.previousOffset > 0) {
-            // set next offset of previous schema
-            offset = schema.nextOffset;
-            [file seekToFileOffset:schema.previousOffset + 4];
-            [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
-        }
-        else if (schema.nextOffset > 0) {
-            // set previous offset of next schema
-            offset = schema.previousOffset;
-            [file seekToFileOffset:schema.nextOffset];
+        NyaruSchema *schema = [[NyaruSchema alloc] initWithName:indexName previousOffser:previous nextOffset:0];
+        schema.offsetInFile = [file seekToEndOfFile];
+        [file writeData:schema.dataFormate];
+        
+        if (lastSchema) {
+            // update last schema's next offset
+            lastSchema.nextOffsetInFile = schema.offsetInFile;
+            unsigned int offset = schema.offsetInFile;
+            [file seekToFileOffset:lastSchema.offsetInFile + 4];
             [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
         }
         [file closeFile];
         
-        [_schema removeObjectForKey:name];
+        [_schemas setObject:schema forKey:schema.name];
+        loadIndexForSchema(schema, _schemas, _clearedIndexBlock, _indexFilePath, _documentFilePath);
+    });
+}
+- (void)removeIndex:(NSString *)indexName
+{
+    if ([indexName isEqualToString:NYARU_KEY]) {
+        @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"index 'key' could not be remove." userInfo:nil]);
     }
+    
+    dispatch_async(_accessQueue, ^{
+        NyaruSchema *schema = [_schemas objectForKey:indexName];
+        if (schema) {
+            NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
+            unsigned int offset;
+            if (schema.previousOffsetInFile > 0) {
+                // set next offset of previous schema
+                offset = schema.nextOffsetInFile;
+                [file seekToFileOffset:schema.previousOffsetInFile + 4];
+                [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
+            }
+            else if (schema.nextOffsetInFile > 0) {
+                // set previous offset of next schema
+                offset = schema.previousOffsetInFile;
+                [file seekToFileOffset:schema.nextOffsetInFile];
+                [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
+            }
+            [file closeFile];
+            
+            [_schemas removeObjectForKey:indexName];
+        }
+    });
+}
+- (void)removeAllindexes
+{
+    for (NSString *index in [self allIndexes]) {
+        if ([index isEqualToString:NYARU_KEY]) { continue; }
+        [self removeIndex:index];
+    }
+}
+
+
+#pragma mark - Document
+- (NSMutableDictionary *)insert:(NSDictionary *)document
+{
+    if (document == nil) {
+        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document could not be nil." userInfo:nil];
+        return nil;
+    }
+    
+    NSMutableDictionary *doc = [NSMutableDictionary dictionaryWithDictionary:document];
+    if ([[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NYARU_KEY]).length == 0) {
+        static const char map[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        char *keyPrefix = malloc(9);
+        NSUInteger selector;
+        for (NSUInteger index = 0; index < 8; index++) {
+            selector = arc4random() % 52;
+            keyPrefix[index] = map[selector];
+        }
+        keyPrefix[8] = '\0';
+        
+        time_t t;
+        time(&t);
+        mktime(gmtime(&t));
+        t = ((t << 16) & 0x7FFFFFFF) | (_idCount++ & 0xFFFF);
+        [doc setObject:[NSString stringWithFormat:@"%s%lu", keyPrefix, t] forKey:NYARU_KEY];
+        free(keyPrefix);
+    }
+    
+    // serialize document
+    __block NSData *docData = doc.JSONDataN;
+    
+    if (docData.length == 0) {
+        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document serialized failed." userInfo:nil];
+        return nil;
+    }
+    
+    // check key is exist
+    if ([((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:[doc objectForKey:NYARU_KEY]]) {
+        @throw([NSException exceptionWithName:NYARU_PRODUCT reason:[NSString stringWithFormat:@"key '%@' is exist.", [doc objectForKey:NYARU_KEY]] userInfo:nil]);
+        return nil;
+    }
+    
+    // write data with GCD
+    dispatch_async(_accessQueue, ^(void) {
+        // io handle
+        __block NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
+        __block NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
+        
+        unsigned int documentOffset = 0;
+        unsigned int documentLength = docData.length;
+        unsigned int blockLength = 0;
+        unsigned int indexOffset = 0;
+        
+        // get index offset
+        for (NSUInteger blockIndex = 0; blockIndex < _clearedIndexBlock.count; blockIndex++) {
+            NyaruIndexBlock *block = [_clearedIndexBlock objectAtIndex:blockIndex];
+            if (block.blockLength >= documentLength) {
+                // old document block could be reuse
+                indexOffset = block.indexOffset;
+                
+                // read old document block offset
+                [fileIndex seekToFileOffset:indexOffset];
+                NSData *documentOffsetData = [fileIndex readDataOfLength:4];
+                [documentOffsetData getBytes:&documentOffset length:sizeof(documentOffset)];
+                [fileDocument seekToFileOffset:documentOffset];
+                
+                // if reuse document block, update index data
+                [fileIndex seekToFileOffset:indexOffset];
+                
+                [_clearedIndexBlock removeObjectAtIndex:blockIndex];
+                break;
+            }
+        }
+        if (indexOffset == 0) {
+            documentOffset = [fileDocument seekToEndOfFile];
+            indexOffset = [fileIndex seekToEndOfFile];
+            blockLength = documentLength;
+        }
+        
+        // push key and index
+        for (NyaruSchema *schema in _schemas.allValues) {
+            if (schema.unique) {
+                NyaruKey *key = [[NyaruKey alloc] initWithIndexOffset:indexOffset
+                                                       documentOffset:documentOffset
+                                                       documentLength:documentLength
+                                                          blockLength:blockLength];
+                [schema pushNyaruKey:[doc objectForKey:NYARU_KEY] nyaruKey:key];
+            }
+            else {
+                [schema pushNyaruIndex:[doc objectForKey:NYARU_KEY] value:[doc objectForKey:schema.name]];
+            }
+        }
+        
+        // write document
+        [fileDocument writeData:docData];
+        [_documentCache setObject:doc forKey:[NSNumber numberWithUnsignedInt:documentOffset]];
+        
+        // write index
+        NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
+        [indexData appendBytes:&documentLength length:sizeof(documentLength)];
+        [indexData appendBytes:&blockLength length:sizeof(blockLength)];
+        [fileIndex writeData:indexData];
+        
+        // close files
+        [fileDocument closeFile];
+        [fileIndex closeFile];
+        docData = nil;
+    });
+    
+    return doc;
+}
+- (void)waiteForWriting
+{
+    dispatch_sync(_accessQueue, ^{ });
+}
+- (void)removeByKey:(NSString *)documentKey
+{
+    dispatch_async(_accessQueue, ^(void) {
+        NyaruKey *nyaruKey = [[(NyaruSchema *)[_schemas objectForKey:NYARU_KEY] allKeys] objectForKey:documentKey];
+        if (!nyaruKey) { return; }
+        
+        // remove cache
+        [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
+        
+        NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
+        @try {
+            unsigned int data = 0;
+            [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+            
+            for (NyaruSchema *schema in _schemas.allValues) {
+                [schema removeWithKey:documentKey];
+            }
+        }
+        @catch (NSException *exception) { }
+        [fileIndex closeFile];
+    });
+}
+- (void)removeByQuery:(NSArray *)queries
+{
+    dispatch_async(_accessQueue, ^(void) {
+        NSArray *documentKeys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
+        NSDictionary *keyMap = [(NyaruSchema *)[_schemas objectForKey:NYARU_KEY] allKeys];
+        NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
+        
+        for (NSString *documentKey in documentKeys) {
+            NyaruKey *nyaruKey = [keyMap objectForKey:documentKey];
+            
+            // remove cache
+            [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
+            
+            @try {
+                unsigned int data = 0;
+                [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+                [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+                [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+                
+                for (NyaruSchema *schema in _schemas.allValues) {
+                    [schema removeWithKey:documentKey];
+                }
+            }
+            @catch (NSException *exception) { }
+        }
+        [fileIndex closeFile];
+    });
+}
+- (void)removeAll
+{
+    // write data with GCD
+    dispatch_async(_accessQueue, ^(void) {
+        [_clearedIndexBlock removeAllObjects];
+        [_documentCache removeAllObjects];
+        for (NyaruSchema *schema in _schemas.allValues) {
+            [schema removeAll];
+        }
+        
+        // remove files
+        [[NSFileManager defaultManager] removeItemAtPath:_documentFilePath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:_indexFilePath error:nil];
+        
+        // create files
+        NSError *error = nil;
+        NSString *header = NYARU_HEADER;
+        [header writeToFile:_documentFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
+        }
+        [header writeToFile:_indexFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
+        if (error) {
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
+        }
+    });
+}
+
+
+#pragma mark - Fetch
+- (NSArray *)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit
+{
+    __block NSMutableArray *result;
+    dispatch_sync(_accessQueue, ^(void) {
+        NSUInteger fetchLimit = limit;
+        NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, YES);
+        NSMutableDictionary *item;
+        fetchLimit += skip;
+        if (fetchLimit == 0) { fetchLimit = keys.count; }
+        else if (fetchLimit > keys.count) { fetchLimit = keys.count; }
+    
+        NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+        
+        result = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
+        for (NSUInteger index = skip; index < fetchLimit; index++) {
+            item = fetchDocumentWithNyaruKey([keys objectAtIndex:index], _documentCache, fileDocument);
+            if (item) { [result addObject:item]; }
+        }
+        [fileDocument closeFile];
+    });
+    
+    return result;
+}
+- (NSArray *)fetchKeyByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit
+{
+    __block NSArray *result;
+    dispatch_sync(_accessQueue, ^(void) {
+        NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
+        if (skip == 0 && limit == keys.count) {
+            // fetch all
+            result = keys;
+            return;
+        }
+        
+        NSUInteger fetchLimit = limit;
+        fetchLimit += skip;
+        if (fetchLimit == 0) { fetchLimit = keys.count; }
+        else if (fetchLimit > keys.count) { fetchLimit = keys.count; }
+        
+        NSMutableArray *resultTemp = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
+        for (NSUInteger index = skip; index < fetchLimit; index++) {
+            [resultTemp addObject:[keys objectAtIndex:index]];
+        }
+        result = resultTemp;
+    });
+    
+    return result;
+}
+
+
+#pragma mark - Query
+- (NyaruQuery *)query
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return query;
+}
+- (NyaruQuery *)all
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query unionAll];
+}
+- (NyaruQuery *)where:(NSString *)indexName equalTo:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName equalTo:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName notEqualTo:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName notEqualTo:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName lessThan:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName lessThan:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName lessEqualThan:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName lessEqualThan:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName greaterThan:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName greaterThan:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName greaterEqualThan:(id)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName greaterEqualThan:value];
+}
+- (NyaruQuery *)where:(NSString *)indexName likeTo:(NSString *)value
+{
+    NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
+    return [query union:indexName likeTo:value];
+}
+
+
+#pragma mark - Count
+- (NSUInteger)count
+{
+    __block NSUInteger result;
+    dispatch_sync(_accessQueue, ^(void) {
+        result = [[_schemas objectForKey:NYARU_KEY] allKeys].count;
+    });
+    return result;
+}
+- (NSUInteger)countByQuery:(NSArray *)queries
+{
+    __block NSUInteger result;
+    dispatch_sync(_accessQueue, ^(void) {
+        result = nyaruKeysForNyaruQueries(_schemas, queries, NO).count;
+    });
+    return result;
 }
 
 
 #pragma mark - ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-#pragma mark - Document
-#pragma mark Read
-- (NSMutableDictionary *)documentForKey:(NSString *)key
+#pragma mark - for NyaruDB (do not use these)
+- (void)removeCollectionFiles
 {
-    NyaruKey *nyaruKey = [[_schema objectForKey:NyaruConfig.key] indexForKey:key];
+    fileDelete(_schemaFilePath);
+    fileDelete(_indexFilePath);
+    fileDelete(_documentFilePath);
+}
+- (void)close
+{
+    dispatch_sync(_accessQueue, ^(void) {
+        for (NyaruSchema *schema in _schemas.allValues) {
+            [schema close];
+        }
+        [_documentCache removeAllObjects];
+        [_schemas removeAllObjects];
+        [_clearedIndexBlock removeAllObjects];
+    });
+    dispatch_release(_accessQueue);
+}
+
+#pragma mark Schema
+- (NSMutableDictionary *)schemas
+{
+    return _schemas;
+}
+
+
+#pragma mark - Private methods
+/**
+ Get NyaruKeys with _schemas and queries
+ @param schemas _schemas
+ @param queries [NyaruQuery]
+ @param isReturnNyaruKey YES: return @[NyaruKey], NO: return @[document.key]
+ @return @[NyaruKey] / @[document.key]
+ */
+NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArray *queries, BOOL isReturnNyaruKey)
+{
+    NyaruQueryCell *sortQuery = nil;
+    NSMutableSet *resultKeys = [NSMutableSet new];
+    NSArray *keys;
     
-    if (nyaruKey) {
-        NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
-        NSMutableDictionary *result = documentForKey(nyaruKey, fileDocument);
-        [fileDocument closeFile];
+    for (NyaruQueryCell *query in queries) {
+        NyaruSchema *schema = [schemas objectForKey:query.schemaName];
         
+        if (query.operation == (NyaruQueryAll | NyaruQueryUnion)) {
+            // union all
+            if (queries.count == 1) {
+                // high speed return all NyaruKeys
+                if (isReturnNyaruKey) {
+                    return [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allValues;
+                }
+                else {
+                    return [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allKeys;
+                }
+            }
+            else {
+                [resultKeys addObjectsFromArray:[(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allKeys];
+            }
+        }
+        else if (schema == nil) { continue; }
+        else if (query.operation == NyaruQueryOrderASC || query.operation == NyaruQueryOrderDESC) {
+            // sort operation
+            sortQuery = query;
+        }
+        else if ((query.operation & NyaruQueryIntersection) == NyaruQueryIntersection) {
+            // and(intersect) .....
+            keys = nyaruKeysWithQuery(schema, query);
+            [resultKeys intersectSet:[NSSet setWithArray:keys]];
+        }
+        else if ((query.operation & NyaruQueryUnion) == NyaruQueryUnion) {
+            // union .....
+            keys = nyaruKeysWithQuery(schema, query);
+            [resultKeys addObjectsFromArray:keys];
+        }
+    }
+    
+    NSDictionary *keyMap = nil;
+    if (isReturnNyaruKey) {
+        // return @[NyaruKey]
+        keyMap = [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys];
+    }
+    
+    if (sortQuery) {
+        // sort result and map document.key to NyaruKey
+        NyaruSchema *nyaruSchema = [schemas objectForKey:sortQuery.schemaName];
+        if (nyaruSchema) {
+            NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:resultKeys.count];
+            NSArray *sortedMap = nyaruKeysWithSortByIndexValue(nyaruSchema, sortQuery);
+            if (isReturnNyaruKey) {
+                // map document.key to NyaruKey
+                for (NSString *key in sortedMap) {
+                    if ([resultKeys intersectsSet:[NSSet setWithObject:key]]) {
+                        [result addObject:[keyMap objectForKey:key]];
+                    }
+                }
+            }
+            else {
+                for (NSString *key in sortedMap) {
+                    if ([resultKeys intersectsSet:[NSSet setWithObject:key]]) {
+                        [result addObject:key];
+                    }
+                }
+            }
+            return result;
+        }
+    }
+    
+    if (isReturnNyaruKey) {
+        // map document.key to NyaruKey
+        NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:resultKeys.count];
+        for (NSString *key in resultKeys) {
+            [result addObject:[keyMap objectForKey:key]];
+        }
         return result;
     }
     else {
-        return nil;
+        return resultKeys.allObjects;
     }
 }
-- (NSUInteger)count
-{
-    NyaruSchema *schema = [_schema objectForKey:NyaruConfig.key];
-    return schema.allKeys.count;
-}
-- (NSUInteger)countForQueries:(NSArray *)query
-{
-    NSArray *resultKeys = nyaruKeysForNyaruQueries(_schema, query);
-    
-    return resultKeys.count;
-}
-- (NSArray *)documents
-{
-    NSMutableArray *result = [NSMutableArray new];
-    
-    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
-    NSMutableDictionary *allKeys = ((NyaruSchema *)[_schema objectForKey:NyaruConfig.key]).allKeys;
-    for (NSString *key in allKeys.allKeys) {
-        NyaruKey *nyaruKey = [allKeys objectForKey:key];
-        [result addObject:documentForKey(nyaruKey, fileDocument)];
-    }
-    [fileDocument closeFile];
-    
-    return result;
-}
-- (NSArray *)documentsForNyaruQueries:(NSArray *)query
-{
-    NSMutableArray *result = [NSMutableArray new];
-    NSArray *keys = nyaruKeysForNyaruQueries(_schema, query);
-    
-    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
-    for (NyaruKey *key in keys) {
-        [result addObject:documentForKey(key, fileDocument)];
-    }
-    [fileDocument closeFile];
-    
-    return result;
-}
-- (NSArray *)documentsForNyaruQueries:(NSArray *)query skip:(NSUInteger)skip take:(NSUInteger)take
-{
-    NSMutableArray *result = [NSMutableArray new];
-    NSArray *keys = nyaruKeysForNyaruQueries(_schema, query);
-    
-    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
-    for (NSUInteger index = skip; index < keys.count && index < take + skip; index++) {
-        NyaruKey *key = [keys objectAtIndex:index];
-        [result addObject:documentForKey(key, fileDocument)];
-    }
-    [fileDocument closeFile];
-    
-    return result;
-}
-#pragma mark Read - Private
-// get document full informetion with nyaru key and file handle
-BURST_LINK NSMutableDictionary *documentForKey(NyaruKey *nyaruKey, NSFileHandle *fileDocument)
-{
-    NSMutableDictionary *result = nil;
-    
-    @try {
-        [fileDocument seekToFileOffset:nyaruKey.documentOffset];
-        
-        // read document data
-        NSData *documentData = [fileDocument readDataOfLength:nyaruKey.documentLength];
-        result = documentData.gunzippedData.mutableObjectFromJSONDataN;
-    }
-    @catch (NSException *exception) { }
-    
-    return result;
-}
-// get nyarukeys for queries,   return [NyaruKey]
-BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArray *queries)
-{
-    // key: NSNumber *queryIndex,  value: NSMutableArray *[document.key, document.key]
-    NSMutableDictionary *mapResult = [NSMutableDictionary new];
-    // key: NSNumber *queryIndex,  value: NSMutableDictionary [NyaruIndex]
-    NSMutableDictionary *mapResultSort = [NSMutableDictionary new];
-    NSInteger queryIndex = 0;
-    
-    for (NyaruQuery *query in queries) {
-        NyaruSchema *schema = [schemas objectForKey:query.schemaName];
-        if (schemas == nil || schema.unique) {
-            // there are no schemas which name is same with query.schemaName.
-            // or query.schemaName is 'key'
-            continue;
-        }
-        
-        if (query.operation == NyaruQueryOrderASC || query.operation == NyaruQueryOrderDESC) {
-            // map ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-            NSMutableArray *result = mapNyaruIndexForSort(schema.allIndexes, query);
-            [mapResultSort setObject:result forKey:[NSNumber numberWithInteger:queryIndex]];
-        }
-        else {
-            // map ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-            NSMutableArray *result = mapNyaruIndex(schema, query);
-            [mapResult setObject:result forKey:[NSNumber numberWithInteger:queryIndex]];
-        }
-        queryIndex++;
-    }
-    
-    // reduce ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-    NSMutableDictionary *schemaKey = ((NyaruSchema *)[schemas objectForKey:NyaruConfig.key]).allKeys;
-    NSMutableDictionary *tempKeys = nil;
-    
-    // set base data
-    // key: NSString document.key,  vlaue: NyaruKey
-    NSMutableDictionary *result = [[NSMutableDictionary alloc] initWithDictionary:schemaKey];
-    
-    // select operation
-    NSNumber *mapID = nil;
-    NSMutableArray *keys = nil;
-    NyaruQuery *query = nil;
-    for (NSUInteger index = 0; index < queries.count; index++) {
-        mapID = [NSNumber numberWithUnsignedInteger:index];
-        if ([mapResult objectForKey:mapID] == nil) {
-            // sort query
-            continue;
-        }
-        keys = [mapResult objectForKey:mapID];
-        query = [queries objectAtIndex:index];
-        
-        switch (query.appendWith) {
-            case NYOr:
-                // previous || result (append items
-                for (NSString *key in keys) {
-                    [result setObject:[schemaKey objectForKey:key] forKey:key];
-                }
-                break;
-            case NYAnd:
-            default:
-                // previous && result (remove items
-                if (keys.count > 0) {
-                    // if items in indexes are not exist than remove them
-                    tempKeys = [[NSMutableDictionary alloc] initWithObjects:result.allKeys forKeys:result.allKeys];
-                    [tempKeys removeObjectsForKeys:keys];
-                    [result removeObjectsForKeys:tempKeys.allKeys];
-                }
-                else {
-                    // indexes has no item than clear result
-                    [result removeAllObjects];
-                }
-                break;
-        }
-    }
-    
-    // sort operation
-    if (mapResultSort.count > 0) {
-        NSMutableArray *sortResult = [NSMutableArray new];
-        NSMutableArray *indexes = mapResultSort.allValues.lastObject;
-        
-        for (NyaruIndex *index in indexes) {
-            NyaruKey *key = [result objectForKey:index.key];
-            if (key) {
-                [sortResult addObject:key];
-            }
-        }
-        
-        return sortResult;
-    }
-    
-    return result.allValues;
-}
-// sort operation return [NyaruIndex]
-BURST_LINK NSMutableArray *mapNyaruIndexForSort(NSMutableArray *allIndexes, NyaruQuery *query)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    
-    switch (query.operation) {
-        case NyaruQueryOrderASC:
-        default:
-            for (NyaruIndex *index in allIndexes) {
-                [result addObject:index];
-            }
-            break;
-        case NyaruQueryOrderDESC:
-            for (NSUInteger index = allIndexes.count - 1; index != NSUIntegerMax; index--) {
-                NyaruIndex *nyaruIndex = [allIndexes objectAtIndex:index];
-                [result addObject:nyaruIndex];
-            }
-            break;
-    }
-    
-    return result;
-}
-// select operation return [document.key, document.key, document.key...]
-BURST_LINK NSMutableArray *mapNyaruIndex(NyaruSchema *schema, NyaruQuery *query)
+/**
+ Get NyaruIndexe.key in the schema with query.
+ @param schema NyaruSchema
+ @param query NyaruQueryCell
+ @return @[NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell *query)
 {
     NSMutableArray *result = [NSMutableArray new];
     NyaruSchemaType queryType;
+    
+    // schema.key equal to query.value
+    if (schema.unique) {
+        if ((query.operation & NyaruQueryEqual) == NyaruQueryEqual) {
+            NyaruKey *key = [schema.allKeys objectForKey:query.value];
+            if (key) { [result addObject:query.value]; }
+            return result;
+        }
+        else {
+            @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"key des not provite query." userInfo:nil];
+        }
+    }
     
     // lookup class
     if ([query.value isKindOfClass:NSNull.class]) { queryType = NyaruSchemaTypeNil; }
     else if ([query.value isKindOfClass:NSNumber.class]) { queryType = NyaruSchemaTypeNumber; }
     else if ([query.value isKindOfClass:NSString.class]) { queryType = NyaruSchemaTypeString; }
     else if ([query.value isKindOfClass:NSDate.class]) { queryType = NyaruSchemaTypeDate; }
-    else { queryType = NyaruSchemaTypeString; }
+    else if (query.value == nil) { queryType = NyaruSchemaTypeNil; query.value = [NSNull null]; }
+    else { queryType = NyaruSchemaTypeString; query.value = [NSString stringWithFormat:@"%@", query.value]; }
     
-    switch (query.operation) {
-        case NyaruQueryEqual:
-            if (queryType == NyaruSchemaTypeNil) {
-                for (NyaruIndex *index in schema.allNilIndexes) {
-                    [result addObject:index.key];
-                }
-            }
-            else
-                result = filterEqual(schema.allIndexes, query.value, queryType);
-            break;
-        case NyaruQueryUnequal:
-            result = filterUnequal(schema.allIndexes, query.value, queryType);
-            break;
-        case NyaruQueryLess:
-            if (queryType != NyaruSchemaTypeNil)
-                result = filterLess(schema.allIndexes, query.value, queryType, NO);
-            break;
-        case NyaruQueryLessEqual:
-            if (queryType == NyaruSchemaTypeNil) {
-                for (NyaruIndex *index in schema.allNilIndexes) {
-                    [result addObject:index.key];
-                }
-            }
-            else
-                result = filterLess(schema.allIndexes, query.value, queryType, YES);
-            break;
-        case NyaruQueryGreater:
-            result = filterGreater(schema.allIndexes, query.value, queryType, NO);
-            break;
-        case NyaruQueryGreaterEqual:
-            if (queryType == NyaruSchemaTypeNil) {
-                for (NyaruIndex *index in schema.allIndexes) {
-                    [result addObject:index.key];
-                }
-            }
-            else
-                result = filterGreater(schema.allNotNilIndexes, query.value, queryType, YES);
-            break;
-        case NyaruQueryLike:
-        case NyaruQueryBeginningOf:
-        case NyaruQueryEndOf:
-            if ([query.value isKindOfClass:NSString.class]) {
-                result = filterLike(schema.allNotNilIndexes, query.value, queryType, query.operation);
-            }
-        default:
-            break;
-    }
-    
-    return result;
-}
-// find equal items in pool
-// if there are no equal items then return final up bound, and length = 0;
-BURST_LINK NSRange findEqualRange(NSMutableArray *pool, id reference, NyaruSchemaType schemaType)
-{
-    NSUInteger rangeStart = NSNotFound;
-    NSUInteger rangeEnd = 0;
-    NSUInteger upBound = 0;
-    NSUInteger downBound = pool.count - 1;
-    NSUInteger targetIndex = (upBound + downBound) / 2;
-    NSComparisonResult comp;
-    id target;
-    
-    while (upBound <= downBound && downBound != NSUIntegerMax) {
-        target = ((NyaruIndex *)[pool objectAtIndex:targetIndex]).value;
-        comp = compare(reference, target, schemaType);
-        
-        switch (comp) {
-            case NSOrderedSame:
-                rangeStart = targetIndex;
-                rangeEnd = targetIndex;
-                // find equal data
-                for (NSUInteger index = targetIndex - 1; index >= upBound && index != NSUIntegerMax; index--) {
-                    target = ((NyaruIndex *)[pool objectAtIndex:index]).value;
-                    comp = compare(reference, target, schemaType);
-                    if (comp == NSOrderedSame)
-                        rangeStart = index;
-                    else
-                        break;
-                }
-                for (NSUInteger index = targetIndex + 1; index <= downBound; index++) {
-                    target = ((NyaruIndex *)[pool objectAtIndex:index]).value;
-                    comp = compare(reference, target, schemaType);
-                    if (comp == NSOrderedSame)
-                        rangeEnd = index;
-                    else
-                        break;
-                }
-                // return equal nyaru index array
-                return NSMakeRange(rangeStart, rangeEnd - rangeStart + 1);
-            case NSOrderedAscending:
-                // reference is less than target
-                downBound = downBound == targetIndex ? --targetIndex : targetIndex;
-                if (downBound == NSUIntegerMax) {
-                    return NSMakeRange(NSUIntegerMax, 0);
-                }
-                break;
-            case NSOrderedDescending:
-                // reference is greater than target
-                upBound = upBound == targetIndex ? ++targetIndex : targetIndex;
-                if (upBound == downBound) {
-                    // last
-                    target = ((NyaruIndex *)[pool objectAtIndex:upBound]).value;
-                    comp = compare(reference, target, schemaType);
-                    if (comp == NSOrderedAscending) { return NSMakeRange(upBound - 1, 0); }
-                    else if (comp == NSOrderedDescending) { return NSMakeRange(upBound, 0); }
-                }
-                break;
-        }
-        
-        targetIndex = (upBound + downBound) / 2;
-    }
-    
-    // not find equal data
-    return NSMakeRange(upBound, 0);
-}
-BURST_LINK NSMutableArray *filterEqual(NSMutableArray *pool, id reference, NyaruSchemaType schemaType)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    if (pool.count == 0) { return result; }
-    NSRange equalRange = findEqualRange(pool, reference, schemaType);
-    
-    if (equalRange.length == 0) {
+    if (queryType != NyaruSchemaTypeNil && schema.schemaType != queryType) {
+        // type not match
         return result;
     }
     
-    for (NSUInteger index = equalRange.location; index < equalRange.location + equalRange.length; index++) {
-        [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-    }
-    
-    return result;
-}
-BURST_LINK NSMutableArray *filterUnequal(NSMutableArray *pool, id reference, NyaruSchemaType schemaType)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    if (pool.count == 0) { return result; }
-    NSRange equalRange = findEqualRange(pool, reference, schemaType);
-    
-    if (equalRange.length == 0) {
-        for (NSUInteger index = 0; index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    else {
-        for (NSUInteger index = 0; index < equalRange.location; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-        for (NSUInteger index = equalRange.location + equalRange.length; index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    
-    return result;
-}
-BURST_LINK NSMutableArray *filterLess(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    if (pool.count == 0) { return result; }
-    NSRange equalRange = findEqualRange(pool, reference, schemaType);
-    
-    // no less data
-    if (equalRange.location == NSUIntegerMax) { return result; }
-    
-    //&& index < pool.count
-    NSUInteger max = equalRange.location < pool.count ? equalRange.location : pool.count - 1;
-    for (NSUInteger index = 0; index <= max; index++) {
-        // add less datas
-        [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-    }
-    
-    if (includeEqual && equalRange.length > 0) {
-        // add equal datas
-        for (NSUInteger index = equalRange.location; index < equalRange.location + equalRange.length && index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    
-    return result;
-}
-BURST_LINK NSMutableArray *filterGreater(NSMutableArray *pool, id reference, NyaruSchemaType schemaType, BOOL includeEqual)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    if (pool.count == 0) { return result; }
-    NSRange equalRange = findEqualRange(pool, reference, schemaType);
-    
-    if (includeEqual && equalRange.length > 0) {
-        // add equal datas and greater datas
-        for (NSUInteger index = equalRange.location; index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    else if (!includeEqual && equalRange.length > 0) {
-        // add greater datas
-        for (NSUInteger index = equalRange.location + equalRange.length; index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    else {
-        // add greater datas
-        for (NSUInteger index = equalRange.location + 1; index < pool.count; index++) {
-            [result addObject:((NyaruIndex *)[pool objectAtIndex:index]).key];
-        }
-    }
-    
-    return result;
-}
-BURST_LINK NSMutableArray *filterLike(NSMutableArray *pool, NSString *reference, NyaruSchemaType schemaType, NyaruQueryOperation operation)
-{
-    NSMutableArray *result = [NSMutableArray new];
-    if (pool.count == 0) { return result; }
-    NSRange target;
-    
-    switch (operation) {
+    // switch operation
+    NyaruQueryOperation op = query.operation & QUERY_OPERATION_MASK;
+    // if query type is nil should set nil data here.
+    switch (op) {
+        case NyaruQueryEqual:
+            if (queryType == NyaruSchemaTypeNil) {
+                [result addObjectsFromArray:schema.allNilIndexes];
+            }
+            else { return filterEqual(schema.allNotNilIndexes, query.value, queryType); }
+            break;
+        case NyaruQueryUnequal:
+            if (queryType == NyaruSchemaTypeNil) {
+                for (NyaruIndex *index in schema.allNotNilIndexes) {
+                    [result addObject:[[index keySet] allObjects]];
+                }
+            }
+            else {
+                result = filterUnequal(schema.allNotNilIndexes, query.value, queryType);
+                [result addObjectsFromArray:schema.allNilIndexes];
+            }
+            break;
+        case NyaruQueryLess:
+            // no value less then nil
+            if (queryType != NyaruSchemaTypeNil) {
+                result = filterLess(schema.allNotNilIndexes, query.value, queryType, NO);
+                [result addObjectsFromArray:schema.allNilIndexes];
+            }
+            break;
+        case NyaruQueryLessEqual:
+            if (queryType == NyaruSchemaTypeNil) {
+                [result addObjectsFromArray:schema.allNilIndexes];
+            }
+            else {
+                result = filterLess(schema.allNotNilIndexes, query.value, queryType, YES);
+                [result addObjectsFromArray:schema.allNilIndexes];
+            }
+            break;
+        case NyaruQueryGreater:
+            if (queryType == NyaruSchemaTypeNil) {
+                for (NyaruIndex *index in schema.allNotNilIndexes) {
+                    [result addObject:[[index keySet] allObjects]];
+                }
+            }
+            else { return filterGreater(schema.allNotNilIndexes, query.value, queryType, NO); }
+            break;
+        case NyaruQueryGreaterEqual:
+            if (queryType == NyaruSchemaTypeNil) {
+                [result addObjectsFromArray:schema.allNilIndexes];
+                for (NyaruIndex *index in schema.allNotNilIndexes) {
+                    [result addObject:[[index keySet] allObjects]];
+                }
+            }
+            else { return filterGreater(schema.allNotNilIndexes, query.value, queryType, YES); }
+            break;
         case NyaruQueryLike:
-            for (NyaruIndex *index in pool) {
-                if ([index.value rangeOfString:reference options:NSCaseInsensitiveSearch].location != NSNotFound) {
-                    [result addObject:index.key];
-                }
-            }
-            break;
-        case NyaruQueryBeginningOf:
-            target = NSMakeRange(0, reference.length);
-            for (NyaruIndex *index in pool) {
-                if ([index.value rangeOfString:reference options:NSCaseInsensitiveSearch range:target].location == 0 ) {
-                    [result addObject:index.key];
-                }
-            }
-            break;
-        case NyaruQueryEndOf:
-            for (NyaruIndex *index in pool) {
-                target = NSMakeRange([index.value length] - reference.length + 1, reference.length);
-                if ([index.value rangeOfString:reference options:NSCaseInsensitiveSearch range:target].location != NSNotFound) {
-                    [result addObject:index.key];
-                }
+            result = filterLike(schema.allNotNilIndexes, query.value, queryType);
+            if (queryType == NyaruSchemaTypeNil) {
+                [result addObjectsFromArray:schema.allNilIndexes];
             }
             break;
     }
     
     return result;
 }
-#pragma mark compare value1 and value2 with datatype 'SchemaType'
-BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType)
+/**
+ Get all NyaruIndexe.key in the schema and sort these by NyaruIndex.value.
+ @param schema NyaruSchema
+ @param query NyaruQueryCell
+ @return @[NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, NyaruQueryCell *query)
 {
-    if ([value2 isKindOfClass:NSNull.class]) {
-        switch (schemaType) {
-            case NyaruSchemaTypeNil:
-                return NSOrderedSame;
-            default:
-                return NSOrderedDescending;
+    NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:schema.allKeys.count];
+    
+    if ((query.operation & NyaruQueryOrderDESC) == NyaruQueryOrderDESC) {
+        // DESC
+        for (NyaruIndex *index in schema.allNotNilIndexes) {
+            for (NSString *key in [[index keySet] allObjects]) {
+                [result insertObject:key atIndex:0];
+            }
+        }
+        [result addObjectsFromArray:schema.allNilIndexes];
+    }
+    else {
+        // ASC
+        for (NyaruIndex *index in schema.allNilIndexes) {
+            [result addObjectsFromArray:[[index keySet] allObjects]];
+        }
+        for (NyaruIndex *index in schema.allNotNilIndexes) {
+            [result addObjectsFromArray:[[index keySet] allObjects]];
+        }
+    }
+    
+    return result;
+}
+/**
+ Get all NyaruIndex.key which's value is equal to target.
+ @param allIndexes schema.allNotNillIndexes
+ @param target NyaruQuery.value match target
+ @param targetType NyaruSchemaType of target and schema
+ @return @[NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSArray *filterEqual(NSArray *allIndexes, id target, NyaruSchemaType type)
+{
+    NSRange range = findEqualRange(allIndexes, target, type);
+    if (range.length > 0) {
+        // found equal value
+        return [[allIndexes objectAtIndex:range.location] keySet].allObjects;
+    }
+    
+    return [NSMutableArray new];
+}
+/**
+ Get all NyaruIndex.key which's value is not equal to target.
+ @param allIndexes schema.allNotNillIndexes
+ @param target NyaruQuery.value match target
+ @param targetType NyaruSchemaType of target and schema
+ @return NSMutableArray [NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSMutableArray *filterUnequal(NSArray *allIndexes, id target, NyaruSchemaType type)
+{
+    NSMutableArray *result = [NSMutableArray new];
+    
+    NSRange range = findEqualRange(allIndexes, target, type);
+    if (range.length > 0) {
+        // found equal value
+        NSUInteger max = range.location == NSUIntegerMax ? allIndexes.count : range.location;
+        for (NSUInteger index = 0; index < max; index++) {
+            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+        }
+        for (NSUInteger index = range.location + range.length; index < allIndexes.count; index++) {
+            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+        }
+    }
+    else {
+        // no equal value
+        for (NyaruIndex *index in allIndexes) {
+            [result addObjectsFromArray:index.keySet.allObjects];
+        }
+    }
+    
+    return result;
+}
+/**
+ Get all NyaruIndex.key which's value is less(equal) to target.
+ @param allIndexes schema.allNotNillIndexes
+ @param target NyaruQuery.value match target
+ @param targetType NyaruSchemaType of target and schema
+ @param includeEqual YES: LessEqual, NO: Less
+ @return @[NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSMutableArray *filterLess(NSArray *allIndexes, id target, NyaruSchemaType type, BOOL includeEqual)
+{
+    NSMutableArray *result = [NSMutableArray new];
+    
+    NSRange range = findEqualRange(allIndexes, target, type);
+    // no less data
+    if (range.location == NSUIntegerMax && range.length == 0) { return result; }
+    
+    if (range.location != NSUIntegerMax && range.location != 0) {
+        NSUInteger max = range.length > 0 ? range.location - 1 : range.location;
+        for (NSUInteger index = 0; index <= max; index++) {
+            // add less datas
+            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+        }
+    }
+    
+    if (includeEqual && range.length > 0) {
+        // add equal datas
+        [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
+    }
+    
+    return result;
+}
+/**
+ Get all NyaruIndex.key which's value is greater(equal) to target.
+ @param allIndexes schema.allNotNillIndexes
+ @param target NyaruQuery.value match target
+ @param targetType NyaruSchemaType of target and schema
+ @param includeEqual YES: LessEqual, NO: Less
+ @return @[NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSArray *filterGreater(NSArray *allIndexes, id target, NyaruSchemaType type, BOOL includeEqual)
+{
+    NSMutableArray *result = [NSMutableArray new];
+    
+    NSRange range = findEqualRange(allIndexes, target, type);
+    // no greater data
+    if (range.location == allIndexes.count && range.length == 0 && !includeEqual) { return result; }
+    if (range.location == NSUIntegerMax && range.length == 0) {
+        // all data is greater
+        for (NSUInteger index = 0; index < allIndexes.count; index++) {
+            // add greater datas
+            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+        }
+        return result;
+    }
+    
+    for (NSUInteger index = range.location + 1; index < allIndexes.count; index++) {
+        // add greater datas
+        [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+    }
+    
+    if (includeEqual && range.length > 0) {
+        // add equal datas
+        [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
+    }
+    
+    return result;
+}
+/**
+ Get all NyaruIndex.key which's value is like, beginning of, end of to target.
+ @param allIndexes schema.allNotNillIndexes
+ @param target NyaruQuery.value match target
+ @param targetType NyaruSchemaType of target and schema
+ @return NSMutableArray [NyaruIndex.key]
+ */
+NYARU_BURST_LINK NSMutableArray *filterLike(NSArray *allIndexes, NSString *target, NyaruSchemaType type)
+{
+    NSMutableArray *result = [NSMutableArray new];
+    
+    for (NyaruIndex *index in allIndexes) {
+        if ([index.value rangeOfString:target options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            [result addObjectsFromArray:[index keySet].allObjects];
+        }
+    }
+    
+    return result;
+}
+/**
+ Find equal items in the array.
+ If there are no equal items then return final up bound, and length = 0;
+    ([0, 2, 4], target=-1) => (NSUIntegerMax, 0)
+    ([0, 2, 4], target=0) => (0, 1)
+    ([0, 2, 4], target=1) => (0, 0)
+    ([0, 2, 4], target=2) => (1, 1)
+    ([0, 2, 4], target=3) => (1, 0)
+    ([0, 2, 4], target=4) => (2, 1)
+    ([0, 2, 4], target=5) => (2, 0)
+ */
+NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaType type)
+{
+    NSComparisonResult compResult;
+    
+    // array.count : 0 ~ 1
+    switch (array.count) {
+        case 0:
+            return NSMakeRange(NSUIntegerMax, 0);
+        case 1:
+            compResult = compare([[array objectAtIndex:0] value], target, type);
+            // target < array[0]
+            if (compResult == NSOrderedDescending) { return NSMakeRange(NSUIntegerMax, 0); }
+            // target == array[0]
+            else if (compResult == NSOrderedSame) { return NSMakeRange(0, 1); }
+            // target > array[0]
+            else { return NSMakeRange(0, 0); }
+    }
+    
+    // compare the first
+    compResult = compare([[array objectAtIndex:0] value], target, type);
+    switch (compResult) {
+        case NSOrderedSame:
+            // target == array[0]
+            return NSMakeRange(0, 1);
+        case NSOrderedDescending:
+            // target < array[0]
+            return NSMakeRange(NSUIntegerMax, 0);
+        case NSOrderedAscending: break;
+    }
+    // compare the last
+    compResult = compare([[array lastObject] value], target, type);
+    switch (compResult) {
+        case NSOrderedSame:
+            // index == array[last]
+            return NSMakeRange(array.count - 1, 1);
+        case NSOrderedAscending:
+            // target > array[last]
+            return NSMakeRange(array.count - 1, 0);
+        case NSOrderedDescending: break;
+    }
+    
+    NSUInteger upBound = 1;
+    NSUInteger downBound = array.count - 2;
+    NSUInteger targetIndex = (upBound + downBound) / 2;
+    
+    while (upBound <= downBound) {
+        compResult = compare([[array objectAtIndex:targetIndex] value], target, type);
+        
+        switch (compResult) {
+            case NSOrderedSame:
+                // target == array[targetIndex]
+                return NSMakeRange(targetIndex, 1);
+            case NSOrderedDescending:
+                // index.value < array[targetIndex]
+                downBound = targetIndex - 1;
+                targetIndex = (upBound + downBound) / 2;
+                break;
+            case NSOrderedAscending:
+                // index.value > array[targetIndex]
+                upBound = targetIndex + 1;
+                targetIndex = (upBound + downBound) / 2;
+                if (targetIndex < upBound) { targetIndex = upBound; }
                 break;
         }
     }
     
+    // did not find the same value in the array.
+    return NSMakeRange(upBound, 0);
+}
+#pragma mark compare value1 and value2
+/**
+ A comparer for inserting NyaruIndex.
+ */
+NYARU_BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType)
+{
     switch (schemaType) {
         case NyaruSchemaTypeString:
             return [(NSString *)value1 compare:value2 options:NSCaseInsensitiveSearch];
@@ -716,7 +987,7 @@ BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType sche
             return NSOrderedAscending;
     }
 }
-BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
+NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
 {
     NSInteger value1TimeInterval = value1.timeIntervalSince1970;
     NSInteger value2TimeInterval = value2.timeIntervalSince1970;
@@ -728,228 +999,93 @@ BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
     else
         return NSOrderedSame;
 }
-
-#pragma mark Insert
-- (NSMutableDictionary *)insertDocument:(NSDictionary *)document
+#pragma mark fetch
+/**
+ Fetch the document with NyaruKey and NSFileHandle.
+ @param nyaruKey NyaruKey
+ @param documentCache _documentCache
+ @param fileDocument NSFileHandle
+ @return NSMutableDictionary / nil
+ */
+NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruKey, NSCache *documentCache, NSFileHandle *fileDocument)
 {
-    if (document == nil) {
-        @throw [NSException exceptionWithName:NyaruDBNProduct reason:@"document could not be nil." userInfo:nil];
-        return nil;
+    NSMutableDictionary *result = [documentCache objectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
+    if (result) {
+        // return document from cache
+        return result;
     }
     
-    NSMutableDictionary *doc = [NSMutableDictionary dictionaryWithDictionary:document];
-    if ([[doc objectForKey:NyaruConfig.key] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NyaruConfig.key]).length == 0) {
-        CFUUIDRef uuid = CFUUIDCreate(kCFAllocatorDefault);
-        CFStringRef cfId = CFUUIDCreateString(kCFAllocatorDefault, uuid);
-        [doc setObject:[NSString stringWithString:(__bridge NSString *)cfId] forKey:NyaruConfig.key];
-        CFRelease(cfId);
-        CFRelease(uuid);
+    @try {
+        [fileDocument seekToFileOffset:nyaruKey.documentOffset];
+        
+        // read document data
+        NSData *documentData = [fileDocument readDataOfLength:nyaruKey.documentLength];
+        result = documentData.mutableObjectFromJSONDataN;
+        [documentCache setObject:result forKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
     }
+    @catch (NSException *exception) { }
     
-    // get document offset
-    NSData *docData = doc.JSONDataN.gzippedData;
-    
-    if (docData.length == 0) {
-        @throw [NSException exceptionWithName:NyaruDBNProduct reason:@"document serialized failed." userInfo:nil];
-        return nil;
-    }
-    
-    // check key is exist
-    if ([((NyaruSchema *)[_schema objectForKey:NyaruConfig.key]).allKeys objectForKey:[doc objectForKey:NyaruConfig.key]]) {
-        @throw([NSException exceptionWithName:NyaruDBNProduct reason:[NSString stringWithFormat:@"key '%@' is exist.", [doc objectForKey:NyaruConfig.key]] userInfo:nil]);
-        return nil;
-    }
-    
-    // write data with GCD
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_group_async(group, _ioQueue, ^(void) {
-        NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
-        NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
-        
-        unsigned int documentOffset = 0;
-        unsigned int documentLength = docData.length;
-        unsigned int blockLength = 0;
-        
-        // get index offset
-        unsigned int indexOffset = 0;
-        if (_clearedIndexBlock.count > 0) {
-            for (NSDictionary *target in _clearedIndexBlock) {
-                blockLength = [[target objectForKey:NyaruConfig.blockLength] unsignedIntValue];
-                if (blockLength >= documentLength) {
-                    // old document block could be reuse
-                    indexOffset = [[target objectForKey:NyaruConfig.indexOffset] unsignedIntValue];
-                    
-                    // read old document block offset
-                    [fileIndex seekToFileOffset:indexOffset];
-                    NSData *documentOffsetData = [fileIndex readDataOfLength:4];
-                    [documentOffsetData getBytes:&documentOffset length:sizeof(documentOffset)];
-                    [fileDocument seekToFileOffset:documentOffset];
-                    
-                    // if reuse document block, update index data
-                    [fileIndex seekToFileOffset:indexOffset];
-                    
-                    [_clearedIndexBlock removeObject:target];
-                    break;
-                }
-            }
-        }
-        if (indexOffset == 0) {
-            documentOffset = [fileDocument seekToEndOfFile];
-            indexOffset = [fileIndex seekToEndOfFile];
-            blockLength = documentLength;
-        }
-        
-        // push key and index
-        for (NyaruSchema *schema in _schema.allValues) {
-            if (schema.unique) {
-                NyaruKey *key = [[NyaruKey alloc] initWithIndexOffset:indexOffset
-                                                       documentOffset:documentOffset
-                                                       documentLength:documentLength
-                                                          blockLength:blockLength];
-                [schema pushKey:[doc objectForKey:NyaruConfig.key] nyaruKey:key];
-            }
-            else {
-                NyaruIndex *index = [[NyaruIndex alloc] initWithIndexValue:[doc objectForKey:schema.name]
-                                                                       key:[doc objectForKey:NyaruConfig.key]];
-                [schema pushIndex:index];
-            }
-        }
-        
-        // write document
-        [fileDocument writeData:docData];
-        
-        // write index
-        NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
-        [indexData appendBytes:&documentLength length:sizeof(documentLength)];
-        [indexData appendBytes:&blockLength length:sizeof(blockLength)];
-        [fileIndex writeData:indexData];
-        
-        // close files
-        [fileDocument closeFile];
-        [fileIndex closeFile];
-    });
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-    dispatch_release(group);
-    docData = nil;
-    
-    return doc;
-}
-
-#pragma mark Rmove
-- (void)removeDocumentWithKey:(NSString *)key
-{
-    NyaruKey *nyaruKey = [[_schema objectForKey:NyaruConfig.key] indexForKey:key];
-    
-    if (nyaruKey) {
-        // write data with GCD
-        dispatch_group_t group = dispatch_group_create();
-        dispatch_group_async(group, _ioQueue, ^(void) {
-            NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
-            
-            @try {
-                unsigned int data = 0;
-                [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
-                [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
-                [_clearedIndexBlock addObject:@{
-                 NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:nyaruKey.indexOffset],
-                 NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:nyaruKey.blockLength] }];
-                
-                for (NyaruSchema *schema in _schema.allValues) {
-                    [schema removeForKey:key];
-                }
-            }
-            @catch (NSException *exception) { }
-            
-            [fileIndex closeFile];
-        });
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-        dispatch_release(group);
-    }
-}
-- (void)removeAllDocument
-{
-    // write data with GCD
-    dispatch_group_t group = dispatch_group_create();
-    dispatch_group_async(group, _ioQueue, ^(void) {
-        [_clearedIndexBlock removeAllObjects];
-        for (NyaruSchema *schema in _schema.allValues) {
-            [schema removeAll];
-        }
-        
-        // remove files
-        [[NSFileManager defaultManager] removeItemAtPath:_documentFilePath error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:_indexFilePath error:nil];
-        
-        // create files
-        NSError *error = nil;
-        NSString *header = NyaruFileHeader;
-        [header writeToFile:_documentFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
-        if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
-        }
-        [header writeToFile:_indexFilePath atomically:NO encoding:NSUTF8StringEncoding error:&error];
-        if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
-        }
-    });
-    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-    dispatch_release(group);
+    return result;
 }
 
 
-#pragma mark - ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
-#pragma mark - Private Method
-BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
-{
-    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
-    NSData *header = [fileHandle readDataOfLength:NyaruFileHeaderLength];
-    [fileHandle closeFile];
-    return [[[NSString alloc] initWithData:header encoding:NSUTF8StringEncoding] isEqualToString:NyaruFileHeader];
-}
-
-- (NSMutableDictionary *)loadSchema
+#pragma mark - Private methods
+/**
+ Load database schema with file path.
+ @param path schema file path
+ @return NSMutableDictionary { key: schema name, value: NyaruSchema }
+ */
+NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
 {
     NSMutableDictionary *result = [NSMutableDictionary new];
-    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:_schemaFilePath error:nil];
-    unsigned int size = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntegerValue];
-    NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:_schemaFilePath];
+    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+    NSUInteger fileSize = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntegerValue];
+    NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
     
-    [file seekToFileOffset:NyaruFileHeaderLength];
-    while (file.offsetInFile < size) {
-        unsigned int offset = file.offsetInFile;
+    [file seekToFileOffset:NYARU_HEADER_LENGTH];
+    NSMutableData *data;
+    unsigned int offset;
+    unsigned char length;
+    while (file.offsetInFile < fileSize) {
+        offset = file.offsetInFile;
         // get length of key
-        unsigned char length;
-        NSMutableData *data = [NSMutableData dataWithData:[file readDataOfLength:9]];
-        [[data subdataWithRange:NSMakeRange(8, 1)] getBytes:&length length:sizeof(length)];
+        data = [NSMutableData dataWithData:[file readDataOfLength:9]];
+        [[data subdataWithRange:NSMakeRange(8, 1)] getBytes:&length length:1];
         
         // read data of schema name
         [data appendData:[file readDataOfLength:length]];
         
-        NyaruSchema *schema = [[NyaruSchema alloc] initWithData:data];
-        schema.offset = offset;
+        NyaruSchema *schema = [[NyaruSchema alloc] initWithData:data andOffset:offset];
         [result setObject:schema forKey:schema.name];
         
-        if (schema.nextOffset == 0) {
+        if (schema.nextOffsetInFile == 0) {
             // this is last of schema
             break;
         }
         else {
-            [file seekToFileOffset:schema.nextOffset];
+            [file seekToFileOffset:schema.nextOffsetInFile];
         }
     }
-    
     [file closeFile];
+    
     return result;
 }
 
-- (void)loadIndex
+/**
+ Load indexes in this collection for search data.
+ @param schemas _schemas
+ @param clearedIndexBlock _clearedIndexBlock
+ @param indexFilePath _indexFilePath
+ @param documentFilePath _documentFilePath
+ */
+NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *clearedIndexBlock, NSString *indexFilePath, NSString *documentFilePath)
 {
-    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:_indexFilePath error:nil];
+    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:indexFilePath error:nil];
     unsigned int size = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntegerValue];
-    NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:_indexFilePath];
-    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+    NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:indexFilePath];
+    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:documentFilePath];
     
-    [fileIndex seekToFileOffset:NyaruFileHeaderLength];
+    [fileIndex seekToFileOffset:NYARU_HEADER_LENGTH];
     while (fileIndex.offsetInFile < size) {
         // read index
         unsigned int indexOffset = fileIndex.offsetInFile;
@@ -960,9 +1096,7 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
         
         [[indexData subdataWithRange:NSMakeRange(4, 4)] getBytes:&documentLength length:sizeof(documentLength)];
         if (documentLength == 0) {
-            [_clearedIndexBlock addObject:@{
-             NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:indexOffset],
-             NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:blockLength] }];
+            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         [[indexData subdataWithRange:NSMakeRange(0, 4)] getBytes:&documentOffset length:sizeof(documentOffset)];
@@ -971,21 +1105,18 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
         // read document
         [fileDocument seekToFileOffset:documentOffset];
         NSData *documentData = [fileDocument readDataOfLength:documentLength];
-        NSDictionary *document = documentData.gunzippedData.mutableObjectFromJSONDataN;
+        NSDictionary *document = documentData.mutableObjectFromJSONDataN;
         
-        for (NyaruSchema *schema in _schema.allValues) {
+        for (NyaruSchema *schema in schemas.allValues) {
             if (schema.unique) {
                 NyaruKey *key = [[NyaruKey alloc] initWithIndexOffset:indexOffset
                                                        documentOffset:documentOffset
                                                        documentLength:documentLength
                                                           blockLength:blockLength];
-                
-                [schema pushKey:[document objectForKey:NyaruConfig.key] nyaruKey:key];
+                [schema pushNyaruKey:[document objectForKey:NYARU_KEY] nyaruKey:key];
             }
             else {
-                NyaruIndex *index = [[NyaruIndex alloc] initWithIndexValue:[document objectForKey:schema.name]
-                                                                       key:[document objectForKey:NyaruConfig.key]];
-                [schema pushIndex:index];
+                [schema pushNyaruIndex:[document objectForKey:NYARU_KEY] value:[document objectForKey:schema.name]];
             }
         }
     }
@@ -993,19 +1124,28 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
     [fileIndex closeFile];
     [fileDocument closeFile];
 }
-- (void)loadIndexForSchema:(NyaruSchema *)schema
+
+/**
+ Load indexes in this collection for search data.
+ @param schema the new schema
+ @param schemas _schemas
+ @param clearedIndexBlock _clearedIndexBlock
+ @param indexFilePath _indexFilePath
+ @param documentFilePath _documentFilePath
+ */
+NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionary *schemas, NSMutableArray *clearedIndexBlock, NSString *indexFilePath, NSString *documentFilePath)
 {
     if (schema.unique) {
         // first schema 'key'
         return;
     }
     
-    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:_indexFilePath error:nil];
+    NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:indexFilePath error:nil];
     unsigned int size = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntegerValue];
-    NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:_indexFilePath];
-    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+    NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:indexFilePath];
+    NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:documentFilePath];
     
-    [fileIndex seekToFileOffset:NyaruFileHeaderLength];
+    [fileIndex seekToFileOffset:NYARU_HEADER_LENGTH];
     while (fileIndex.offsetInFile < size) {
         // read index
         unsigned int indexOffset = fileIndex.offsetInFile;
@@ -1016,9 +1156,7 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
         
         [[indexData subdataWithRange:NSMakeRange(4, 4)] getBytes:&documentLength length:sizeof(documentLength)];
         if (documentLength == 0) {
-            [_clearedIndexBlock addObject:@{
-             NyaruConfig.indexOffset: [NSNumber numberWithUnsignedInt:indexOffset],
-             NyaruConfig.blockLength: [NSNumber numberWithUnsignedInt:blockLength] }];
+            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         [[indexData subdataWithRange:NSMakeRange(0, 4)] getBytes:&documentOffset length:sizeof(documentOffset)];
@@ -1027,15 +1165,57 @@ BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
         // read document
         [fileDocument seekToFileOffset:documentOffset];
         NSData *documentData = [fileDocument readDataOfLength:documentLength];
-        NSDictionary *document = documentData.gunzippedData.mutableObjectFromJSONDataN;
+        NSDictionary *document = documentData.mutableObjectFromJSONDataN;
         
-        NyaruIndex *index = [[NyaruIndex alloc] initWithIndexValue:[document objectForKey:schema.name]
-                                                               key:[document objectForKey:NyaruConfig.key]];
-        [schema pushIndex:index];
+        [schema pushNyaruIndex:[document objectForKey:NYARU_KEY] value:[document objectForKey:schema.name]];
     }
     
     [fileIndex closeFile];
     [fileDocument closeFile];
+}
+
+/**
+ Get the last schema
+ @param _schemas
+ @return NyaruSchema / nil
+ */
+NYARU_BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas)
+{
+    for (NyaruSchema *schema in allSchemas.allValues) {
+        if (schema.nextOffsetInFile == 0) {
+            return schema;
+        }
+    }
+    
+    return nil;
+}
+
+/**
+ Check file's header match NyaruDB.
+ @param patch file patch
+ @return YES / NO
+ */
+NYARU_BURST_LINK BOOL isNyaruHeaderOK(NSString *path)
+{
+    NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingAtPath:path];
+    NSData *header = [fileHandle readDataOfLength:NYARU_HEADER_LENGTH];
+    [fileHandle closeFile];
+    return [header isEqualToData:[NYARU_HEADER dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+/**
+ Is file exist then delete it.
+ @param path file path
+ */
+NYARU_BURST_LINK void fileDelete(NSString *path)
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
+        if (error) {
+            @throw [NSException exceptionWithName:NYARU_DOCUMENT reason:error.description userInfo:error.userInfo];
+        }
+    }
 }
 
 @end

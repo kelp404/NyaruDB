@@ -1,0 +1,478 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		21DC702116D706C700EB0953 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702016D706C700EB0953 /* UIKit.framework */; };
+		21DC702316D706C700EB0953 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702216D706C700EB0953 /* Foundation.framework */; };
+		21DC702516D706C700EB0953 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702416D706C700EB0953 /* CoreGraphics.framework */; };
+		21DC702B16D706C700EB0953 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 21DC702916D706C700EB0953 /* InfoPlist.strings */; };
+		21DC702D16D706C700EB0953 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC702C16D706C700EB0953 /* main.m */; };
+		21DC703116D706C800EB0953 /* NyaruDBDemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC703016D706C800EB0953 /* NyaruDBDemoAppDelegate.m */; };
+		21DC703316D706C800EB0953 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703216D706C800EB0953 /* Default.png */; };
+		21DC703516D706C800EB0953 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703416D706C800EB0953 /* Default@2x.png */; };
+		21DC703716D706C800EB0953 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703616D706C800EB0953 /* Default-568h@2x.png */; };
+		21DC703A16D706C800EB0953 /* NyaruDBDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC703916D706C800EB0953 /* NyaruDBDemoViewController.m */; };
+		21DC703D16D706C800EB0953 /* NyaruDBDemoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703B16D706C800EB0953 /* NyaruDBDemoViewController.xib */; };
+		21DC704516D706C800EB0953 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC704416D706C800EB0953 /* SenTestingKit.framework */; };
+		21DC704616D706C800EB0953 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702016D706C700EB0953 /* UIKit.framework */; };
+		21DC704716D706C800EB0953 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702216D706C700EB0953 /* Foundation.framework */; };
+		21DC704F16D706C800EB0953 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 21DC704D16D706C800EB0953 /* InfoPlist.strings */; };
+		21DC705216D706C800EB0953 /* NyaruDBDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC705116D706C800EB0953 /* NyaruDBDemoTests.m */; };
+		21DC705C16D706EB00EB0953 /* libNyaruDB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC705B16D706EB00EB0953 /* libNyaruDB.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		21DC704816D706C800EB0953 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 21DC701516D706C700EB0953 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 21DC701C16D706C700EB0953;
+			remoteInfo = NyaruDBDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		21DC701D16D706C700EB0953 /* NyaruDBDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NyaruDBDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		21DC702016D706C700EB0953 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		21DC702216D706C700EB0953 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		21DC702416D706C700EB0953 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		21DC702816D706C700EB0953 /* NyaruDBDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NyaruDBDemo-Info.plist"; sourceTree = "<group>"; };
+		21DC702A16D706C700EB0953 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		21DC702C16D706C700EB0953 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		21DC702E16D706C800EB0953 /* NyaruDBDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NyaruDBDemo-Prefix.pch"; sourceTree = "<group>"; };
+		21DC702F16D706C800EB0953 /* NyaruDBDemoAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDBDemoAppDelegate.h; sourceTree = "<group>"; };
+		21DC703016D706C800EB0953 /* NyaruDBDemoAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NyaruDBDemoAppDelegate.m; sourceTree = "<group>"; };
+		21DC703216D706C800EB0953 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		21DC703416D706C800EB0953 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		21DC703616D706C800EB0953 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		21DC703816D706C800EB0953 /* NyaruDBDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDBDemoViewController.h; sourceTree = "<group>"; };
+		21DC703916D706C800EB0953 /* NyaruDBDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NyaruDBDemoViewController.m; sourceTree = "<group>"; };
+		21DC703C16D706C800EB0953 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/NyaruDBDemoViewController.xib; sourceTree = "<group>"; };
+		21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NyaruDBDemoTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		21DC704416D706C800EB0953 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		21DC704C16D706C800EB0953 /* NyaruDBDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NyaruDBDemoTests-Info.plist"; sourceTree = "<group>"; };
+		21DC704E16D706C800EB0953 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		21DC705016D706C800EB0953 /* NyaruDBDemoTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDBDemoTests.h; sourceTree = "<group>"; };
+		21DC705116D706C800EB0953 /* NyaruDBDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NyaruDBDemoTests.m; sourceTree = "<group>"; };
+		21DC705B16D706EB00EB0953 /* libNyaruDB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNyaruDB.a; path = "../NyaruDB/build/Release-iphoneos/libNyaruDB.a"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		21DC701A16D706C700EB0953 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC705C16D706EB00EB0953 /* libNyaruDB.a in Frameworks */,
+				21DC702116D706C700EB0953 /* UIKit.framework in Frameworks */,
+				21DC702316D706C700EB0953 /* Foundation.framework in Frameworks */,
+				21DC702516D706C700EB0953 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		21DC703F16D706C800EB0953 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC704516D706C800EB0953 /* SenTestingKit.framework in Frameworks */,
+				21DC704616D706C800EB0953 /* UIKit.framework in Frameworks */,
+				21DC704716D706C800EB0953 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		21DC701416D706C700EB0953 = {
+			isa = PBXGroup;
+			children = (
+				21DC702616D706C700EB0953 /* NyaruDBDemo */,
+				21DC704A16D706C800EB0953 /* NyaruDBDemoTests */,
+				21DC701F16D706C700EB0953 /* Frameworks */,
+				21DC701E16D706C700EB0953 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		21DC701E16D706C700EB0953 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				21DC701D16D706C700EB0953 /* NyaruDBDemo.app */,
+				21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		21DC701F16D706C700EB0953 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				21DC705B16D706EB00EB0953 /* libNyaruDB.a */,
+				21DC702016D706C700EB0953 /* UIKit.framework */,
+				21DC702216D706C700EB0953 /* Foundation.framework */,
+				21DC702416D706C700EB0953 /* CoreGraphics.framework */,
+				21DC704416D706C800EB0953 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		21DC702616D706C700EB0953 /* NyaruDBDemo */ = {
+			isa = PBXGroup;
+			children = (
+				21DC702F16D706C800EB0953 /* NyaruDBDemoAppDelegate.h */,
+				21DC703016D706C800EB0953 /* NyaruDBDemoAppDelegate.m */,
+				21DC703816D706C800EB0953 /* NyaruDBDemoViewController.h */,
+				21DC703916D706C800EB0953 /* NyaruDBDemoViewController.m */,
+				21DC703B16D706C800EB0953 /* NyaruDBDemoViewController.xib */,
+				21DC702716D706C700EB0953 /* Supporting Files */,
+			);
+			path = NyaruDBDemo;
+			sourceTree = "<group>";
+		};
+		21DC702716D706C700EB0953 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				21DC702816D706C700EB0953 /* NyaruDBDemo-Info.plist */,
+				21DC702916D706C700EB0953 /* InfoPlist.strings */,
+				21DC702C16D706C700EB0953 /* main.m */,
+				21DC702E16D706C800EB0953 /* NyaruDBDemo-Prefix.pch */,
+				21DC703216D706C800EB0953 /* Default.png */,
+				21DC703416D706C800EB0953 /* Default@2x.png */,
+				21DC703616D706C800EB0953 /* Default-568h@2x.png */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		21DC704A16D706C800EB0953 /* NyaruDBDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				21DC705016D706C800EB0953 /* NyaruDBDemoTests.h */,
+				21DC705116D706C800EB0953 /* NyaruDBDemoTests.m */,
+				21DC704B16D706C800EB0953 /* Supporting Files */,
+			);
+			path = NyaruDBDemoTests;
+			sourceTree = "<group>";
+		};
+		21DC704B16D706C800EB0953 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				21DC704C16D706C800EB0953 /* NyaruDBDemoTests-Info.plist */,
+				21DC704D16D706C800EB0953 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		21DC701C16D706C700EB0953 /* NyaruDBDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 21DC705516D706C800EB0953 /* Build configuration list for PBXNativeTarget "NyaruDBDemo" */;
+			buildPhases = (
+				21DC701916D706C700EB0953 /* Sources */,
+				21DC701A16D706C700EB0953 /* Frameworks */,
+				21DC701B16D706C700EB0953 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NyaruDBDemo;
+			productName = NyaruDBDemo;
+			productReference = 21DC701D16D706C700EB0953 /* NyaruDBDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		21DC704216D706C800EB0953 /* NyaruDBDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 21DC705816D706C800EB0953 /* Build configuration list for PBXNativeTarget "NyaruDBDemoTests" */;
+			buildPhases = (
+				21DC703E16D706C800EB0953 /* Sources */,
+				21DC703F16D706C800EB0953 /* Frameworks */,
+				21DC704016D706C800EB0953 /* Resources */,
+				21DC704116D706C800EB0953 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				21DC704916D706C800EB0953 /* PBXTargetDependency */,
+			);
+			name = NyaruDBDemoTests;
+			productName = NyaruDBDemoTests;
+			productReference = 21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		21DC701516D706C700EB0953 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = NyaruDBDemo;
+				LastUpgradeCheck = 0460;
+			};
+			buildConfigurationList = 21DC701816D706C700EB0953 /* Build configuration list for PBXProject "NyaruDBDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 21DC701416D706C700EB0953;
+			productRefGroup = 21DC701E16D706C700EB0953 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				21DC701C16D706C700EB0953 /* NyaruDBDemo */,
+				21DC704216D706C800EB0953 /* NyaruDBDemoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		21DC701B16D706C700EB0953 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC702B16D706C700EB0953 /* InfoPlist.strings in Resources */,
+				21DC703316D706C800EB0953 /* Default.png in Resources */,
+				21DC703516D706C800EB0953 /* Default@2x.png in Resources */,
+				21DC703716D706C800EB0953 /* Default-568h@2x.png in Resources */,
+				21DC703D16D706C800EB0953 /* NyaruDBDemoViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		21DC704016D706C800EB0953 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC704F16D706C800EB0953 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		21DC704116D706C800EB0953 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		21DC701916D706C700EB0953 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC702D16D706C700EB0953 /* main.m in Sources */,
+				21DC703116D706C800EB0953 /* NyaruDBDemoAppDelegate.m in Sources */,
+				21DC703A16D706C800EB0953 /* NyaruDBDemoViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		21DC703E16D706C800EB0953 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				21DC705216D706C800EB0953 /* NyaruDBDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		21DC704916D706C800EB0953 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 21DC701C16D706C700EB0953 /* NyaruDBDemo */;
+			targetProxy = 21DC704816D706C800EB0953 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		21DC702916D706C700EB0953 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				21DC702A16D706C700EB0953 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		21DC703B16D706C800EB0953 /* NyaruDBDemoViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				21DC703C16D706C800EB0953 /* en */,
+			);
+			name = NyaruDBDemoViewController.xib;
+			sourceTree = "<group>";
+		};
+		21DC704D16D706C800EB0953 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				21DC704E16D706C800EB0953 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		21DC705316D706C800EB0953 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		21DC705416D706C800EB0953 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		21DC705616D706C800EB0953 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
+				HEADER_SEARCH_PATHS = ../NyaruDB;
+				INFOPLIST_FILE = "NyaruDBDemo/NyaruDBDemo-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		21DC705716D706C800EB0953 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
+				HEADER_SEARCH_PATHS = ../NyaruDB;
+				INFOPLIST_FILE = "NyaruDBDemo/NyaruDBDemo-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		21DC705916D706C800EB0953 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NyaruDBDemo.app/NyaruDBDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
+				INFOPLIST_FILE = "NyaruDBDemoTests/NyaruDBDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		21DC705A16D706C800EB0953 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/NyaruDBDemo.app/NyaruDBDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
+					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
+				INFOPLIST_FILE = "NyaruDBDemoTests/NyaruDBDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		21DC701816D706C700EB0953 /* Build configuration list for PBXProject "NyaruDBDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				21DC705316D706C800EB0953 /* Debug */,
+				21DC705416D706C800EB0953 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		21DC705516D706C800EB0953 /* Build configuration list for PBXNativeTarget "NyaruDBDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				21DC705616D706C800EB0953 /* Debug */,
+				21DC705716D706C800EB0953 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		21DC705816D706C800EB0953 /* Build configuration list for PBXNativeTarget "NyaruDBDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				21DC705916D706C800EB0953 /* Debug */,
+				21DC705A16D706C800EB0953 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 21DC701516D706C700EB0953 /* Project object */;
+}

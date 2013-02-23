@@ -7,26 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		21177E9D1622AF890078551E /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 21177E9B1622AF890078551E /* NyaruQuery.h */; };
-		21177E9E1622AF890078551E /* NyaruQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 21177E9C1622AF890078551E /* NyaruQuery.m */; };
-		21199FE116048EBD00270A48 /* NSData+GZIP.h in Headers */ = {isa = PBXBuildFile; fileRef = 21199FDF16048EBD00270A48 /* NSData+GZIP.h */; };
-		21199FE216048EBD00270A48 /* NSData+GZIP.m in Sources */ = {isa = PBXBuildFile; fileRef = 21199FE016048EBD00270A48 /* NSData+GZIP.m */; };
-		21199FE816048FC300270A48 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 21199FE716048FC300270A48 /* libz.dylib */; };
-		21199FF11604917300270A48 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 21199FE716048FC300270A48 /* libz.dylib */; };
-		216D8FD915F45AA50050AB28 /* NyaruIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 216D8FD715F45AA50050AB28 /* NyaruIndex.h */; };
-		216D8FDA15F45AA50050AB28 /* NyaruIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 216D8FD815F45AA50050AB28 /* NyaruIndex.m */; };
-		218A213615FC0105004A433B /* NyaruSchema.h in Headers */ = {isa = PBXBuildFile; fileRef = 218A213415FC0105004A433B /* NyaruSchema.h */; };
-		218A213715FC0105004A433B /* NyaruSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 218A213515FC0105004A433B /* NyaruSchema.m */; };
-		219CF6A515D772BB00065BF5 /* NyaruConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 219CF6A315D772BB00065BF5 /* NyaruConfig.h */; };
+		216CDDC716D2385D00A26FE0 /* NyaruDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC516D2385D00A26FE0 /* NyaruDB.h */; };
+		216CDDC816D2385D00A26FE0 /* NyaruDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDC616D2385D00A26FE0 /* NyaruDB.m */; };
+		216CDDCB16D23A8300A26FE0 /* NyaruConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC916D23A8300A26FE0 /* NyaruConfig.h */; };
+		216CDDCF16D23F5400A26FE0 /* NyaruCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */; };
+		216CDDD016D23F5400A26FE0 /* NyaruCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */; };
+		21A877A716D35AD200B5DDA8 /* NyaruKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877A516D35AD200B5DDA8 /* NyaruKey.h */; };
+		21A877A816D35AD200B5DDA8 /* NyaruKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877A616D35AD200B5DDA8 /* NyaruKey.m */; };
+		21A877AB16D35ADD00B5DDA8 /* NyaruIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877A916D35ADD00B5DDA8 /* NyaruIndex.h */; };
+		21A877AC16D35ADD00B5DDA8 /* NyaruIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */; };
+		21A877AF16D37E7600B5DDA8 /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */; };
+		21A877B016D37E7600B5DDA8 /* NyaruQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */; };
 		21AFC773161ECACB0086027B /* JSONKit-Nyaru.h in Headers */ = {isa = PBXBuildFile; fileRef = 21AFC771161ECACB0086027B /* JSONKit-Nyaru.h */; };
 		21AFC774161ECACB0086027B /* JSONKit-Nyaru.m in Sources */ = {isa = PBXBuildFile; fileRef = 21AFC772161ECACB0086027B /* JSONKit-Nyaru.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		21D13292161D684700864F3D /* NyaruKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 21D13290161D684700864F3D /* NyaruKey.h */; };
-		21D13293161D684700864F3D /* NyaruKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 21D13291161D684700864F3D /* NyaruKey.m */; };
-		21D13295161D809B00864F3D /* NyaruConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 21D13294161D809B00864F3D /* NyaruConfig.m */; };
-		21DC9ADA15D7F2320090F8C8 /* NyaruCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DC9AD815D7F2320090F8C8 /* NyaruCollection.h */; };
-		21DC9ADB15D7F2320090F8C8 /* NyaruCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC9AD915D7F2320090F8C8 /* NyaruCollection.m */; };
+		21CCD81D16D3C2C400168102 /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */; };
+		21CCD81E16D3C2C400168102 /* NyaruQueryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */; };
+		21DF5CD016D31E6F00405E0E /* NyaruIndexBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */; };
+		21DF5CD116D31E6F00405E0E /* NyaruIndexBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DF5CCF16D31E6F00405E0E /* NyaruIndexBlock.m */; };
+		21DF5CD416D32C4300405E0E /* NyaruSchema.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DF5CD216D32C4300405E0E /* NyaruSchema.h */; };
+		21DF5CD516D32C4300405E0E /* NyaruSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DF5CD316D32C4300405E0E /* NyaruSchema.m */; };
 		21EAAD7B15B1003600835B47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21EAAD7A15B1003600835B47 /* Foundation.framework */; };
-		21EAAD8115B1003600835B47 /* NyaruDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 21EAAD8015B1003600835B47 /* NyaruDB.m */; };
 		21EAAD8915B1003600835B47 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21EAAD8815B1003600835B47 /* SenTestingKit.framework */; };
 		21EAAD8B15B1003600835B47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21EAAD8A15B1003600835B47 /* UIKit.framework */; };
 		21EAAD8C15B1003600835B47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21EAAD7A15B1003600835B47 /* Foundation.framework */; };
@@ -46,28 +46,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		21177E9B1622AF890078551E /* NyaruQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQuery.h; sourceTree = "<group>"; };
-		21177E9C1622AF890078551E /* NyaruQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQuery.m; sourceTree = "<group>"; };
-		21199FDF16048EBD00270A48 /* NSData+GZIP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GZIP.h"; sourceTree = "<group>"; };
-		21199FE016048EBD00270A48 /* NSData+GZIP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+GZIP.m"; sourceTree = "<group>"; };
-		21199FE716048FC300270A48 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		216D8FD715F45AA50050AB28 /* NyaruIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndex.h; sourceTree = "<group>"; };
-		216D8FD815F45AA50050AB28 /* NyaruIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndex.m; sourceTree = "<group>"; };
-		218A213415FC0105004A433B /* NyaruSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruSchema.h; sourceTree = "<group>"; };
-		218A213515FC0105004A433B /* NyaruSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruSchema.m; sourceTree = "<group>"; };
-		219CF6A315D772BB00065BF5 /* NyaruConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruConfig.h; sourceTree = "<group>"; };
+		216CDDC516D2385D00A26FE0 /* NyaruDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruDB.h; sourceTree = "<group>"; };
+		216CDDC616D2385D00A26FE0 /* NyaruDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruDB.m; sourceTree = "<group>"; };
+		216CDDC916D23A8300A26FE0 /* NyaruConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruConfig.h; sourceTree = "<group>"; };
+		216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruCollection.h; sourceTree = "<group>"; };
+		216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruCollection.m; sourceTree = "<group>"; };
+		21A877A516D35AD200B5DDA8 /* NyaruKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruKey.h; sourceTree = "<group>"; };
+		21A877A616D35AD200B5DDA8 /* NyaruKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruKey.m; sourceTree = "<group>"; };
+		21A877A916D35ADD00B5DDA8 /* NyaruIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndex.h; sourceTree = "<group>"; };
+		21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndex.m; sourceTree = "<group>"; };
+		21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQuery.h; sourceTree = "<group>"; };
+		21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQuery.m; sourceTree = "<group>"; };
 		21AFC771161ECACB0086027B /* JSONKit-Nyaru.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSONKit-Nyaru.h"; sourceTree = "<group>"; };
 		21AFC772161ECACB0086027B /* JSONKit-Nyaru.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSONKit-Nyaru.m"; sourceTree = "<group>"; };
-		21D13290161D684700864F3D /* NyaruKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruKey.h; sourceTree = "<group>"; };
-		21D13291161D684700864F3D /* NyaruKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruKey.m; sourceTree = "<group>"; };
-		21D13294161D809B00864F3D /* NyaruConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruConfig.m; sourceTree = "<group>"; };
-		21DC9AD815D7F2320090F8C8 /* NyaruCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruCollection.h; sourceTree = "<group>"; };
-		21DC9AD915D7F2320090F8C8 /* NyaruCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruCollection.m; sourceTree = "<group>"; };
+		21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQueryCell.h; sourceTree = "<group>"; };
+		21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQueryCell.m; sourceTree = "<group>"; };
+		21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndexBlock.h; sourceTree = "<group>"; };
+		21DF5CCF16D31E6F00405E0E /* NyaruIndexBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndexBlock.m; sourceTree = "<group>"; };
+		21DF5CD216D32C4300405E0E /* NyaruSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruSchema.h; sourceTree = "<group>"; };
+		21DF5CD316D32C4300405E0E /* NyaruSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruSchema.m; sourceTree = "<group>"; };
 		21EAAD7715B1003600835B47 /* libNyaruDB.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libNyaruDB.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		21EAAD7A15B1003600835B47 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		21EAAD7E15B1003600835B47 /* NyaruDB-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NyaruDB-Prefix.pch"; sourceTree = "<group>"; };
-		21EAAD7F15B1003600835B47 /* NyaruDB.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDB.h; sourceTree = "<group>"; };
-		21EAAD8015B1003600835B47 /* NyaruDB.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NyaruDB.m; sourceTree = "<group>"; };
 		21EAAD8715B1003600835B47 /* NyaruDBTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NyaruDBTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		21EAAD8815B1003600835B47 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		21EAAD8A15B1003600835B47 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -82,7 +82,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21199FE816048FC300270A48 /* libz.dylib in Frameworks */,
 				21EAAD7B15B1003600835B47 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,7 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21199FF11604917300270A48 /* libz.dylib in Frameworks */,
 				21EAAD8915B1003600835B47 /* SenTestingKit.framework in Frameworks */,
 				21EAAD8B15B1003600835B47 /* UIKit.framework in Frameworks */,
 				21EAAD8C15B1003600835B47 /* Foundation.framework in Frameworks */,
@@ -102,20 +100,9 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		21199FDE16048EBD00270A48 /* GZIP */ = {
-			isa = PBXGroup;
-			children = (
-				21199FDF16048EBD00270A48 /* NSData+GZIP.h */,
-				21199FE016048EBD00270A48 /* NSData+GZIP.m */,
-			);
-			name = GZIP;
-			path = External/GZIP;
-			sourceTree = "<group>";
-		};
 		2185601F15D7469B00245243 /* External */ = {
 			isa = PBXGroup;
 			children = (
-				21199FDE16048EBD00270A48 /* GZIP */,
 				21DFF67D15F83BA900615275 /* JSONKit */,
 			);
 			name = External;
@@ -153,7 +140,6 @@
 		21EAAD7915B1003600835B47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				21199FE716048FC300270A48 /* libz.dylib */,
 				21EAAD7A15B1003600835B47 /* Foundation.framework */,
 				21EAAD8815B1003600835B47 /* SenTestingKit.framework */,
 				21EAAD8A15B1003600835B47 /* UIKit.framework */,
@@ -164,20 +150,23 @@
 		21EAAD7C15B1003600835B47 /* NyaruDB */ = {
 			isa = PBXGroup;
 			children = (
-				219CF6A315D772BB00065BF5 /* NyaruConfig.h */,
-				21D13294161D809B00864F3D /* NyaruConfig.m */,
-				21EAAD7F15B1003600835B47 /* NyaruDB.h */,
-				21EAAD8015B1003600835B47 /* NyaruDB.m */,
-				21DC9AD815D7F2320090F8C8 /* NyaruCollection.h */,
-				21DC9AD915D7F2320090F8C8 /* NyaruCollection.m */,
-				218A213415FC0105004A433B /* NyaruSchema.h */,
-				218A213515FC0105004A433B /* NyaruSchema.m */,
-				21D13290161D684700864F3D /* NyaruKey.h */,
-				21D13291161D684700864F3D /* NyaruKey.m */,
-				216D8FD715F45AA50050AB28 /* NyaruIndex.h */,
-				216D8FD815F45AA50050AB28 /* NyaruIndex.m */,
-				21177E9B1622AF890078551E /* NyaruQuery.h */,
-				21177E9C1622AF890078551E /* NyaruQuery.m */,
+				216CDDC916D23A8300A26FE0 /* NyaruConfig.h */,
+				216CDDC516D2385D00A26FE0 /* NyaruDB.h */,
+				216CDDC616D2385D00A26FE0 /* NyaruDB.m */,
+				21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */,
+				21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */,
+				216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */,
+				216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */,
+				21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */,
+				21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */,
+				21DF5CD216D32C4300405E0E /* NyaruSchema.h */,
+				21DF5CD316D32C4300405E0E /* NyaruSchema.m */,
+				21A877A516D35AD200B5DDA8 /* NyaruKey.h */,
+				21A877A616D35AD200B5DDA8 /* NyaruKey.m */,
+				21A877A916D35ADD00B5DDA8 /* NyaruIndex.h */,
+				21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */,
+				21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */,
+				21DF5CCF16D31E6F00405E0E /* NyaruIndexBlock.m */,
 				2185601F15D7469B00245243 /* External */,
 				21EAAD7D15B1003600835B47 /* Supporting Files */,
 			);
@@ -218,14 +207,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				219CF6A515D772BB00065BF5 /* NyaruConfig.h in Headers */,
-				21DC9ADA15D7F2320090F8C8 /* NyaruCollection.h in Headers */,
-				216D8FD915F45AA50050AB28 /* NyaruIndex.h in Headers */,
-				218A213615FC0105004A433B /* NyaruSchema.h in Headers */,
-				21199FE116048EBD00270A48 /* NSData+GZIP.h in Headers */,
-				21D13292161D684700864F3D /* NyaruKey.h in Headers */,
 				21AFC773161ECACB0086027B /* JSONKit-Nyaru.h in Headers */,
-				21177E9D1622AF890078551E /* NyaruQuery.h in Headers */,
+				216CDDC716D2385D00A26FE0 /* NyaruDB.h in Headers */,
+				216CDDCB16D23A8300A26FE0 /* NyaruConfig.h in Headers */,
+				216CDDCF16D23F5400A26FE0 /* NyaruCollection.h in Headers */,
+				21DF5CD016D31E6F00405E0E /* NyaruIndexBlock.h in Headers */,
+				21DF5CD416D32C4300405E0E /* NyaruSchema.h in Headers */,
+				21A877A716D35AD200B5DDA8 /* NyaruKey.h in Headers */,
+				21A877AB16D35ADD00B5DDA8 /* NyaruIndex.h in Headers */,
+				21A877AF16D37E7600B5DDA8 /* NyaruQuery.h in Headers */,
+				21CCD81D16D3C2C400168102 /* NyaruQueryCell.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,7 +266,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
-				ORGANIZATIONNAME = "Accuvally Inc.";
+				ORGANIZATIONNAME = "";
 			};
 			buildConfigurationList = 21EAAD7115B1003500835B47 /* Build configuration list for PBXProject "NyaruDB" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -327,15 +318,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21EAAD8115B1003600835B47 /* NyaruDB.m in Sources */,
-				21DC9ADB15D7F2320090F8C8 /* NyaruCollection.m in Sources */,
-				216D8FDA15F45AA50050AB28 /* NyaruIndex.m in Sources */,
-				218A213715FC0105004A433B /* NyaruSchema.m in Sources */,
-				21199FE216048EBD00270A48 /* NSData+GZIP.m in Sources */,
-				21D13293161D684700864F3D /* NyaruKey.m in Sources */,
-				21D13295161D809B00864F3D /* NyaruConfig.m in Sources */,
 				21AFC774161ECACB0086027B /* JSONKit-Nyaru.m in Sources */,
-				21177E9E1622AF890078551E /* NyaruQuery.m in Sources */,
+				216CDDC816D2385D00A26FE0 /* NyaruDB.m in Sources */,
+				216CDDD016D23F5400A26FE0 /* NyaruCollection.m in Sources */,
+				21DF5CD116D31E6F00405E0E /* NyaruIndexBlock.m in Sources */,
+				21DF5CD516D32C4300405E0E /* NyaruSchema.m in Sources */,
+				21A877A816D35AD200B5DDA8 /* NyaruKey.m in Sources */,
+				21A877AC16D35ADD00B5DDA8 /* NyaruIndex.m in Sources */,
+				21A877B016D37E7600B5DDA8 /* NyaruQuery.m in Sources */,
+				21CCD81E16D3C2C400168102 /* NyaruQueryCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

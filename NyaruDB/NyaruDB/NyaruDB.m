@@ -2,59 +2,59 @@
 //  NyaruDB.m
 //  NyaruDB
 //
-//  Created by Kelp on 12/7/14.
+//  Created by Kelp on 2013/02/18.
 //
 /*
  Normal Field Datatype:
-    NSNull
-    NSNumber (true: 1, false: 0)
-    NSDate
-    NSString
-    NSArray
-    NSDictionary
+ NSNull
+ NSNumber (true: 1, false: 0)
+ NSDate
+ NSString
+ NSArray
+ NSDictionary
  
  Schema Datatype:
-    NSNull
-    NSNumber (true: 1, false: 0)
-    NSDate
-    NSString
-*/
+ NSNull
+ NSNumber (true: 1, false: 0)
+ NSDate
+ NSString
+ */
 /*
  Database:
-    NyaruCollection: Members
-    NyaruCollection: Tickets
-    ...................
+ NyaruCollection: Members
+ NyaruCollection: Tickets
+ ...................
  
  NyaruCollection:
-    Schema (_schema) {name.schema}
-        NyaruSchema: 0, "key"
-        NyaruSchema: 1, "email"
-        ...................
+ Schema (_schema) {name.schema}
+ NyaruSchema: 0, "key"
+ NyaruSchema: 1, "email"
+ ...................
  
-    Unique Index (_index)           {name.index}    schema is 'key'
-        Dictionary type index
-        Key: value of key
-        Value: NyaruKey (value in memory when field is Index)
-    Index (_index)                      {name.index}
-        Array type index
+ Unique Index (_index)           {name.index}    schema is 'key'
+ Dictionary type index
+ Key: value of key
+ Value: NyaruKey (value in memory when field is Index)
+ Index (_index)                      {name.index}
+ Array type index
  
-    Document                            {name.document}
-        JSON data
-        JSON data
-        ..................
+ Document                            {name.document}
+ JSON data
+ JSON data
+ ..................
  
  ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
  
  Attention:
-    limit length of name of field is 255
-    limit of datas is 4,294,967,295
-    limit of document size is 4G
-    key is unique and it is NSString
-    key does not provide searching by query
-    key is case sensitive
-    index is case insensitive
-    a field of data should be same data type which is schema
-    sort query allow only one
+ limit length of name of field is 255
+ limit of datas is 4,294,967,295
+ limit of document size is 4G
+ key is unique and it is NSString
+ key does not provide searching by query
+ key is case sensitive
+ index is case insensitive
+ a field of data should be same data type which is schema
+ sort query allow only one
  
  ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
  
@@ -72,23 +72,21 @@
  Document Length   FF | FF | FF | FF |
  Block Length         FF | FF | FF | FF |
  
-*/
+ */
 
 
 #import "NyaruDB.h"
-
-@interface NyaruDB()
-- (NSMutableDictionary *)loadCollections;
-@end
+#import "NyaruConfig.h"
+#import "NyaruCollection.h"
 
 
 @implementation NyaruDB
 
-@synthesize databasePath = _databasePath;
-
 static NyaruDB *_instance;
 
-+ (id)sharedInstance
+
+#pragma mark - Static methods
++ (id)instance
 {
     @synchronized(_instance) {
         if (_instance == nil) {
@@ -98,19 +96,18 @@ static NyaruDB *_instance;
     }
 }
 
-// remove all database. if you init database error, maybe need to call this message.
 + (void)reset
 {
     _instance = nil;
     
     NSString *path = ((NSArray *)NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)).lastObject;
-    NSString *databasePath = [path stringByAppendingPathComponent:NyaruDBNProduct];
+    NSString *databasePath = [path stringByAppendingPathComponent:NYARU_PRODUCT];
     
-    if([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:databasePath]) {
         NSError *error = nil;
         [[NSFileManager defaultManager] removeItemAtPath:databasePath error:&error];
         if (error) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
         }
     }
 }
@@ -122,28 +119,79 @@ static NyaruDB *_instance;
     self = [super init];
     if (self) {
         NSString *path = ((NSArray *)NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)).lastObject;
-        _databasePath = [path stringByAppendingPathComponent:NyaruDBNProduct];
+        _databasePath = [path stringByAppendingPathComponent:NYARU_PRODUCT];
         
         // if database path does not exists then create it
-        if(![[NSFileManager defaultManager] fileExistsAtPath:_databasePath]) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:_databasePath]) {
             NSError *error = nil;
             [[NSFileManager defaultManager] createDirectoryAtPath:_databasePath withIntermediateDirectories:YES attributes:nil error:&error];
             if (error) {
-                @throw([NSException exceptionWithName:NyaruDBNProduct reason:error.description userInfo:error.userInfo]);
+                @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
             }
         }
         
         // load collections
-        _collections = self.loadCollections;
+        _collections = loadCollections(_databasePath);
     }
     return self;
 }
 
-- (NSMutableDictionary *)loadCollections
+
+#pragma mark - Collection
+- (NyaruCollection *)collectionForName:(NSString *)name
+{
+    if (name == nil || name.length == 0) { return nil; }
+    
+    NyaruCollection *result = [_collections objectForKey:name];
+    if (result) {
+        return result;
+    }
+    else {
+        // create collection
+        NyaruCollection *collection = [[NyaruCollection alloc] initWithNewCollectionName:name databasePath:_databasePath];
+        if (collection) {
+            [_collections setObject:collection forKey:name];
+        }
+        return collection;
+    }
+}
+- (NSArray *)collections
+{
+    return _collections.allValues;
+}
+- (void)removeCollection:(NSString *)name
+{
+    NyaruCollection *collection = [_collections objectForKey:name];
+    if (collection) {
+        [_collections removeObjectForKey:name];
+        [collection close];
+        [collection removeCollectionFiles];
+        collection = nil;
+    }
+}
+- (void)removeAllCollections
+{
+    NSArray *collections = _collections.allValues;
+    [_collections removeAllObjects];
+    for (NyaruCollection *collection in collections) {
+        [collection close];
+        [collection removeCollectionFiles];
+    }
+}
+
+
+#pragma mark - Private
+/**
+ Load all collections from files for init.
+ 
+ @param databasePath database path. it is a folder.
+ @return return NSMutableDictionary (key: collection name, value: collection)
+ */
+NYARU_BURST_LINK NSMutableDictionary *loadCollections(NSString *databasePath)
 {
     NSMutableDictionary *result = [NSMutableDictionary new];
     
-    NSArray *dirContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:_databasePath error:nil];
+    NSArray *dirContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:databasePath error:nil];
     NSPredicate *filter = [NSPredicate predicateWithFormat:@"self ENDSWITH '.index'"];
     NSArray *indexes = [dirContents filteredArrayUsingPredicate:filter];  // get .index in the path
     
@@ -153,76 +201,13 @@ static NyaruDB *_instance;
         NSString *name = [index stringByDeletingPathExtension];
         
         // load collection
-        NyaruCollection *collection = [[NyaruCollection alloc] initWithLoadCollectionName:name databasePath:_databasePath];
+        NyaruCollection *collection = [[NyaruCollection alloc] initWithLoadCollectionName:name databasePath:databasePath];
         if (collection) {
             [result setObject:collection forKey:collection.name];
         }
     }
     
     return result;
-}
-
-
-#pragma mark - Read Collection
-- (NSDictionary *)allCollections
-{
-    return _collections;
-}
-
-- (NyaruCollection *)collectionForName:(NSString *)name
-{
-    return (NyaruCollection *)[_collections objectForKey:name];
-}
-
-
-#pragma mark - Write Collection
-// remove collection, than create a new one
-// success: return a new collection,    failed: return nil
-- (NyaruCollection *)createCollection:(NSString *)name
-{
-    // remove
-    [self removeCollection:name];
-    
-    // create
-    NSPredicate *filter = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"self == '%@'", name]];
-    NSArray *key = [_collections.allKeys filteredArrayUsingPredicate:filter];
-    if (key.count > 0) {
-        return nil;
-    }
-    
-    if (name == nil || name.length == 0) {
-        return nil;
-    }
-    
-    NyaruCollection *collection = [[NyaruCollection alloc] initWithNewCollectionName:name databasePath:_databasePath];
-    if (collection) {
-        [_collections setObject:collection forKey:name];
-    }
-    return collection;
-}
-
-- (void)removeCollection:(NSString *)name
-{
-    NyaruCollection *collection = [_collections objectForKey:name];
-    if (collection) {
-        [collection remove];
-        [_collections removeObjectForKey:name];
-    }
-    else {
-        NSString *indexFilePath = [[_databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruIndexExtension];
-        NSString *schemaFilePath = [[_databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruSchemaExtension];
-        NSString *documentFilePath = [[_databasePath stringByAppendingPathComponent:name] stringByAppendingPathExtension:NyaruDocumentExtension];
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:documentFilePath]) {
-            [[NSFileManager defaultManager] removeItemAtPath:documentFilePath error:nil];
-        }
-        if ([[NSFileManager defaultManager] fileExistsAtPath:indexFilePath]) {
-            [[NSFileManager defaultManager] removeItemAtPath:indexFilePath error:nil];
-        }
-        if ([[NSFileManager defaultManager] fileExistsAtPath:schemaFilePath]) {
-            [[NSFileManager defaultManager] removeItemAtPath:schemaFilePath error:nil];
-        }
-    }
 }
 
 

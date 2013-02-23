@@ -2,22 +2,30 @@
 //  NyaruConfig.h
 //  NyaruDB
 //
-//  Created by Kelp on 12/8/12.
+//  Created by Kelp on 2013/02/18.
+//
 //
 
 #import <Foundation/Foundation.h>
 #import "JSONKit-Nyaru.h"
-#import "NSData+GZIP.h"
 
 #pragma mark - NyaruDB Config
-#define NyaruDBNProduct @"NyaruDB"
-#define NyaruFileHeader @"(」・ω・)」うー！(／・ω・)／にゃー！ \n"
-#define NyaruFileHeaderLength 0x37
 
-#define NyaruSchemaExtension @"schema"
-#define NyaruIndexExtension @"index"
-#define NyaruDocumentExtension @"document"
+/**
+ The limit of caching documents for fetch.
+ */
+#define NYARU_CACHE_LIMIT 1000
 
+
+#define NYARU_PRODUCT @"NyaruDB"
+#define NYARU_HEADER @"(」・ω・)」うー！(／・ω・)／にゃー！1\n"
+#define NYARU_HEADER_LENGTH 0x37
+
+#define NYARU_SCHEMA @"schema"
+#define NYARU_INDEX @"index"
+#define NYARU_DOCUMENT @"document"
+
+#define NYARU_KEY @"key"
 
 #pragma mark - NyaruDB Base Settings
 #if defined (__GNUC__) && (__GNUC__ >= 4)
@@ -25,23 +33,5 @@
 #else  // defined (__GNUC__) && (__GNUC__ >= 4)
 #define NYARU_ATTRIBUTES(attr, ...)
 #endif
+#define NYARU_BURST_LINK static __inline__ NYARU_ATTRIBUTES(always_inline)
 
-#define BURST_LINK static __inline__ NYARU_ATTRIBUTES(always_inline)
-
-
-@interface NyaruConfig : NSObject
-
-enum {
-    NyaruSchemaTypeNumber = 0,
-    NyaruSchemaTypeString = 1,
-    NyaruSchemaTypeDate = 2,
-    NyaruSchemaTypeNil = 3,
-    NyaruSchemaTypeOther = 4,
-};
-typedef unsigned int NyaruSchemaType;
-
-+ (NSString *)key;
-+ (NSString *)indexOffset;
-+ (NSString *)blockLength;
-
-@end

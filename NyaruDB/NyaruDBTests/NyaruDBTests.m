@@ -6,6 +6,10 @@
 //
 
 #import "NyaruDBTests.h"
+#import "NyaruSchema.h"
+#import "NyaruIndex.h"
+#import "NyaruConfig.h"
+
 
 @implementation NyaruDBTests
 
@@ -14,6 +18,18 @@
     [super setUp];
     
     // Set-up code here.
+    @try {
+        NyaruDB *db = [NyaruDB instance];
+        STAssertNotNil(db, @"nil!!");
+        [db removeAllCollections];
+        NyaruCollection *collection = [db collectionForName:@"nya"];
+        STAssertNotNil(collection, @"nil!!");
+    }
+    @catch (NSException *exception) {
+        NSLog(@"error------------------------------");
+        NSLog(@"%@", exception.description);
+        STFail(@"execption");
+    }
 }
 
 - (void)tearDown
@@ -23,322 +39,159 @@
     [super tearDown];
 }
 
-- (void)testInit
+- (void)test01CreateCollection
 {
-    @try {
-        NyaruDB *db = [NyaruDB sharedInstance];
-        NSLog(@"database path: %@", db.databasePath);
-    }
-    @catch (NSException *exception) {
-        STFail(@"init failed");
-    }
+    NyaruDB *db = [NyaruDB instance];
+    
+    NyaruCollection *collection = [db collectionForName:@"test01"];
+    STAssertNotNil(collection, @"nil!!");
+    [db removeCollection:@"test01"];
 }
 
-- (void)testCollection
+- (void)test02InsertAndRemoveDocument
 {
-    NyaruDB *db = [NyaruDB sharedInstance];
+    NyaruDB *db = [NyaruDB instance];
+    NyaruCollection *collection = [db collectionForName:@"nya"];
+    STAssertEquals(collection.count, 0U, nil);
     
-    NyaruCollection *collectioin = [db createCollection:@"collection00"];
-    if (collectioin == nil || [db.allCollections objectForKey:@"collection00"] == nil) {
-        STFail(@"collection create failed");
-    }
-    [db removeCollection:@"collection00"];
+    // insert with key
+    NSString *key = [[collection insert:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
+    STAssertEquals(collection.count, 1U, nil);
+    STAssertEqualObjects([[[[collection where:@"key" equalTo:key] fetch] lastObject] objectForKey:@"data"], @"value", nil);
+    
+    // insert without key
+    key = [[collection insert:@{@"name": @"Kelp"}] objectForKey:@"key"];
+    STAssertEqualObjects([[[[collection where:@"key" equalTo:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", nil);
+    // then remove it
+    [[collection where:@"key" equalTo:key] remove];
+    STAssertEquals(collection.count, 1U, nil);
+    
+    // remove key == @"aa"
+    [[collection where:@"key" equalTo:@"aa"] remove];
+    STAssertEquals(collection.count, 0U, nil);
 }
 
-- (void)testSchema
+- (void)test03CreateAndRemoveIndex
 {
-    NyaruDB *db = [NyaruDB sharedInstance];
+    NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db createCollection:@"collection01"];
-    [collection createSchema:@"email"];
-    [collection createSchema:@"number"];
-    [collection insertDocument:@{@"email": @"kelp@phate.org", @"name": @"Kelp"}];
-    if (collection.allSchemas.count != 3 ||
-        [collection.allSchemas objectForKey:@"email"] == nil ||
-        [collection.allSchemas objectForKey:@"number"] == nil ||
-        [collection.allSchemas objectForKey:@"key"] == nil) {
-        STFail(@"schema create failed");
-    }
-    [collection remove];
+    NyaruCollection *collection = [db collectionForName:@"nya"];
+    [collection removeAllindexes];
+    STAssertEquals(collection.allIndexes.count, 1U, nil);
+    [collection createIndex:@"updateTime"];
+    STAssertEquals([[NSSet setWithArray:collection.allIndexes] intersectsSet:[NSSet setWithObject:@"updateTime"]], YES, nil);
+    
+    [collection createIndex:@"updateTime"];
+    [collection createIndex:@"indexA"];
+    [collection createIndex:@"indexB"];
+    STAssertEquals([[NSSet setWithArray:collection.allIndexes] intersectsSet:[NSSet setWithObject:@"indexA"]], YES, nil);
+    STAssertEquals([[NSSet setWithArray:collection.allIndexes] intersectsSet:[NSSet setWithObject:@"indexB"]], YES, nil);
+    STAssertEquals(collection.allIndexes.count, 4U, nil);
+    [collection removeIndex:@"indexA"];
+    [collection removeIndex:@"indexB"];
+    STAssertEquals(collection.allIndexes.count, 2U, nil);
+    
+    // insert document into collection which has other indexes
+    NSDate *time = [NSDate date];
+    [collection insert:@{@"name": @"Kelp"}];
+    [collection insert:@{@"name": @"Kelp X", @"updateTime": time}];
+    [collection insert:@{@"name": @"Kelp"}];
+    STAssertEqualObjects([[collection where:@"updateTime" equalTo:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", nil);
 }
 
-- (void)testDocumentForKey
+- (void)test04InsertAndQueryString
 {
-    NyaruDB *db = [NyaruDB sharedInstance];
+    NyaruDB *db = [NyaruDB instance];
+    [db removeCollection:@"04"];
+    NyaruCollection *co = [db collectionForName:@"04"];
+    [co createIndex:@"string"];
     
-    NyaruCollection *collection = [db createCollection:@"testDocumentForKey"];
-    [collection insertDocument:@{@"key" : @"a00", @"data" : @"kelp"}];
-    NSMutableDictionary *document = [collection documentForKey:@"a00"];
-    if ([document objectForKey:@"data"] == nil || ![[document objectForKey:@"data"] isEqualToString:@"kelp"]) {
-        STFail(@"data should be kelp");
-    }
-    [collection remove];
-}
-
-- (void)testSort
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    
-    NyaruCollection *collection = [db createCollection:@"testSort"];
-    [collection createSchema:@"number"];
-    [collection insertDocument:@{@"number" : @100}];
-    [collection insertDocument:@{@"number" : @200}];
-    [collection insertDocument:@{@"number" : @10}];
-    
-    // desc
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderDESC]];
-    NSArray *documents = [collection documentsForNyaruQueries:query];
-    if (![@200 isEqualToNumber:[[documents objectAtIndex:0] objectForKey:@"number"]]) {
-        STFail(@"number should be 200");
-    }
-    if (![@100 isEqualToNumber:[[documents objectAtIndex:1] objectForKey:@"number"]]) {
-        STFail(@"number should be 100");
-    }
-    if (![@10 isEqualToNumber:[[documents objectAtIndex:2] objectForKey:@"number"]]) {
-        STFail(@"number should be 10");
-    }
-    
-    // asc
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderASC]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (![@10 isEqualToNumber:[[documents objectAtIndex:0] objectForKey:@"number"]]) {
-        STFail(@"number should be 10");
-    }
-    if (![@100 isEqualToNumber:[[documents objectAtIndex:1] objectForKey:@"number"]]) {
-        STFail(@"number should be 100");
-    }
-    if (![@200 isEqualToNumber:[[documents objectAtIndex:2] objectForKey:@"number"]]) {
-        STFail(@"number should be 200");
-    }
-    
-    [collection remove];
-}
-    
-- (void)testQuery00
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    
-    NyaruCollection *collection = [db createCollection:@"testQuery00"];
-    [collection createSchema:@"number"];
-    [collection insertDocument:@{@"number" : @10}];
-    [collection insertDocument:@{@"number" : @100}];
-    [collection insertDocument:@{@"number" : @200}];
-    
-    
-    // NyaruQueryGreater
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreater value:@0]];
-    NSArray *documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 3) { STFail(@"query failed"); }
-    
-    // NyaruQueryGreater
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreaterEqual value:@10]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 3) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreater value:@101]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 1) { STFail(@"query failed"); }
-    
-    // NyaruQueryLess
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLessEqual value:@100]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 2) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLessEqual value:@1000]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 3) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryLess value:@1]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 0) { STFail(@"query failed"); }
-    
-    // NyaruQueryEqual
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@10]];
-    documents = [collection documentsForNyaruQueries:query];
-    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @10, @"query failed");
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@200]];
-    documents = [collection documentsForNyaruQueries:query];
-    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @200, @"query failed");
-    query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryEqual value:@100]];
-    documents = [collection documentsForNyaruQueries:query];
-    STAssertEqualObjects([[documents lastObject] objectForKey:@"number"], @100, @"query failed");
-    
-    [collection remove];
-}
-
-- (void)testQuery01Less
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    
-    NyaruCollection *collection = [db createCollection:@"testQuery01"];
-    [collection createSchema:@"date"];
-    
-    // NyaruQueryEqual
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:@10]];
-    NSArray *documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 0) { STFail(@"query failed"); }
-    
-    // insert
-    [collection insertDocument:@{ @"date": [NSDate dateWithTimeIntervalSince1970:1] }];
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:[NSDate dateWithTimeIntervalSince1970:0]]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 0) { STFail(@"query failed"); }
-    
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLessEqual value:[NSDate dateWithTimeIntervalSince1970:1]]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 1) { STFail(@"query failed"); }
-    
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLess value:[NSDate date]]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 1) { STFail(@"query failed"); }
-    
-    // insert
-    [collection insertDocument:@{ @"date": [NSDate date] }];
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryLessEqual value:[NSDate date]]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 2) { STFail(@"query failed"); }
-    
-    [collection remove];
-}
-
-- (void)testQuery02Great
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    
-    NyaruCollection *collection = [db createCollection:@"testQuery02"];
-    [collection createSchema:@"name"];
-    [collection createSchema:@"date"];
-    
-    
-    // NyaruQueryEqual
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@10]];
-    NSArray *documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 0) { STFail(@"query failed"); }
-    
-    // insert 1, 2, 3
-    [collection insertDocument:@{ @"date": @1, @"name": @0 }];
-    [collection insertDocument:@{ @"date": @2, @"name": @0 }];
-    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
-    
-    // check great 0, 1, 3
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@0]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 3) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@1]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 2) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@2]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 1) { STFail(@"query failed"); }
-    
-    // remove 3
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryEqual value:@3]];
-    documents = [collection documentsForNyaruQueries:query];
-    [collection removeDocumentWithKey:[[documents lastObject] objectForKey:@"key"]];
-    
-    // insert 3
-    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
-    
-    // remove 3
-    query = @[[NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryEqual value:@3]];
-    documents = [collection documentsForNyaruQueries:query];
-    [collection removeDocumentWithKey:[[documents lastObject] objectForKey:@"key"]];
-    
-    // insert 3
-    [collection insertDocument:@{ @"date": @3, @"name": @0 }];
-    
-    // check great 0, 1, 2, 3
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@0]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 3) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@1]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 2) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@2]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 1) { STFail(@"query failed"); }
-    query = @[[NyaruQuery queryWithSchemaName:@"name" operation:NyaruQueryEqual value:@0], [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryOrderDESC],
-                    [NyaruQuery queryWithSchemaName:@"date" operation:NyaruQueryGreater value:@3]];
-    documents = [collection documentsForNyaruQueries:query];
-    if (documents.count != 0) { STFail(@"query failed"); }
-    
-    
-    [collection remove];
-}
-
-- (void)testDocuments
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    
-    NyaruCollection *collection = [db createCollection:@"testSort"];
-    [collection createSchema:@"number"];
-    [collection insertDocument:@{@"number" : @100}];
-    [collection insertDocument:@{@"number" : @200}];
-    [collection insertDocument:@{@"number" : @10}];
-    
-    NSArray *documents = collection.documents;
+    NSArray *documents = [[co where:@"email" equalTo:@"kelp@phate.org"] fetch];
     for (NSMutableDictionary *document in documents) {
         NSLog(@"%@", document);
     }
     
-    [collection remove];
+    for (NSInteger index = 0; index < 10; index++) {
+        [co insert:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
+    }
+    [co insert:@{@"string": @"B5", @"data": @"data00"}];
+    // count
+    STAssertEquals([co where:@"string" equalTo:@"B0"].count, 1U, nil);
+    STAssertEquals([co where:@"string" equalTo:@"B5"].count, 2U, nil);
+    STAssertEquals([co where:@"string" equalTo:@"B9"].count, 1U, nil);
+    STAssertEquals([co where:@"string" equalTo:@"B10"].count, 0U, nil);
+    STAssertEquals([co where:@"string" notEqualTo:@"B0"].count, 10U, nil);
+    STAssertEquals([co where:@"string" notEqualTo:@"B5"].count, 9U, nil);
+    STAssertEquals([co where:@"string" notEqualTo:@"B9"].count, 10U, nil);
+    STAssertEquals([co where:@"string" notEqualTo:@"B10"].count, 11U, nil);
+    
+    STAssertEquals([co where:@"string" greaterThan:@"B9"].count, 0U, nil);
+    STAssertEquals([co where:@"string" greaterThan:@"B8"].count, 1U, nil);
+    STAssertEquals([co where:@"string" greaterThan:@"B0"].count, 10U, nil);
+    STAssertEquals([co where:@"string" greaterThan:@"A0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" greaterEqualThan:@"C0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" greaterEqualThan:@"B9"].count, 1U, nil);
+    STAssertEquals([co where:@"string" greaterEqualThan:@"B8"].count, 2U, nil);
+    STAssertEquals([co where:@"string" greaterEqualThan:@"B0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" greaterEqualThan:@"A0"].count, 11U, nil);
+    
+    STAssertEquals([co where:@"string" lessThan:@"A0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" lessThan:@"B0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" lessThan:@"B1"].count, 1U, nil);
+    STAssertEquals([co where:@"string" lessThan:@"B6"].count, 7U, nil);
+    STAssertEquals([co where:@"string" lessThan:@"B9"].count, 10U, nil);
+    STAssertEquals([co where:@"string" lessThan:@"C0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"A0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"B0"].count, 1U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"B1"].count, 2U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"B6"].count, 8U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"B9"].count, 11U, nil);
+    STAssertEquals([co where:@"string" lessEqualThan:@"C0"].count, 11U, nil);
+    
+    STAssertEquals([co where:@"string" likeTo:@"b"].count, 11U, nil);
+    STAssertEquals([co where:@"string" likeTo:@"c"].count, 0U, nil);
 }
 
-- (void)testRemove
+- (void)test20Speed
 {
-    NyaruDB *db = [NyaruDB sharedInstance];
+    NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db createCollection:@"testSort"];
-    [collection createSchema:@"number"];
-    [collection insertDocument:@{@"number" : @100}];
-    [collection insertDocument:@{@"number" : @200}];
-    [collection insertDocument:@{@"number" : @10}];
+    NyaruCollection *collection = [db collectionForName:@"speed"];
+    [collection removeAll];
+    [collection createIndex:@"group"];
     
-    [collection removeAllDocument];
-    [collection insertDocument:@{@"number" : @100}];
-    [collection insertDocument:@{@"number" : @200}];
-    [collection insertDocument:@{@"number" : @10}];
+    NSDate *timer = [NSDate date];
+    for (NSInteger loop = 0; loop < 1000; loop++) {
+        [collection insert:@{
+         @"name": @"Test",
+         @"url": @"https://github.com/Kelp404/NyaruDB",
+         @"phone": @"0123456",
+         @"address": @"1600 Amphitheatre Parkway Mountain View, CA 94043, USA",
+         @"group": [NSNumber numberWithInt:arc4random() % 512],
+         @"email": @"test@phate.org",
+         @"level": @0,
+         @"updateTime": @""
+         }];
+    }
+    [collection waiteForWriting];
+    NSLog(@"------------------------------------------------");
+    NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
+    NSLog(@"------------------------------------------------");
     
-    [collection remove];
+    timer = [NSDate date];
+    collection.all.fetch;
+    NSLog(@"------------------------------------------------");
+    NSLog(@"fetch 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
+    NSLog(@"------------------------------------------------");
+    
+    timer = [NSDate date];
+    for (NSInteger index = 0; index < 10; index++) {
+        [collection where:@"group" greaterEqualThan:[NSNumber numberWithInt:arc4random() % 512]].fetch;
+    }
+    NSLog(@"------------------------------------------------");
+    NSLog(@"search documents in 1k data for 10 times cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
+    NSLog(@"------------------------------------------------");
 }
 
-- (void)testAccessData
-{
-    NyaruDB *db = [NyaruDB sharedInstance];
-    NyaruCollection *collection = [db createCollection:@"accessTest"];
-    
-    // create schema
-    [collection createSchema:@"number"];
-    
-    // insert
-    NSDate *count = [NSDate new];
-    NSDate *date = [NSDate date];
-    for (NSInteger index = 0; index < 1000; index++) {
-        NSInteger random = arc4random() % 200;
-        
-        NSDictionary *document = @{ @"email": [NSString stringWithFormat:@"%i@phate.org", random],
-            @"name": [NSString stringWithFormat:@"User%i", random],
-            @"phone": @"0123456789",
-            @"date": date,
-            @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
-            @"number": [NSNumber numberWithInteger:random] };
-        [collection insertDocument:document];
-    }
-    NSLog(@"insert 1k documents cost : %f ms", [count timeIntervalSinceNow] * -1000.0);
-    
-    // search top 3 document
-    NSArray *query = @[[NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryGreater value:@150],
-                                [NyaruQuery queryWithSchemaName:@"number" operation:NyaruQueryOrderDESC]];
-    NSArray *documents = [collection documentsForNyaruQueries:query skip:0 take:3];
-    for (NSMutableDictionary *document in documents) {
-        NSLog(@"%@", document);
-    }
-    
-    // remove collection
-    [collection remove];
-}
 
 @end

@@ -2,47 +2,65 @@
 //  NyaruQuery.h
 //  NyaruDB
 //
-//  Created by Kelp on 2012/10/08.
+//  Created by Kelp on 2013/02/19.
+//
 //
 
 #import <Foundation/Foundation.h>
-#import "NyaruSchema.h"
 
-enum {
-    NyaruQueryEqual = 0,
-    NyaruQueryLess = 1,
-    NyaruQueryLessEqual = 2,
-    NyaruQueryGreater = 3,
-    NyaruQueryGreaterEqual = 4,
-    NyaruQueryLike = 5,               // only for NSString
-    NyaruQueryBeginningOf = 6,    // only for NSString
-    NyaruQueryEndOf = 7,             // only for NSString
-    NyaruQueryOrderASC = 8,
-    NyaruQueryOrderDESC = 9,
+@class NyaruCollection;
+
+
+@interface NyaruQuery : NSObject {
     
-    NyaruQueryUnequal = 10,
-};
-typedef NSInteger NyaruQueryOperation;
+}
 
-enum {
-    NYOr = 0,
-    NYAnd = 1
-};
-typedef NSInteger NyaruAppendPrevious;
+#pragma mark - Properties
+@property (strong, nonatomic, readonly) NyaruCollection *collection;
+@property (strong, nonatomic) NSMutableArray *queries;
 
-@interface NyaruQuery : NSObject
+/**
+ Get NyaruQuery instance.
+ */
+- (id)initWithCollection:(NyaruCollection *)collection;
 
-@property (strong, nonatomic) NSString *schemaName;
-@property (nonatomic) NyaruQueryOperation operation;
-@property (strong, nonatomic) id value;
-@property (nonatomic) NyaruAppendPrevious appendWith;
+@end
 
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation;
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value;
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value appendWith:(NyaruAppendPrevious)appendWith;
 
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation;
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value;
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value appendWith:(NyaruAppendPrevious)appendWith;
+
+@interface NyaruQuery (NyaruQueryIn)
+#pragma mark - Intersection
+- (NyaruQuery *)and:(NSString *)indexName equalTo:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName notEqualTo:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName lessThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName lessEqualThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greaterThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greaterEqualThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName likeTo:(NSString *)value;
+
+#pragma mark - Union
+- (NyaruQuery *)unionAll;
+- (NyaruQuery *)union:(NSString *)indexName equalTo:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName notEqualTo:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName lessThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName lessEqualThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greaterThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greaterEqualThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName likeTo:(NSString *)value;
+
+#pragma mark - Order By
+- (NyaruQuery *)orderBy:(NSString *)indexName;
+- (NyaruQuery *)orderByDESC:(NSString *)indexName;
+
+#pragma mark - Count
+- (NSUInteger)count;
+
+#pragma mark - Fetch
+- (NSArray *)fetch;
+- (NSArray *)fetch:(NSUInteger)limit;
+- (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip;
+
+#pragma mark - Remove
+- (void)remove;
 
 @end

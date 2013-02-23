@@ -1,42 +1,50 @@
 //
-//  NyaruMnemosyne.m
+//  NyaruSchema.m
 //  NyaruDB
 //
-//  Created by Kelp on 12/9/9.
+//  Created by Kelp on 2013/02/19.
+//
 //
 
-#import "NyaruConfig.h"
 #import "NyaruSchema.h"
+#import "NyaruConfig.h"
+#import "NyaruIndex.h"
+#import "NyaruKey.h"
+
 
 @implementation NyaruSchema
 
 @synthesize name = _name;
+@synthesize offsetInFile = _offsetInFile;
+@synthesize previousOffsetInFile = _previousOffsetInFile;
+@synthesize nextOffsetInFile = _nextOffsetInFile;
 @synthesize unique = _unique;
-@synthesize nextOffset = _nextOffset;
-@synthesize previousOffset = _previousOffset;
+@synthesize schemaType = _schemaType;
 
 
 #pragma mark - Init
-- (id)initWithData:(NSData *)data
+- (id)initWithData:(NSData *)data andOffset:(NSUInteger)offset
 {
     self = [super init];
     if (self) {
-        [[data subdataWithRange:NSMakeRange(0, 4)] getBytes:&_previousOffset length:sizeof(_previousOffset)];
-        [[data subdataWithRange:NSMakeRange(4, 4)] getBytes:&_nextOffset length:sizeof(_nextOffset)];
+        [[data subdataWithRange:NSMakeRange(0, 4)] getBytes:&_previousOffsetInFile length:4];
+        [[data subdataWithRange:NSMakeRange(4, 4)] getBytes:&_nextOffsetInFile length:4];
         _name = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(9, data.length - 9)] encoding:NSUTF8StringEncoding];
-        _unique = [_name isEqualToString:NyaruConfig.key];
+        _offsetInFile = offset;
+        _unique = [_name isEqualToString:NYARU_KEY];
         
         if (_unique) {
+            _schemaType = NyaruSchemaTypeString;
             _indexKey = [NSMutableDictionary new];
         }
         else {
+            _schemaType = NyaruSchemaTypeUnknow;
             _indexNil = [NSMutableArray new];
             _index = [NSMutableArray new];
         }
     }
     return self;
 }
-
 - (id)initWithName:(NSString *)name previousOffser:(unsigned int)previous nextOffset:(unsigned int)next
 {
     self = [super init];
@@ -45,18 +53,20 @@
             return nil;
         }
         if ([name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > 0xff) {
-            @throw([NSException exceptionWithName:NyaruDBNProduct reason:@"len of name is over 255" userInfo:nil]);
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"len of name is over 255" userInfo:nil]);
         }
         
-        _previousOffset = previous;
-        _nextOffset = next;
+        _previousOffsetInFile = previous;
+        _nextOffsetInFile = next;
         _name = name;
-        _unique = [_name isEqualToString:NyaruConfig.key];
+        _unique = [_name isEqualToString:NYARU_KEY];
         
         if (_unique) {
+            _schemaType = NyaruSchemaTypeString;
             _indexKey = [NSMutableDictionary new];
         }
         else {
+            _schemaType = NyaruSchemaTypeUnknow;
             _indexNil = [NSMutableArray new];
             _index = [NSMutableArray new];
         }
@@ -64,12 +74,13 @@
     return self;
 }
 
+
 #pragma mark - Get Binary Data For Write Schema File
 - (NSData *)dataFormate
 {
     NSData *nameData = [_name dataUsingEncoding:NSUTF8StringEncoding];
-    unsigned int previous = _previousOffset;
-    unsigned int next = _nextOffset;
+    unsigned int previous = _previousOffsetInFile;
+    unsigned int next = _nextOffsetInFile;
     unsigned char length = nameData.length;
     
     // generate index binary data
@@ -83,35 +94,41 @@
 }
 
 
-#pragma mark - Index Access
-#pragma mark read index
-- (NyaruKey *)indexForKey:(NSString *)key
+#pragma mark - Get NyaruKey / NyaruIndex
+- (NSDictionary *)allKeys
 {
-    return [_indexKey objectForKey:key];
+    return _indexKey;
+}
+- (NSArray *)allNilIndexes
+{
+    return _indexNil;
+}
+- (NSArray *)allNotNilIndexes
+{
+    return _index;
 }
 
-#pragma mark remove keys/indexes
-- (void)removeForKey:(NSString *)key
+
+#pragma mark - Remove by key
+- (void)removeWithKey:(NSString *)key
 {
     [_indexKey removeObjectForKey:key];
     
-    id target = nil;
-    for (NyaruIndex *index in _index) {
-        if ([index.key isEqualToString:key]) {
-            target = index;
-            break;
+    for (NSUInteger index = 0; index < _indexNil.count; index++) {
+        if ([[_indexNil objectAtIndex:index] isEqualToString:key]) {
+            [_indexNil removeObjectAtIndex:index];
+            return;
         }
     }
-    if (target) {
-        [_index removeObject:target];
-    }
-    else {
-        for (NyaruIndex *index in _indexNil) {
-            if ([index.key isEqualToString:key]) {
-                target = index;
+    for (NSUInteger index = 0; index < _index.count; index++) {
+        NyaruIndex *nyaruIndex = [_index objectAtIndex:index];
+        if ([nyaruIndex.keySet intersectsSet:[NSSet setWithObject:key]]) {
+            [nyaruIndex.keySet removeObject:key];
+            if (nyaruIndex.keySet.count == 0) {
+                [_index removeObjectAtIndex:index];
             }
+            return;
         }
-        [_indexNil removeObject:target];
     }
 }
 - (void)removeAll
@@ -121,50 +138,9 @@
     [_indexNil removeAllObjects];
 }
 
-#pragma mark get all keys/indexes
-- (NSMutableDictionary *)allKeys
-{
-    if (_unique) {
-        return [NSMutableDictionary dictionaryWithDictionary:_indexKey];
-    }
-    else {
-        return nil;
-    }
-}
-- (NSMutableArray *)allNilIndexes
-{
-    if (_unique) {
-        return nil;
-    }
-    else {
-        NSMutableArray *result = [NSMutableArray arrayWithArray:_indexNil];
-        return result;
-    }
-}
-- (NSMutableArray *)allNotNilIndexes
-{
-    if (_unique) {
-        return nil;
-    }
-    else {
-        NSMutableArray *result = [NSMutableArray arrayWithArray:_index];
-        return result;
-    }
-}
-- (NSMutableArray *)allIndexes
-{
-    if (_unique) {
-        return nil;
-    }
-    else {
-        NSMutableArray *result = [NSMutableArray arrayWithArray:_indexNil];
-        [result addObjectsFromArray:_index];
-        return result;
-    }
-}
 
-#pragma mark push key & index
-- (BOOL)pushKey:(NSString *)key nyaruKey:(NyaruKey *)nyaruKey;
+#pragma mark - push key & index
+- (BOOL)pushNyaruKey:(NSString *)key nyaruKey:(NyaruKey *)nyaruKey;
 {
     if ([_indexKey objectForKey:key]) {
         // key is exist
@@ -175,106 +151,171 @@
         return YES;
     }
 }
-- (void)pushIndex:(NyaruIndex *)index
+- (void)pushNyaruIndex:(NSString *)key value:(id)value
 {
-    if ([index.value isKindOfClass:NSNull.class]) {
-        // NSNull
-        [_indexNil addObject:index];
+    if ([value isKindOfClass:NSNull.class] || value == nil) {
+        [_indexNil addObject:key];
+        return;
     }
-    else if ([index.value isKindOfClass:NSNumber.class]) {
-        // NSNumber
-        insertIndexIntoArrayWithSort(_index, index, NyaruSchemaTypeNumber);
-    }
-    else if ([index.value isKindOfClass:NSString.class]) {
-        // NSString
-        insertIndexIntoArrayWithSort(_index, index, NyaruSchemaTypeString);
-    }
-    else if ([index.value isKindOfClass:NSDate.class]) {
-        // NSDate
-        insertIndexIntoArrayWithSort(_index, index, NyaruSchemaTypeDate);
-    }
-    else {
-        // other
-        [_index addObject:index];
+    
+    switch (_schemaType) {
+        case NyaruSchemaTypeUnknow:
+            // check schema type
+            if ([value isKindOfClass:NSNumber.class]) { _schemaType = NyaruSchemaTypeNumber; }
+            else if ([value isKindOfClass:NSString.class]) { _schemaType = NyaruSchemaTypeString; }
+            else if ([value isKindOfClass:NSDate.class]) { _schemaType = NyaruSchemaTypeDate; }
+            else {
+                // other
+                @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"insert other type data" userInfo:nil];
+            }
+        case NyaruSchemaTypeNumber:
+        case NyaruSchemaTypeString:
+        case NyaruSchemaTypeDate:
+            insertIndexIntoArrayWithSort(_index, key, value, _schemaType);
+            break;
     }
 }
 
 
-#pragma mark - Private Methods
-#pragma mark compare value1 and value2 with datatype 'SchemaType'
-BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType)
+#pragma mark - for NyaruDB (do not use these)
+- (void)close
 {
-    if ([value2 isKindOfClass:NSNull.class]) {
-        switch (schemaType) {
-            case NyaruSchemaTypeNil:
-                return NSOrderedSame;
-            default:
-                return NSOrderedDescending;
+    if (_indexKey) { [_indexKey removeAllObjects]; }
+    if (_indexNil) { [_indexNil removeAllObjects]; }
+    if (_index) { [_index removeAllObjects]; }
+}
+
+
+#pragma mark - Private methods
+#pragma mark insert index into array with sort
+/**
+ Insert NyaruIndex into array (_index)
+ @param array _index
+ @param key document.key
+ @param value NyaruIndex.value
+ @param schemaType 
+ */
+NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSString *key, id value, NyaruSchemaType schemaType)
+{
+    // array.count : 0 ~ 2
+    NSComparisonResult compResult;
+    switch (array.count) {
+        case 0:
+            [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+            return;
+        case 2:
+            compResult = compare([[array objectAtIndex:1] value], value, schemaType);
+            if (compResult == NSOrderedAscending) {
+                // index > array[1]
+                [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+                return;
+            }
+            else if (compResult == NSOrderedSame) {
+                // index == array[1]
+                [[[array objectAtIndex:1] keySet] addObject:key];
+                return;
+            }
+        case 1:
+            compResult = compare([[array objectAtIndex:0] value], value, schemaType);
+            if (compResult == NSOrderedDescending) {
+                // index < array[0]
+                [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:0];
+            }
+            else if (compResult == NSOrderedSame) {
+                // index == array[0]
+                [[[array objectAtIndex:0] keySet] addObject:key];
+            }
+            else {
+                // index > array[0]
+                [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+            }
+            return;
+    }
+    
+    // compare the first
+    compResult = compare([[array objectAtIndex:0] value], value, schemaType);
+    if (compResult == NSOrderedDescending) {
+        // index < array[0]
+        [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:0];
+        return;
+    }
+    else if (compResult == NSOrderedSame) {
+        // index == array[0]
+        [[[array objectAtIndex:0] keySet] addObject:key];
+        return;
+    }
+    // compare the last
+    compResult = compare([[array lastObject] value], value, schemaType);
+    if (compResult == NSOrderedAscending) {
+        // index > array[last]
+        [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+        return;
+    }
+    else if (compResult == NSOrderedSame) {
+        // index == array[last]
+        [[[array lastObject] keySet] addObject:key];
+        return;
+    }
+    
+    NSUInteger upBound = 0;
+    NSUInteger downBound = array.count - 1;
+    NSUInteger targetIndex = (upBound + downBound) / 2;
+    
+    while (upBound <= downBound) {
+        compResult = compare([[array objectAtIndex:targetIndex] value], value, schemaType);
+        
+        switch (compResult) {
+            case NSOrderedSame:
+                // index.value == array[targetIndex]
+                [[[array objectAtIndex:targetIndex] keySet] addObject:key];
+                return;
+            case NSOrderedDescending:
+                // index.value < array[targetIndex]
+                downBound = targetIndex - 1;
+                targetIndex = (upBound + downBound) / 2;
+                break;
+            case NSOrderedAscending:
+                // index.value > array[targetIndex]
+                upBound = targetIndex + 1;
+                targetIndex = (upBound + downBound) / 2;
+                if (targetIndex < upBound) { targetIndex = upBound; }
                 break;
         }
     }
     
+    // did not find the same value in the array.
+    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:targetIndex + 1];
+}
+
+#pragma mark compare value1 and value2
+/**
+ A comparer for inserting NyaruIndex.
+ */
+NYARU_BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType)
+{
     switch (schemaType) {
         case NyaruSchemaTypeString:
             return [(NSString *)value1 compare:value2 options:NSCaseInsensitiveSearch];
         case NyaruSchemaTypeNumber:
             return [(NSNumber *)value1 compare:value2];
         case NyaruSchemaTypeDate:
-            if (((NSDate *)value1).timeIntervalSince1970 == ((NSDate *)value2).timeIntervalSince1970)
-                return NSOrderedSame;
-            else if (((NSDate *)value1).timeIntervalSince1970 < ((NSDate *)value2).timeIntervalSince1970)
-                return NSOrderedAscending;
-            else
-                return NSOrderedDescending;
+            return compareDate((NSDate *)value1, (NSDate *)value2);
         default:
             return NSOrderedAscending;
     }
 }
-#pragma mark insert index into array with sort
-BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NyaruIndex *index, NyaruSchemaType schemaType)
+NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
 {
-    if (array.count == 0) {
-        [array addObject:index];
-        return;
-    }
+    NSInteger value1TimeInterval = value1.timeIntervalSince1970;
+    NSInteger value2TimeInterval = value2.timeIntervalSince1970;
     
-    unsigned int upBound = 0;
-    unsigned int downBound = array.count - 1;
-    unsigned int targetIndex = (upBound + downBound) / 2;
-    id target;
-    NSComparisonResult comp;
-    
-    while (upBound < downBound) {
-        target = ((NyaruIndex *)[array objectAtIndex:targetIndex]).value;
-        comp = compare(index.value, target, schemaType);
-        
-        switch (comp) {
-            case NSOrderedSame:
-                [array insertObject:index atIndex:targetIndex + 1];
-                return;
-            case NSOrderedAscending:
-                // index is less than target
-                downBound = downBound == targetIndex ? --targetIndex : targetIndex;
-                break;
-            case NSOrderedDescending:
-                // index is greater than target
-                upBound = upBound == targetIndex ? ++targetIndex : targetIndex;
-                break;
-        }
-        
-        targetIndex = (upBound + downBound) / 2;
-    }
-    
-    target = ((NyaruIndex *)[array objectAtIndex:targetIndex]).value;
-    comp = compare(index.value, target, schemaType);
-    switch (comp) {
-        case NSOrderedAscending:
-            [array insertObject:index atIndex:targetIndex];
-            break;
-        default:
-            [array insertObject:index atIndex:targetIndex + 1];
-            break;
-    }
+    if (value1TimeInterval > value2TimeInterval)
+        return NSOrderedDescending;
+    else if (value1TimeInterval < value2TimeInterval)
+        return NSOrderedAscending;
+    else
+        return NSOrderedSame;
 }
+
 
 @end

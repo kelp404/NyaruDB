@@ -1,8 +1,9 @@
 //
-//  NyaruIndex.h
+//  NyaruKey.h
 //  NyaruDB
 //
-//  Created by Kelp on 12/9/3.
+//  Created by Kelp on 2013/02/19.
+//
 //
 
 #import <Foundation/Foundation.h>

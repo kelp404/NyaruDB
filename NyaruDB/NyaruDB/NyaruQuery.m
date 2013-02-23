@@ -2,64 +2,218 @@
 //  NyaruQuery.m
 //  NyaruDB
 //
-//  Created by Kelp on 2012/10/08.
+//  Created by Kelp on 2013/02/19.
+//
 //
 
 #import "NyaruQuery.h"
+#import "NyaruCollection.h"
+#import "NyaruQueryCell.h"
+
 
 @implementation NyaruQuery
 
-@synthesize schemaName = _schemaName;
-@synthesize value = _value;
-@synthesize operation = _operation;
-@synthesize appendWith = _appendWith;
+@synthesize queries = _queries;
 
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation
-{
-    return [[NyaruQuery alloc] initWithSchemaName:schema operation:operation];
-}
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value
-{
-    return [[NyaruQuery alloc] initWithSchemaName:schema operation:operation value:value];
-}
-+ (id)queryWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value appendWith:(NyaruAppendPrevious)appendWith
-{
-    return [[NyaruQuery alloc] initWithSchemaName:schema operation:operation value:value appendWith:appendWith];
-}
-
-- (id)init
+- (id)initWithCollection:(NyaruCollection *)collection
 {
     self = [super init];
     if (self) {
-        _appendWith = NYAnd;
+        _collection = collection;
+        _queries = [NSMutableArray new];
     }
     return self;
 }
 
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation
+@end
+
+
+@implementation NyaruQuery (NyaruQueryIn)
+#pragma mark - Intersection
+- (NyaruQuery *)and:(NSString *)indexName equalTo:(id)value
 {
-    self = [self initWithSchemaName:schema operation:operation value:nil];
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryEqual | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName notEqualTo:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryUnequal | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName lessThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLess | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName lessEqualThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLessEqual | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName greaterThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryGreater | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName greaterEqualThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryGreaterEqual | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)and:(NSString *)indexName likeTo:(NSString *)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLike | NyaruQueryIntersection;
+    query.value = value;
+    [_queries addObject:query];
     return self;
 }
 
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value
+
+#pragma mark - Union
+- (NyaruQuery *)unionAll
 {
-    self = [self init];
-    if (self) {
-        _schemaName = schema;
-        _value = value == nil ? [NSNull null] : value;
-        _operation = operation;
-    }
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.operation = NyaruQueryAll | NyaruQueryUnion;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName equalTo:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryEqual | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName notEqualTo:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryUnequal | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName lessThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLess | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName lessEqualThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLessEqual | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName greaterThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryGreater | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName greaterEqualThan:(id)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryGreaterEqual | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
+    return self;
+}
+- (NyaruQuery *)union:(NSString *)indexName likeTo:(NSString *)value
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryLike | NyaruQueryUnion;
+    query.value = value;
+    [_queries addObject:query];
     return self;
 }
 
-- (id)initWithSchemaName:(NSString *)schema operation:(NyaruQueryOperation)operation value:(id)value appendWith:(NyaruAppendPrevious)appendWith
+
+#pragma mark - Order By
+- (NyaruQuery *)orderBy:(NSString *)indexName
 {
-    self = [self initWithSchemaName:schema operation:operation value:value];
-    if (self) {
-        _appendWith = appendWith;
-    }
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryOrderASC;
+    [_queries addObject:query];
     return self;
 }
+- (NyaruQuery *)orderByDESC:(NSString *)indexName
+{
+    NyaruQueryCell *query = [NyaruQueryCell new];
+    query.schemaName = indexName;
+    query.operation = NyaruQueryOrderDESC;
+    [_queries addObject:query];
+    return self;
+}
+
+
+#pragma mark - Count
+- (NSUInteger)count
+{
+    return [_collection countByQuery:_queries];
+}
+
+
+#pragma mark - Fetch
+- (NSArray *)fetch
+{
+    return [_collection fetchByQuery:_queries skip:0 limit:0];
+}
+- (NSArray *)fetch:(NSUInteger)limit
+{
+    return [_collection fetchByQuery:_queries skip:0 limit:limit];
+}
+- (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip
+{
+    return [_collection fetchByQuery:_queries skip:skip limit:limit];
+}
+
+
+#pragma mark - Remove
+- (void)remove
+{
+    [_collection removeByQuery:_queries];
+}
+
 
 @end
