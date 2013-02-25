@@ -11,7 +11,7 @@ It is a key-document NoSQL database. You could search data by a field of the doc
 
 ##Feature
 * More quickly than sqlite.  
-NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize document.  
+NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize documents.  
 And use memory cache and binary tree to optimize performance.
 ```
 NoSQL with SQL:  
@@ -109,6 +109,20 @@ NyaruDB *db = [NyaruDB instance];
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSDate *date = [NSDate date];
 NSArray *documents = [[[co where:@"date" greaterThan:date] orderByDESC:@"date"] fetch];
+for (NSMutableDictionary *document in documents) {
+    NSLog(@"%@", document);
+}
+```
+
+
+```objective-c
+// search document the 'date' is greater than now, and 'type' is equal to 2
+// then sort by date with ASC
+NyaruDB *db = [NyaruDB instance];
+
+NyaruCollection *co = [db collectionForName:@"collectionName"];
+NSDate *date = [NSDate date];
+NSArray *documents = [[[[co where:@"date" greaterThan:date] and:@"type" equalTo:@2] orderBy:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
