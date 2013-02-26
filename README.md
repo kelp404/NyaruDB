@@ -90,12 +90,19 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
 
 
 ##Query    
+The field of the document which is `key` or `index` supports search.  
+`key` supports `equalTo`.  
+`index` supports `equalTo`, `notEqualTo`, `lessThan`, `lessEqualThan`, `greaterThan`, `greaterEqualThan` and `likeTo`.  
+
+You could use `and`(Intersection) or `union` to append query.  
+
+
 ```objective-c
-// search document the 'email' is equal to 'kelp@phate.org'
+// search the document the 'key' is equal to 'IjkhMGIT752091136'
 NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
-NSArray *documents = [[co where:@"email" equalTo:@"kelp@phate.org"] fetch];
+NSArray *documents = [[co where:@"key" equalTo:@"IjkhMGIT752091136"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -103,7 +110,7 @@ for (NSMutableDictionary *document in documents) {
 
 
 ```objective-c
-// search document the 'date' is greater than now, and sort by date with DESC
+// search documents the 'date' is greater than now, and sort by date with DESC
 NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
@@ -116,7 +123,7 @@ for (NSMutableDictionary *document in documents) {
 
 
 ```objective-c
-// search document the 'date' is greater than now, and 'type' is equal to 2
+// search documents the 'date' is greater than now, and 'type' is equal to 2
 // then sort by date with ASC
 NyaruDB *db = [NyaruDB instance];
 
@@ -127,6 +134,29 @@ for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
+
+
+```objective-c
+// search documents 'type' == 1 or 'type' == 3
+NyaruDB *db = [NyaruDB instance];
+
+NyaruCollection *co = [db collectionForName:@"collectionName"];
+NSArray *documents = [[[co where:@"type" equalTo:@1] union:@"type" equalTo:@3] fetch];
+for (NSMutableDictionary *document in documents) {
+    NSLog(@"%@", document);
+}
+```
+
+
+```objective-c
+// count documents 'type' == 1
+NyaruDB *db = [NyaruDB instance];
+
+NyaruCollection *co = [db collectionForName:@"collectionName"];
+NSUInteger count = [[co where:@"type" equalTo:@1] count];
+NSLog(@"%u", count);
+```
+
 
 
 
