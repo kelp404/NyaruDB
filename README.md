@@ -12,7 +12,7 @@ It is a key-document NoSQL database. You could search data by a field of the doc
 ##Feature
 * More quickly than sqlite.  
 NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize documents.  
-And use memory cache and binary tree to optimize performance.
+And use memory cache, <a href="https://developer.apple.com/technologies/mac/core.html#grand-central" target="_blank">GCD</a> and binary tree to optimize performance.
 ```
 NoSQL with SQL:  
 NyaruDB: NSDictionary <-- JSONKit --> File  
@@ -23,7 +23,14 @@ sqlite: NSDictionary <-- converter --> SQL <-- sqlite3 function --> File
 insert 1k documents | 15,800 ms <br/> 300 ms (async) | 36,500 ms
 fetch 1k documents | 50 ms | 300 ms
 search in 1k documents <br/> for 10 times | 15.5 ms | 40 ms
-(this test is on iPhone4
+(this test is on iPhone4)  
+<br/>
+NyaruDB use GCD to write/read documents, **all accesses would be processed in a same dispatch**.  
+Write: process with async GCD.  
+Read: process with sync GCD.  
+If you written documents to database, it will be processed in a async dispatch. So your code would not wait for writing documents. CPU will process the next command.  
+If you written documents to database, then rode that on the next command. Your code would wait for writing done.  
+
 
 * Clean query syntax.  
 ```objective-c
@@ -175,6 +182,87 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 [[co where:@"number" equalTo:@10] remove];
 // remove all
 [[co all] remove];
+```
+
+
+**NyaruDB interface**
+```Objective-C
++ (id)instance;
++ (void)reset;
+
+- (NSArray *)collections;
+- (NyaruCollection *)collectionForName:(NSString *)name;
+
+- (void)removeCollection:(NSString *)name;
+- (void)removeAllCollections;
+```
+
+
+**NyaruCollection interface**
+```Objective-C
+#pragma mark - Index
+- (NSArray *)allIndexes;
+- (void)createIndex:(NSString *)indexName;
+- (void)removeIndex:(NSString *)indexName;
+- (void)removeAllindexes;
+
+#pragma mark - Document
+// insert document
+- (NSMutableDictionary *)insert:(NSDictionary *)document;
+// remove all documents (directly remove files)
+- (void)removeAll;
+// waiting for data writing
+- (void)waiteForWriting;
+
+#pragma mark - Query
+- (NyaruQuery *)all;
+- (NyaruQuery *)where:(NSString *)indexName equalTo:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName notEqualTo:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName lessThan:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName lessEqualThan:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greaterThan:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greaterEqualThan:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName likeTo:(NSString *)value;
+
+#pragma mark - Count
+- (NSUInteger)count;
+```
+
+
+**NyaruQuery interface**
+```Objective-C
+#pragma mark - Intersection
+- (NyaruQuery *)and:(NSString *)indexName equalTo:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName notEqualTo:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName lessThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName lessEqualThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greaterThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greaterEqualThan:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName likeTo:(NSString *)value;
+
+#pragma mark - Union
+- (NyaruQuery *)union:(NSString *)indexName equalTo:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName notEqualTo:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName lessThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName lessEqualThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greaterThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greaterEqualThan:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName likeTo:(NSString *)value;
+
+#pragma mark - Order By
+- (NyaruQuery *)orderBy:(NSString *)indexName;
+- (NyaruQuery *)orderByDESC:(NSString *)indexName;
+
+#pragma mark - Count
+- (NSUInteger)count;
+
+#pragma mark - Fetch
+- (NSArray *)fetch;
+- (NSArray *)fetch:(NSUInteger)limit;
+- (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip;
+
+#pragma mark - Remove
+- (void)remove;
 ```
 
 
