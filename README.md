@@ -28,8 +28,8 @@ search in 1k documents <br/> for 10 times | 15.5 ms | 40 ms
 NyaruDB use GCD to write/read documents, **all accesses would be processed in a same dispatch**.  
 Write: process with async GCD.  
 Read: process with sync GCD.  
-If you written documents to database, it will be processed in a async dispatch. So your code would not wait for writing documents. CPU will process the next command.  
-If you written documents to database, then rode that on the next command. Your code would wait for writing done.  
+Writing documents to database will be processed in a async dispatch. So your code would not wait for writing documents. CPU will process the next command.  
+If next command is reading documents from database, the command will be processed after writing done.  
 
 
 * Clean query syntax.  
