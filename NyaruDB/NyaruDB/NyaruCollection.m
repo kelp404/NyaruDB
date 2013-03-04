@@ -227,14 +227,14 @@
         return nil;
     }
     
-    // check key is exist
-    if ([((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:[doc objectForKey:NYARU_KEY]]) {
-        @throw([NSException exceptionWithName:NYARU_PRODUCT reason:[NSString stringWithFormat:@"key '%@' is exist.", [doc objectForKey:NYARU_KEY]] userInfo:nil]);
-        return nil;
-    }
-    
     // write data with GCD
     dispatch_async(_accessQueue, ^(void) {
+        // check key is exist
+        if ([((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:[doc objectForKey:NYARU_KEY]]) {
+            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:[NSString stringWithFormat:@"key '%@' is exist.", [doc objectForKey:NYARU_KEY]] userInfo:nil]);
+            return;
+        }
+        
         // io handle
         __block NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
         __block NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
