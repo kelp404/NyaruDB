@@ -90,13 +90,13 @@
 #pragma mark - Query
 - (NyaruQuery *)query;
 - (NyaruQuery *)all;
-- (NyaruQuery *)where:(NSString *)indexName equalTo:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName notEqualTo:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName lessThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName lessEqualThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName greaterThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName greaterEqualThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName likeTo:(NSString *)value;
+- (NyaruQuery *)where:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Count
 - (NSUInteger)count;

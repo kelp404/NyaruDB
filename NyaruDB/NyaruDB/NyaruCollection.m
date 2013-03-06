@@ -449,40 +449,40 @@
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
     return [query unionAll];
 }
-- (NyaruQuery *)where:(NSString *)indexName equalTo:(id)value
+- (NyaruQuery *)where:(NSString *)indexName equal:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName equalTo:value];
+    return [query union:indexName equal:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName notEqualTo:(id)value
+- (NyaruQuery *)where:(NSString *)indexName notEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName notEqualTo:value];
+    return [query union:indexName notEqual:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName lessThan:(id)value
+- (NyaruQuery *)where:(NSString *)indexName less:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName lessThan:value];
+    return [query union:indexName less:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName lessEqualThan:(id)value
+- (NyaruQuery *)where:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName lessEqualThan:value];
+    return [query union:indexName lessEqual:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName greaterThan:(id)value
+- (NyaruQuery *)where:(NSString *)indexName greater:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greaterThan:value];
+    return [query union:indexName greater:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName greaterEqualThan:(id)value
+- (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greaterEqualThan:value];
+    return [query union:indexName greaterEqual:value];
 }
-- (NyaruQuery *)where:(NSString *)indexName likeTo:(NSString *)value
+- (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName likeTo:value];
+    return [query union:indexName like:value];
 }
 
 

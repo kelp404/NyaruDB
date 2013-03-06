@@ -14,7 +14,7 @@
 /**
  The limit of caching documents for fetch.
  */
-#define NYARU_CACHE_LIMIT 1000
+#define NYARU_CACHE_LIMIT 100
 
 
 #define NYARU_PRODUCT @"NyaruDB"

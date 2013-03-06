@@ -38,7 +38,7 @@ If next command is reading documents from database, the command will be processe
 * Clean query syntax.  
 ```objective-c
 // where type == 1 order by update
-NSArray *documents = [[[collection where:@"type" equalTo:@1] orderBy:@"update"] fetch];
+NSArray *documents = [[[collection where:@"type" equal:@1] orderBy:@"update"] fetch];
 ```
 
 
@@ -101,8 +101,8 @@ NSDictionary *document = @{ @"email": @"kelp@phate.org",
 
 ##Query    
 The field of the document which is `key` or `index` supports search.  
-`key` supports `equalTo`.  
-`index` supports `equalTo`, `notEqualTo`, `lessThan`, `lessEqualThan`, `greaterThan`, `greaterEqualThan` and `likeTo`.  
+`key` supports `equal`.  
+`index` supports `equal`, `notEqual`, `less`, `lessEqual`, `greater`, `greaterEqual` and `like`.  
 
 You could use `and`(Intersection) or `union` to append query.  
 
@@ -112,7 +112,7 @@ You could use `and`(Intersection) or `union` to append query.
 NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
-NSArray *documents = [[co where:@"key" equalTo:@"IjkhMGIT752091136"] fetch];
+NSArray *documents = [[co where:@"key" equal:@"IjkhMGIT752091136"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -125,7 +125,7 @@ NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSDate *date = [NSDate date];
-NSArray *documents = [[[co where:@"date" greaterThan:date] orderByDESC:@"date"] fetch];
+NSArray *documents = [[[co where:@"date" greater:date] orderByDESC:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -139,7 +139,7 @@ NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSDate *date = [NSDate date];
-NSArray *documents = [[[[co where:@"date" greaterThan:date] and:@"type" equalTo:@2] orderBy:@"date"] fetch];
+NSArray *documents = [[[[co where:@"date" greater:date] and:@"type" equal:@2] orderBy:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -151,7 +151,7 @@ for (NSMutableDictionary *document in documents) {
 NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
-NSArray *documents = [[[co where:@"type" equalTo:@1] union:@"type" equalTo:@3] fetch];
+NSArray *documents = [[[co where:@"type" equal:@1] union:@"type" equal:@3] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -163,7 +163,7 @@ for (NSMutableDictionary *document in documents) {
 NyaruDB *db = [NyaruDB instance];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
-NSUInteger count = [[co where:@"type" equalTo:@1] count];
+NSUInteger count = [[co where:@"type" equal:@1] count];
 NSLog(@"%u", count);
 ```
 
@@ -182,7 +182,7 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 [co insert:@{@"number" : @10}];
 
 // remove by query
-[[co where:@"number" equalTo:@10] remove];
+[[co where:@"number" equal:@10] remove];
 // remove all
 [[co all] remove];
 ```
@@ -220,13 +220,13 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 
 #pragma mark - Query
 - (NyaruQuery *)all;
-- (NyaruQuery *)where:(NSString *)indexName equalTo:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName notEqualTo:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName lessThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName lessEqualThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName greaterThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName greaterEqualThan:(id)value;
-- (NyaruQuery *)where:(NSString *)indexName likeTo:(NSString *)value;
+- (NyaruQuery *)where:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Count
 - (NSUInteger)count;
@@ -236,22 +236,22 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 **NyaruQuery interface**
 ```Objective-C
 #pragma mark - Intersection
-- (NyaruQuery *)and:(NSString *)indexName equalTo:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName notEqualTo:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName lessThan:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName lessEqualThan:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName greaterThan:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName greaterEqualThan:(id)value;
-- (NyaruQuery *)and:(NSString *)indexName likeTo:(NSString *)value;
+- (NyaruQuery *)and:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Union
-- (NyaruQuery *)union:(NSString *)indexName equalTo:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName notEqualTo:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName lessThan:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName lessEqualThan:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greaterThan:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greaterEqualThan:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName likeTo:(NSString *)value;
+- (NyaruQuery *)union:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;
@@ -276,7 +276,7 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 + limit of documents is 4,294,967,295
 + limit of document file size is 4G
 + key is unique and it is NSString
-+ key only provides `equalTo` search
++ key only provides `equal` search
 + key is case sensitive
 + index is case insensitive
 + a field of the document should be same data type which is index

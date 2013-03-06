@@ -30,7 +30,7 @@
 
 @implementation NyaruQuery (NyaruQueryIn)
 #pragma mark - Intersection
-- (NyaruQuery *)and:(NSString *)indexName equalTo:(id)value
+- (NyaruQuery *)and:(NSString *)indexName equal:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -39,7 +39,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName notEqualTo:(id)value
+- (NyaruQuery *)and:(NSString *)indexName notEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -48,7 +48,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName lessThan:(id)value
+- (NyaruQuery *)and:(NSString *)indexName less:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -57,7 +57,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName lessEqualThan:(id)value
+- (NyaruQuery *)and:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -66,7 +66,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName greaterThan:(id)value
+- (NyaruQuery *)and:(NSString *)indexName greater:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -75,7 +75,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName greaterEqualThan:(id)value
+- (NyaruQuery *)and:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -84,7 +84,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)and:(NSString *)indexName likeTo:(NSString *)value
+- (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -103,7 +103,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName equalTo:(id)value
+- (NyaruQuery *)union:(NSString *)indexName equal:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -112,7 +112,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName notEqualTo:(id)value
+- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -121,7 +121,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName lessThan:(id)value
+- (NyaruQuery *)union:(NSString *)indexName less:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -130,7 +130,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName lessEqualThan:(id)value
+- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -139,7 +139,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName greaterThan:(id)value
+- (NyaruQuery *)union:(NSString *)indexName greater:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -148,7 +148,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName greaterEqualThan:(id)value
+- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -157,7 +157,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName likeTo:(NSString *)value
+- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;

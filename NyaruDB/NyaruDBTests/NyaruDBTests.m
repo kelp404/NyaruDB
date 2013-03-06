@@ -43,17 +43,17 @@
     // insert with key
     NSString *key = [[collection insert:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
     STAssertEquals(collection.count, 1U, nil);
-    STAssertEqualObjects([[[[collection where:@"key" equalTo:key] fetch] lastObject] objectForKey:@"data"], @"value", nil);
+    STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"data"], @"value", nil);
     
     // insert without key
     key = [[collection insert:@{@"name": @"Kelp"}] objectForKey:@"key"];
-    STAssertEqualObjects([[[[collection where:@"key" equalTo:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", nil);
+    STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", nil);
     // then remove it
-    [[collection where:@"key" equalTo:key] remove];
+    [[collection where:@"key" equal:key] remove];
     STAssertEquals(collection.count, 1U, nil);
     
     // remove key == @"aa"
-    [[collection where:@"key" equalTo:@"aa"] remove];
+    [[collection where:@"key" equal:@"aa"] remove];
     STAssertEquals(collection.count, 0U, nil);
 }
 
@@ -82,7 +82,7 @@
     [collection insert:@{@"name": @"Kelp"}];
     [collection insert:@{@"name": @"Kelp X", @"updateTime": time}];
     [collection insert:@{@"name": @"Kelp"}];
-    STAssertEqualObjects([[collection where:@"updateTime" equalTo:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", nil);
+    STAssertEqualObjects([[collection where:@"updateTime" equal:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", nil);
 }
 
 - (void)test04InsertAndQueryString
@@ -97,40 +97,40 @@
     }
     [co insert:@{@"string": @"B5", @"data": @"data00"}];
     // count
-    STAssertEquals([co where:@"string" equalTo:@"B0"].count, 1U, nil);
-    STAssertEquals([co where:@"string" equalTo:@"B5"].count, 2U, nil);
-    STAssertEquals([co where:@"string" equalTo:@"B9"].count, 1U, nil);
-    STAssertEquals([co where:@"string" equalTo:@"B10"].count, 0U, nil);
-    STAssertEquals([co where:@"string" notEqualTo:@"B0"].count, 10U, nil);
-    STAssertEquals([co where:@"string" notEqualTo:@"B5"].count, 9U, nil);
-    STAssertEquals([co where:@"string" notEqualTo:@"B9"].count, 10U, nil);
-    STAssertEquals([co where:@"string" notEqualTo:@"B10"].count, 11U, nil);
+    STAssertEquals([co where:@"string" equal:@"B0"].count, 1U, nil);
+    STAssertEquals([co where:@"string" equal:@"B5"].count, 2U, nil);
+    STAssertEquals([co where:@"string" equal:@"B9"].count, 1U, nil);
+    STAssertEquals([co where:@"string" equal:@"B10"].count, 0U, nil);
+    STAssertEquals([co where:@"string" notEqual:@"B0"].count, 10U, nil);
+    STAssertEquals([co where:@"string" notEqual:@"B5"].count, 9U, nil);
+    STAssertEquals([co where:@"string" notEqual:@"B9"].count, 10U, nil);
+    STAssertEquals([co where:@"string" notEqual:@"B10"].count, 11U, nil);
     
-    STAssertEquals([co where:@"string" greaterThan:@"B9"].count, 0U, nil);
-    STAssertEquals([co where:@"string" greaterThan:@"B8"].count, 1U, nil);
-    STAssertEquals([co where:@"string" greaterThan:@"B0"].count, 10U, nil);
-    STAssertEquals([co where:@"string" greaterThan:@"A0"].count, 11U, nil);
-    STAssertEquals([co where:@"string" greaterEqualThan:@"C0"].count, 0U, nil);
-    STAssertEquals([co where:@"string" greaterEqualThan:@"B9"].count, 1U, nil);
-    STAssertEquals([co where:@"string" greaterEqualThan:@"B8"].count, 2U, nil);
-    STAssertEquals([co where:@"string" greaterEqualThan:@"B0"].count, 11U, nil);
-    STAssertEquals([co where:@"string" greaterEqualThan:@"A0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" greater:@"B9"].count, 0U, nil);
+    STAssertEquals([co where:@"string" greater:@"B8"].count, 1U, nil);
+    STAssertEquals([co where:@"string" greater:@"B0"].count, 10U, nil);
+    STAssertEquals([co where:@"string" greater:@"A0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" greaterEqual:@"C0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" greaterEqual:@"B9"].count, 1U, nil);
+    STAssertEquals([co where:@"string" greaterEqual:@"B8"].count, 2U, nil);
+    STAssertEquals([co where:@"string" greaterEqual:@"B0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" greaterEqual:@"A0"].count, 11U, nil);
     
-    STAssertEquals([co where:@"string" lessThan:@"A0"].count, 0U, nil);
-    STAssertEquals([co where:@"string" lessThan:@"B0"].count, 0U, nil);
-    STAssertEquals([co where:@"string" lessThan:@"B1"].count, 1U, nil);
-    STAssertEquals([co where:@"string" lessThan:@"B6"].count, 7U, nil);
-    STAssertEquals([co where:@"string" lessThan:@"B9"].count, 10U, nil);
-    STAssertEquals([co where:@"string" lessThan:@"C0"].count, 11U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"A0"].count, 0U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"B0"].count, 1U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"B1"].count, 2U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"B6"].count, 8U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"B9"].count, 11U, nil);
-    STAssertEquals([co where:@"string" lessEqualThan:@"C0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" less:@"A0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" less:@"B0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" less:@"B1"].count, 1U, nil);
+    STAssertEquals([co where:@"string" less:@"B6"].count, 7U, nil);
+    STAssertEquals([co where:@"string" less:@"B9"].count, 10U, nil);
+    STAssertEquals([co where:@"string" less:@"C0"].count, 11U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"A0"].count, 0U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"B0"].count, 1U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"B1"].count, 2U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"B6"].count, 8U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"B9"].count, 11U, nil);
+    STAssertEquals([co where:@"string" lessEqual:@"C0"].count, 11U, nil);
     
-    STAssertEquals([co where:@"string" likeTo:@"b"].count, 11U, nil);
-    STAssertEquals([co where:@"string" likeTo:@"c"].count, 0U, nil);
+    STAssertEquals([co where:@"string" like:@"b"].count, 11U, nil);
+    STAssertEquals([co where:@"string" like:@"c"].count, 0U, nil);
 }
 
 - (void)test05InsertAndQueryNumber
@@ -145,37 +145,37 @@
     }
     [co insert:@{@"number": @5, @"data": @"data00"}];
     // count
-    STAssertEquals([co where:@"number" equalTo:@0].count, 1U, nil);
-    STAssertEquals([co where:@"number" equalTo:@5].count, 2U, nil);
-    STAssertEquals([co where:@"number" equalTo:@9].count, 1U, nil);
-    STAssertEquals([co where:@"number" equalTo:@10].count, 0U, nil);
-    STAssertEquals([co where:@"number" notEqualTo:@0].count, 10U, nil);
-    STAssertEquals([co where:@"number" notEqualTo:@5].count, 9U, nil);
-    STAssertEquals([co where:@"number" notEqualTo:@9].count, 10U, nil);
-    STAssertEquals([co where:@"number" notEqualTo:@10].count, 11U, nil);
+    STAssertEquals([co where:@"number" equal:@0].count, 1U, nil);
+    STAssertEquals([co where:@"number" equal:@5].count, 2U, nil);
+    STAssertEquals([co where:@"number" equal:@9].count, 1U, nil);
+    STAssertEquals([co where:@"number" equal:@10].count, 0U, nil);
+    STAssertEquals([co where:@"number" notEqual:@0].count, 10U, nil);
+    STAssertEquals([co where:@"number" notEqual:@5].count, 9U, nil);
+    STAssertEquals([co where:@"number" notEqual:@9].count, 10U, nil);
+    STAssertEquals([co where:@"number" notEqual:@10].count, 11U, nil);
     
-    STAssertEquals([co where:@"number" greaterThan:@9].count, 0U, nil);
-    STAssertEquals([co where:@"number" greaterThan:@8].count, 1U, nil);
-    STAssertEquals([co where:@"number" greaterThan:@0].count, 10U, nil);
-    STAssertEquals([co where:@"number" greaterThan:@-1].count, 11U, nil);
-    STAssertEquals([co where:@"number" greaterEqualThan:@10].count, 0U, nil);
-    STAssertEquals([co where:@"number" greaterEqualThan:@9].count, 1U, nil);
-    STAssertEquals([co where:@"number" greaterEqualThan:@8].count, 2U, nil);
-    STAssertEquals([co where:@"number" greaterEqualThan:@0].count, 11U, nil);
-    STAssertEquals([co where:@"number" greaterEqualThan:@-1].count, 11U, nil);
+    STAssertEquals([co where:@"number" greater:@9].count, 0U, nil);
+    STAssertEquals([co where:@"number" greater:@8].count, 1U, nil);
+    STAssertEquals([co where:@"number" greater:@0].count, 10U, nil);
+    STAssertEquals([co where:@"number" greater:@-1].count, 11U, nil);
+    STAssertEquals([co where:@"number" greaterEqual:@10].count, 0U, nil);
+    STAssertEquals([co where:@"number" greaterEqual:@9].count, 1U, nil);
+    STAssertEquals([co where:@"number" greaterEqual:@8].count, 2U, nil);
+    STAssertEquals([co where:@"number" greaterEqual:@0].count, 11U, nil);
+    STAssertEquals([co where:@"number" greaterEqual:@-1].count, 11U, nil);
 
-    STAssertEquals([co where:@"number" lessThan:@-1].count, 0U, nil);
-    STAssertEquals([co where:@"number" lessThan:@0].count, 0U, nil);
-    STAssertEquals([co where:@"number" lessThan:@1].count, 1U, nil);
-    STAssertEquals([co where:@"number" lessThan:@6].count, 7U, nil);
-    STAssertEquals([co where:@"number" lessThan:@9].count, 10U, nil);
-    STAssertEquals([co where:@"number" lessThan:@10].count, 11U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@-1].count, 0U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@0].count, 1U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@1].count, 2U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@6].count, 8U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@9].count, 11U, nil);
-    STAssertEquals([co where:@"number" lessEqualThan:@10].count, 11U, nil);
+    STAssertEquals([co where:@"number" less:@-1].count, 0U, nil);
+    STAssertEquals([co where:@"number" less:@0].count, 0U, nil);
+    STAssertEquals([co where:@"number" less:@1].count, 1U, nil);
+    STAssertEquals([co where:@"number" less:@6].count, 7U, nil);
+    STAssertEquals([co where:@"number" less:@9].count, 10U, nil);
+    STAssertEquals([co where:@"number" less:@10].count, 11U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@-1].count, 0U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@0].count, 1U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@1].count, 2U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@6].count, 8U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@9].count, 11U, nil);
+    STAssertEquals([co where:@"number" lessEqual:@10].count, 11U, nil);
 }
 
 - (void)test06InsertAndQueryDate
@@ -190,15 +190,15 @@
     }
     for (NSUInteger index = 1; index <= 10; index++) {
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:index * 100];
-        STAssertEquals([[co where:@"date" equalTo:date] count], 1U, nil);
+        STAssertEquals([[co where:@"date" equal:date] count], 1U, nil);
         
         date = [NSDate dateWithTimeIntervalSince1970:(index + 1) * 100];
-        STAssertEquals([[co where:@"date" lessThan:date] count], index, nil);
+        STAssertEquals([[co where:@"date" less:date] count], index, nil);
     }
     
-    STAssertEquals([[co where:@"date" greaterEqualThan:[NSDate dateWithTimeIntervalSince1970:0]] count], 10U, nil);
-    STAssertEquals([[co where:@"date" greaterEqualThan:[NSDate date]] count], 0U, nil);
-    STAssertEquals([[co where:@"date" lessThan:[NSDate date]] count], 10U, nil);
+    STAssertEquals([[co where:@"date" greaterEqual:[NSDate dateWithTimeIntervalSince1970:0]] count], 10U, nil);
+    STAssertEquals([[co where:@"date" greaterEqual:[NSDate date]] count], 0U, nil);
+    STAssertEquals([[co where:@"date" less:[NSDate date]] count], 10U, nil);
 }
 
 - (void)test07
@@ -257,7 +257,7 @@
     }
     
     NSNumber *previous = nil;
-    NSArray *documents = [[[[[co where:@"number" greaterEqualThan:@6] union:@"number" equalTo:@5] and:@"name" equalTo:@"kelp"] orderBy:@"number"] fetch];
+    NSArray *documents = [[[[[co where:@"number" greaterEqual:@6] union:@"number" equal:@5] and:@"name" equal:@"kelp"] orderBy:@"number"] fetch];
     STAssertEquals(documents.count > 0, true, nil);
     for (NSMutableDictionary *doc in documents) {
         if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
@@ -308,7 +308,7 @@
     
     timer = [NSDate date];
     for (NSInteger index = 0; index < 10; index++) {
-        [collection where:@"group" greaterEqualThan:[NSNumber numberWithInt:arc4random() % 512]].fetch;
+        [collection where:@"group" greaterEqual:[NSNumber numberWithInt:arc4random() % 512]].fetch;
     }
     NSLog(@"------------------------------------------------");
     NSLog(@"search documents in 1k data for 10 times cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
