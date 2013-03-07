@@ -247,17 +247,14 @@
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
             
             // remove data in .index
-            @try {
-                unsigned int data = 0;
-                [fileIndex seekToFileOffset:existKey.indexOffset + 4];
-                [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
-                [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
-                
-                for (NyaruSchema *schema in _schemas.allValues) {
-                    [schema removeWithKey:docKey];
-                }
+            unsigned int data = 0;
+            [fileIndex seekToFileOffset:existKey.indexOffset + 4];
+            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
+            
+            for (NyaruSchema *schema in _schemas.allValues) {
+                [schema removeWithKey:docKey];
             }
-            @catch (NSException *exception) { }
         }
         
         unsigned int documentOffset = 0;
@@ -337,17 +334,14 @@
         [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
         
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
-        @try {
-            unsigned int data = 0;
-            [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
-            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
-            
-            for (NyaruSchema *schema in _schemas.allValues) {
-                [schema removeWithKey:documentKey];
-            }
+        unsigned int data = 0;
+        [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+        [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+        [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+        
+        for (NyaruSchema *schema in _schemas.allValues) {
+            [schema removeWithKey:documentKey];
         }
-        @catch (NSException *exception) { }
         [fileIndex closeFile];
     });
 }
@@ -364,17 +358,14 @@
             // remove cache
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
             
-            @try {
-                unsigned int data = 0;
-                [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
-                [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
-                [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
-                
-                for (NyaruSchema *schema in _schemas.allValues) {
-                    [schema removeWithKey:documentKey];
-                }
+            unsigned int data = 0;
+            [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+            
+            for (NyaruSchema *schema in _schemas.allValues) {
+                [schema removeWithKey:documentKey];
             }
-            @catch (NSException *exception) { }
         }
         [fileIndex closeFile];
     });
