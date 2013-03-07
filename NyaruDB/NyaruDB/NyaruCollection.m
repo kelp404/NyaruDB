@@ -200,7 +200,7 @@
         return nil;
     }
     
-    NSMutableDictionary *doc = [NSMutableDictionary dictionaryWithDictionary:document];
+    NSMutableDictionary *doc = [document mutableCopy];
     if ([[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NYARU_KEY]).length == 0) {
         static const char map[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         char *keyPrefix = malloc(9);
@@ -229,15 +229,36 @@
     
     // write data with GCD
     dispatch_async(_accessQueue, ^(void) {
-        // check key is exist
-        if ([((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:[doc objectForKey:NYARU_KEY]]) {
-            @throw([NSException exceptionWithName:NYARU_PRODUCT reason:[NSString stringWithFormat:@"key '%@' is exist.", [doc objectForKey:NYARU_KEY]] userInfo:nil]);
-            return;
-        }
+        // document key
+        NSString *docKey = [doc objectForKey:NYARU_KEY];
         
         // io handle
-        __block NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
-        __block NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
+        NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
+        NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
+        
+        // check key is exist
+        NyaruKey *existKey = [((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:docKey];
+        if (existKey) {
+            // if key is exist then remove it and write info in console
+#if DEBUG
+            NSLog(@"[NyaruDB]WARNING: key '%@' is exist. this document will be replace.", docKey);
+#endif
+            // remove cache
+            [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
+            
+            // remove data in .index
+            @try {
+                unsigned int data = 0;
+                [fileIndex seekToFileOffset:existKey.indexOffset + 4];
+                [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+                [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
+                
+                for (NyaruSchema *schema in _schemas.allValues) {
+                    [schema removeWithKey:docKey];
+                }
+            }
+            @catch (NSException *exception) { }
+        }
         
         unsigned int documentOffset = 0;
         unsigned int documentLength = docData.length;
@@ -277,10 +298,10 @@
                                                        documentOffset:documentOffset
                                                        documentLength:documentLength
                                                           blockLength:blockLength];
-                [schema pushNyaruKey:[doc objectForKey:NYARU_KEY] nyaruKey:key];
+                [schema pushNyaruKey:docKey nyaruKey:key];
             }
             else {
-                [schema pushNyaruIndex:[doc objectForKey:NYARU_KEY] value:[doc objectForKey:schema.name]];
+                [schema pushNyaruIndex:docKey value:[doc objectForKey:schema.name]];
             }
         }
         
