@@ -4,7 +4,7 @@
 > 2013年4月7日（日）深夜1:05～からテレビ東京ほかにて放送スタート！  
 
 
-Kelp http://kelp.phate.org/ <br/>
+Kelp https://twitter.com/kelp404  
 [MIT License][mit]
 [MIT]: http://www.opensource.org/licenses/mit-license.php
 
