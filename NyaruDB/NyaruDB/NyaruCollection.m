@@ -920,7 +920,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
         case 0:
             return NSMakeRange(NSUIntegerMax, 0);
         case 1:
-            compResult = compare([[array objectAtIndex:0] value], target, type);
+            compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], target, type);
             // target < array[0]
             if (compResult == NSOrderedDescending) { return NSMakeRange(NSUIntegerMax, 0); }
             // target == array[0]
@@ -930,7 +930,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     }
     
     // compare the first
-    compResult = compare([[array objectAtIndex:0] value], target, type);
+    compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], target, type);
     switch (compResult) {
         case NSOrderedSame:
             // target == array[0]
@@ -941,7 +941,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
         case NSOrderedAscending: break;
     }
     // compare the last
-    compResult = compare([[array lastObject] value], target, type);
+    compResult = compare([(NyaruIndex *)[array lastObject] value], target, type);
     switch (compResult) {
         case NSOrderedSame:
             // index == array[last]
@@ -957,7 +957,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     NSUInteger targetIndex = (upBound + downBound) / 2;
     
     while (upBound <= downBound) {
-        compResult = compare([[array objectAtIndex:targetIndex] value], target, type);
+        compResult = compare([(NyaruIndex *)[array objectAtIndex:targetIndex] value], target, type);
         
         switch (compResult) {
             case NSOrderedSame:
