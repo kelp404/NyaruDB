@@ -192,23 +192,23 @@
  Insert NyaruIndex into array (_index)
  @param array _index
  @param key document.key
- @param value NyaruIndex.value
+ @param insertValue NyaruIndex.value
  @param schemaType 
  */
-NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSString *key, id value, NyaruSchemaType schemaType)
+NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSString *key, id insertValue, NyaruSchemaType schemaType)
 {
     // array.count : 0 ~ 2
     NSComparisonResult compResult;
     switch (array.count) {
         case 0:
-            [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+            [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
             return;
         case 1:
-            compResult = compare([[array objectAtIndex:0] value], value, schemaType);
+            compResult = compare([[array objectAtIndex:0] value], insertValue, schemaType);
             switch (compResult) {
                 case NSOrderedAscending:
                     // index > array[0]
-                    [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+                    [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
                     break;
                 case NSOrderedSame:
                     // index == array[0]
@@ -216,17 +216,17 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
                     break;
                 case NSOrderedDescending:
                     // index < array[0]
-                    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:0];
+                    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0];
                     break;
             }
             return;
     }
     
     // compare the first
-    compResult = compare([[array objectAtIndex:0] value], value, schemaType);
+    compResult = compare([[array objectAtIndex:0] value], insertValue, schemaType);
     if (compResult == NSOrderedDescending) {
         // index < array[0]
-        [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:0];
+        [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0];
         return;
     }
     else if (compResult == NSOrderedSame) {
@@ -235,10 +235,10 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
         return;
     }
     // compare the last
-    compResult = compare([[array lastObject] value], value, schemaType);
+    compResult = compare([[array lastObject] value], insertValue, schemaType);
     if (compResult == NSOrderedAscending) {
         // index > array[last]
-        [array addObject:[[NyaruIndex alloc] initWithIndexValue:value key:key]];
+        [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
         return;
     }
     else if (compResult == NSOrderedSame) {
@@ -252,7 +252,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
     NSUInteger targetIndex = (upBound + downBound) / 2;
     
     while (upBound <= downBound) {
-        compResult = compare([[array objectAtIndex:targetIndex] value], value, schemaType);
+        compResult = compare([[array objectAtIndex:targetIndex] value], insertValue, schemaType);
         
         switch (compResult) {
             case NSOrderedSame:
@@ -274,7 +274,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
     }
     
     // did not find the same value in the array.
-    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:value key:key] atIndex:upBound];
+    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:upBound];
 }
 
 #pragma mark compare value1 and value2
