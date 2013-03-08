@@ -193,7 +193,7 @@
  @param array _index
  @param key document.key
  @param insertValue NyaruIndex.value
- @param schemaType 
+ @param schemaType
  */
 NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSString *key, id insertValue, NyaruSchemaType schemaType)
 {
@@ -204,7 +204,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
             [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
             return;
         case 1:
-            compResult = compare([[array objectAtIndex:0] value], insertValue, schemaType);
+            compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], insertValue, schemaType);
             switch (compResult) {
                 case NSOrderedAscending:
                     // index > array[0]
@@ -223,7 +223,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
     }
     
     // compare the first
-    compResult = compare([[array objectAtIndex:0] value], insertValue, schemaType);
+    compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], insertValue, schemaType);
     if (compResult == NSOrderedDescending) {
         // index < array[0]
         [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0];
@@ -235,7 +235,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
         return;
     }
     // compare the last
-    compResult = compare([[array lastObject] value], insertValue, schemaType);
+    compResult = compare([(NyaruIndex *)[array lastObject] value], insertValue, schemaType);
     if (compResult == NSOrderedAscending) {
         // index > array[last]
         [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
@@ -252,7 +252,7 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
     NSUInteger targetIndex = (upBound + downBound) / 2;
     
     while (upBound <= downBound) {
-        compResult = compare([[array objectAtIndex:targetIndex] value], insertValue, schemaType);
+        compResult = compare([(NyaruIndex *)[array objectAtIndex:targetIndex] value], insertValue, schemaType);
         
         switch (compResult) {
             case NSOrderedSame:
