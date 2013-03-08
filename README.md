@@ -1,5 +1,4 @@
 #NyaruDB
-<a href="http://travis-ci.org/kelp404/NyaruDB"><img src="https://secure.travis-ci.org/kelp404/NyaruDB.png?branch=master" alt="Build Status" style="max-width:100%;"></a>  
 ###(」・ω・)」うー！(／・ω・)／にゃー！
 > <a href="http://nyaruko.com/" target="_blank">這いよれ！ニャル子さんW</a>  
 > 2013年4月7日（日）深夜1:05～からテレビ東京ほかにて放送スタート！  
