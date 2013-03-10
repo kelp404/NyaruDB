@@ -12,6 +12,7 @@ Kelp https://twitter.com/kelp404
 NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS.  
 It is a key-document NoSQL database. You could search data by a field of the document.
 
+
 ##Feature
 * More quickly than sqlite.  
 NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize documents.  
@@ -24,7 +25,7 @@ sqlite: NSDictionary <-- converter --> SQL <-- sqlite3 function --> File
   　  |  NyaruDB  |  sqlite  
 :---------:|:---------:|:---------:
 insert 1k documents | 15,800 ms <br/> 300 ms (async) | 36,500 ms
-fetch 1k documents | 50 ms | 300 ms
+fetch 1k documents | 50 ms (1k cache) | 300 ms
 search in 1k documents <br/> for 10 times | 15.5 ms | 40 ms
 (this test is on iPhone4)  
 <br/>
@@ -43,7 +44,26 @@ NSArray *documents = [[[collection where:@"type" equal:@1] orderBy:@"update"] fe
 
 
 
+---
+##Add into project
+1. **git:**
+```
+$ git clone git://github.com/kelp404/NyaruDB.git
+```
 
+2. **<a href="http://cocoapods.org/" target="_blank">CocoadPods</a>:**  
+add `Podfile` in your project path
+```
+platform :ios
+pod 'NyaruDB'
+```
+```
+$ pod install
+```
+
+
+
+---
 ##Collection
 Collection is like Table of sql database.  
 
@@ -66,6 +86,7 @@ If the document has no 'key' when inserted, it will be automatically generated.
 
 
 
+---
 ##Create Collection
 ```objective-c
 NyaruDB *db = [NyaruDB instance];
@@ -188,6 +209,8 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 ```
 
 
+
+---
 ##Class
 **NyaruDB interface**
 ```Objective-C
@@ -270,7 +293,7 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 ```
 
 
-
+---
 ##Attention
 + limit length of field name is 255
 + limit of documents is 4,294,967,295
