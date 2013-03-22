@@ -85,6 +85,8 @@
 - (void)removeByKey:(NSString *)documentKey;
 - (void)removeByQuery:(NSArray *)queries;
 - (void)removeAll;
+#pragma mark Cache
+- (void)clearCache;
 
 
 #pragma mark - Query

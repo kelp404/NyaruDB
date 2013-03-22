@@ -22,7 +22,15 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     // instance NyaruCollection
-    _co = [[NyaruDB instance] collectionForName:@"demo"];
+    NyaruDB *db;
+    @try {
+        db = [NyaruDB instance];
+    }
+    @catch (NSException *exception) {
+        [NyaruDB reset];
+        db = [NyaruDB instance];
+    }
+    _co = [db collectionForName:@"demo"];
     [_co createIndex:@"updateTime"];
     
     // set up date formatter

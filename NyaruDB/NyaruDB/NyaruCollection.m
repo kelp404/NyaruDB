@@ -220,7 +220,7 @@
     }
     
     // serialize document
-    __block NSData *docData = doc.JSONDataN;
+    __block NSData *docData = serialize(doc);
     
     if (docData.length == 0) {
         @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document serialized failed." userInfo:nil];
@@ -397,6 +397,11 @@
         }
     });
 }
+#pragma mark Cache
+- (void)clearCache
+{
+    [_documentCache removeAllObjects];
+}
 
 
 #pragma mark - Fetch
@@ -546,6 +551,7 @@
 
 
 #pragma mark - Private methods
+#pragma mark - Query
 /**
  Get NyaruKeys with _schemas and queries
  @param schemas _schemas
@@ -980,7 +986,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     // did not find the same value in the array.
     return NSMakeRange(upBound, 0);
 }
-#pragma mark compare value1 and value2
+#pragma mark - compare value1 and value2
 /**
  A comparer for inserting NyaruIndex.
  */
@@ -1009,7 +1015,311 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
     else
         return NSOrderedSame;
 }
-#pragma mark fetch
+
+#pragma mark - Serializer
+/**
+ Serialize document.
+ 
+ Member of document format:
+ [K]<0xFFFFFFFF>{key}[SNTLDA]<0xFFFFFFFF>{value}
+        (length)
+ 
+ @param document: NSDictionary
+ @return: NSData
+ */
+NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
+{
+    NSString *key;  // key of the document
+    id value;       // value of the document
+    unsigned char *buffer = NULL;       // result data buffer
+    NSUInteger bufferLength = 0;        // buffer length
+    NSData *dataKey;                        // key data
+    unsigned char valueType;            // value type [SNTL]
+    unsigned char *bufferValue;         // value buffer
+    unsigned long bufferValueLength = 0;    // value bugger length
+    
+    // content
+    for (key in document.allKeys) {
+        // key of the document should be NSString and not empty
+        if (![key isKindOfClass:NSString.class] || key.length == 0) { continue; }
+        
+        value = [document objectForKey:key];
+        
+        // value of the document should be NSString, NSDate, NSNull or NSNumber
+        if ([value isKindOfClass:NSString.class]) {
+            valueType = 'S';
+            bufferValue = serializeString(&bufferValueLength, value);
+        }
+        else if ([value isKindOfClass:NSDate.class]) {
+            valueType = 'T';
+            bufferValue = serializeDate(&bufferValueLength, value);
+        }
+        else if ([value isKindOfClass:NSNull.class]) {
+            valueType = 'L';
+            bufferValueLength = 0;
+        }
+        else if ([value isKindOfClass:NSNumber.class]) {
+            valueType = 'N';
+            bufferValue = serializeNumber(&bufferValueLength, value);
+        }
+        else if ([value isKindOfClass:NSDictionary.class]) {
+            valueType = 'D';
+            NSData *dictData = serialize(value);
+            bufferValueLength = dictData.length;
+            bufferValue = malloc(bufferValueLength);
+            memcpy(bufferValue, dictData.bytes, bufferValueLength);
+        }
+        else if ([value isKindOfClass:NSArray.class]) {
+            // items just allow NSString, NSNumber, NSDate and NSNull in the array
+            valueType = 'A';
+            bufferValue = serializeArray(&bufferValueLength, value);
+        }
+        else {
+            // value datatype failed
+            continue;
+        }
+        
+        // get nsdata of key
+        dataKey = [key dataUsingEncoding:NSUTF8StringEncoding];
+        unsigned long dataKeyLength = dataKey.length;
+        
+        // realloc
+        NSUInteger offset = bufferLength;
+        bufferLength += dataKeyLength + bufferValueLength + 10;
+        buffer = reallocf(buffer, bufferLength);
+        
+        // set format
+        buffer[offset] = 'K';
+        memcpy(&buffer[offset + 1], &dataKeyLength, 4);
+        buffer[offset + dataKeyLength + 5] = valueType;
+        memcpy(&buffer[offset + dataKeyLength + 6], &bufferValueLength, 4);
+        
+        // copy key
+        memcpy(&buffer[offset + 5], dataKey.bytes, dataKey.length);
+        // copy value
+        memcpy(&buffer[offset + dataKeyLength + 10], bufferValue, bufferValueLength);
+        
+        // free
+        free(bufferValue);
+    }
+    
+    NSData *result = [NSData dataWithBytes:buffer length:bufferLength];
+    free(buffer);
+    return result;
+}
+NYARU_BURST_LINK unsigned char *serializeString(unsigned long *length, NSString *source)
+{
+    NSData *data = [source dataUsingEncoding:NSUTF8StringEncoding];
+    *length = data.length;
+    unsigned char *buffer = malloc(*length);
+    memcpy(buffer, data.bytes, *length);
+    
+    return buffer;
+}
+NYARU_BURST_LINK unsigned char *serializeDate(unsigned long *length, NSDate *source)
+{
+    double data = [source timeIntervalSince1970];
+    *length = 8;
+    unsigned char *buffer = malloc(8);
+    memcpy(buffer, &data, 8);
+    
+    return buffer;
+}
+NYARU_BURST_LINK unsigned char *serializeNumber(unsigned long *length, NSNumber *source)
+{
+    CFNumberRef dataNumber = (__bridge CFNumberRef)source;
+    *length = CFNumberGetByteSize(dataNumber) + 1;
+    CFNumberType numberType = CFNumberGetType(dataNumber);
+    unsigned char *tempData = malloc(*length - 1);
+    CFNumberGetValue(dataNumber, numberType, tempData);
+    
+    unsigned char *buffer = malloc(*length);
+    buffer[0] = numberType;
+    memcpy(&buffer[1], tempData, *length - 1);
+    free(tempData);
+    
+    return buffer;
+}
+NYARU_BURST_LINK unsigned char *serializeArray(unsigned long *length, NSArray *source)
+{
+    *length = 0;
+    unsigned char *buffer = NULL;
+    unsigned long itemLength = 0;
+    unsigned char itemType;
+    for (id item in source) {
+        unsigned char *itemData = NULL;
+        
+        if ([item isKindOfClass:NSString.class]) {
+            itemType = 'S';
+            itemData = serializeString(&itemLength, item);
+        }
+        else if ([item isKindOfClass:NSDate.class]) {
+            itemType = 'T';
+            itemData = serializeDate(&itemLength, item);
+        }
+        else if ([item isKindOfClass:NSNumber.class]) {
+            itemType = 'N';
+            itemData = serializeNumber(&itemLength, item);
+        }
+        else if ([item isKindOfClass:NSNull.class]) {
+            itemType = 'L';
+            itemLength = 0;
+        }
+        else { continue; }
+        
+        NSUInteger offset = *length;
+        *length = itemLength + 5;
+        if (offset == 0) {  // first item
+            buffer = malloc(*length);
+        }
+        else {
+            buffer = reallocf(buffer, *length);
+        }
+        buffer[offset] = itemType;
+        memcpy(&buffer[offset + 1], &itemLength, 4);
+        memcpy(&buffer[offset + 5], itemData, itemLength);
+        
+        if (itemLength == 0) { continue; }
+        free(itemData);
+    }
+    return buffer;
+}
+/**
+ Deserialize document.
+ 
+ Member of document format:
+ [K]<0xFFFFFFFF>{key}[SNTLDA]<0xFFFFFFFF>{value}
+ 
+ @param data: NSData
+ @return: NSMutableDictionary
+ */
+NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
+{
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    const unsigned char *content = data.bytes;
+    NSString *key;
+    unsigned long keyLength = 0;
+    unsigned char valueType;
+    unsigned long valueLength = 0;
+    NSUInteger index = 0;
+    unsigned char *tempData;
+    NSMutableDictionary *tempDictionary;
+    
+    while (index < data.length) {
+        if (content[index] == 'K') {
+            // fetch key length
+            memcpy(&keyLength, &content[index + 1], 4);
+            // fetch key
+            tempData = malloc(keyLength);
+            memcpy(tempData, &content[index + 5], keyLength);
+            key = [[NSString alloc] initWithBytes:tempData length:keyLength encoding:NSUTF8StringEncoding];
+            free(tempData);
+            
+            // fetch value length
+            memcpy(&valueLength, &content[index + keyLength + 6], 4);
+            // fetch value
+            valueType = content[index + keyLength + 5];
+            switch (valueType) {
+                case 'S':   // NSString
+                    [result setObject:deserializeString(content, index, keyLength, valueLength) forKey:key];
+                    break;
+                case 'T':   // NSDate
+                    [result setObject:deserializeDate(content, index, keyLength, valueLength) forKey:key];
+                    break;
+                case 'L':   // NSNull
+                    [result setObject:[NSNull null] forKey:key];
+                    break;
+                case 'N':   // NSNumber
+                    [result setObject:deserializeNumber(content, index, keyLength, valueLength) forKey:key];
+                    break;
+                case 'D':   // NSDictionary
+                    if (valueLength <= 0) {
+                        [result setObject:[NSMutableDictionary new] forKey:key];
+                        break;
+                    }
+                    tempData = malloc(valueLength);
+                    memcpy(tempData, &content[index + keyLength + 10], valueLength);
+                    tempDictionary = deserialize([NSData dataWithBytes:tempData length:valueLength]);
+                    [result setObject:tempDictionary forKey:key];
+                    free(tempData);
+                    break;
+                case 'A':   // NSArray
+                    [result setObject:deserializeArray(content, index, keyLength, valueLength) forKey:key];
+                    break;
+            }
+        
+            index += keyLength + valueLength + 10;
+            continue;
+        }
+        index++;
+    }
+    
+    return result;
+}
+NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+{
+    if (valueLength <= 0) {
+        return @"";
+    }
+    unsigned char *tempData = malloc(valueLength);
+    memcpy(tempData, &content[offset + keyLength + 10], valueLength);
+    NSString *result = [[NSString alloc] initWithBytes:tempData length:valueLength encoding:NSUTF8StringEncoding];
+    free(tempData);
+    return result;
+}
+NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+{
+    double tempDouble = 0.0;
+    memcpy(&tempDouble, &content[offset + keyLength + 10], 8);
+    NSDate *result = [NSDate dateWithTimeIntervalSince1970:tempDouble];
+    return result;
+}
+NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+{
+    if (valueLength <= 0) { return @0; }
+    
+    unsigned char *tempData = malloc(valueLength);
+    memcpy(tempData, &content[offset + keyLength + 11], valueLength - 1);
+    NSNumber *result = (NSNumber *)CFBridgingRelease(CFNumberCreate(NULL, content[offset + keyLength + 10], tempData));
+    free(tempData);
+    return result;
+}
+NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+{
+    if (valueLength <= 0) {
+        return [NSMutableArray new];
+    }
+    
+    NSMutableArray *result = [NSMutableArray new];
+    NSUInteger arrayOffset = offset + keyLength + 10;
+    NSUInteger arrayBound = arrayOffset + valueLength;
+    
+    while (arrayOffset <= arrayBound) {
+        // fetch value length
+        unsigned long itemLength = 0;
+        memcpy(&itemLength, &content[arrayOffset + 1], 4);
+        
+        // fetch value
+        switch (content[arrayOffset]) {
+            case 'S':   // NSString
+                [result addObject:deserializeString(content, arrayOffset, -5, itemLength)];
+                break;
+            case 'T':   // NSDate
+                [result addObject:deserializeDate(content, arrayOffset, -5, itemLength)];
+                break;
+            case 'L':   // NSNull
+                [result addObject:[NSNull null]];
+                break;
+            case 'N':   // NSNumber
+                [result addObject:deserializeNumber(content, arrayOffset, -5, itemLength)];
+                break;
+        }
+        arrayOffset += itemLength + 5;
+    }
+    return result;
+}
+
+#pragma mark - fetch
 /**
  Fetch the document with NyaruKey and NSFileHandle.
  @param nyaruKey NyaruKey
@@ -1030,7 +1340,7 @@ NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruK
         
         // read document data
         NSData *documentData = [fileDocument readDataOfLength:nyaruKey.documentLength];
-        result = documentData.mutableObjectFromJSONDataN;
+        result = deserialize(documentData);
         [documentCache setObject:result forKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
     }
     @catch (NSException *exception) { }
@@ -1039,7 +1349,7 @@ NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruK
 }
 
 
-#pragma mark - Private methods
+#pragma mark - Loader
 /**
  Load database schema with file path.
  @param path schema file path
@@ -1115,7 +1425,7 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
         // read document
         [fileDocument seekToFileOffset:documentOffset];
         NSData *documentData = [fileDocument readDataOfLength:documentLength];
-        NSDictionary *document = documentData.mutableObjectFromJSONDataN;
+        NSDictionary *document = deserialize(documentData);
         
         for (NyaruSchema *schema in schemas.allValues) {
             if (schema.unique) {
@@ -1175,7 +1485,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         // read document
         [fileDocument seekToFileOffset:documentOffset];
         NSData *documentData = [fileDocument readDataOfLength:documentLength];
-        NSDictionary *document = documentData.mutableObjectFromJSONDataN;
+        NSDictionary *document = deserialize(documentData);
         
         [schema pushNyaruIndex:[document objectForKey:NYARU_KEY] value:[document objectForKey:schema.name]];
     }
@@ -1184,6 +1494,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
     [fileDocument closeFile];
 }
 
+#pragma mark - Others
 /**
  Get the last schema
  @param _schemas

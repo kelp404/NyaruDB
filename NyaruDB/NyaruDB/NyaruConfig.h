@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONKit-Nyaru.h"
 
 #pragma mark - NyaruDB Config
 
@@ -18,8 +17,8 @@
 
 
 #define NYARU_PRODUCT @"NyaruDB"
-#define NYARU_HEADER @"(」・ω・)」うー！(／・ω・)／にゃー！1\n"
-#define NYARU_HEADER_LENGTH 0x37
+#define NYARU_HEADER @"nyaruko "
+#define NYARU_HEADER_LENGTH 8
 
 #define NYARU_SCHEMA @"schema"
 #define NYARU_INDEX @"index"

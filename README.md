@@ -15,18 +15,17 @@ It is a key-document NoSQL database. You could search data by a field of the doc
 
 ##Feature
 * More quickly than sqlite.  
-NyaruDB use <a href="https://github.com/johnezang/JSONKit">JSONKit</a> to serialize/deserialize documents.  
-And use memory cache, <a href="https://developer.apple.com/technologies/mac/core.html#grand-central" target="_blank">GCD</a> and binary tree to optimize performance.
+NyaruDB use memory cache, <a href="https://developer.apple.com/technologies/mac/core.html#grand-central" target="_blank">GCD</a> and binary tree to optimize performance.
 ```
 NoSQL with SQL:  
-NyaruDB: NSDictionary <-- JSONKit --> File  
+NyaruDB: NSDictionary <-- NyaruDB --> File  
 sqlite: NSDictionary <-- converter --> SQL <-- sqlite3 function --> File  
 ```
   　  |  NyaruDB  |  sqlite  
 :---------:|:---------:|:---------:
-insert 1k documents | 15,800 ms <br/> 300 ms (async) | 36,500 ms
-fetch 1k documents | 50 ms (1k cache) | 300 ms
-search in 1k documents <br/> for 10 times | 15.5 ms | 40 ms
+insert 1k documents | 11,000 ms <br/> 500 ms (async) | 36,500 ms
+fetch 1k documents | 300 ms <br/> 50 ms (in cache) | 300 ms
+search in 1k documents <br/> for 10 times | 12 ms | 40 ms
 (this test is on iPhone4)  
 <br/>
 NyaruDB use GCD to write/read documents, **all accesses would be processed in a same dispatch**.  
@@ -45,7 +44,7 @@ NSArray *documents = [[[collection where:@"type" equal:@1] orderBy:@"update"] fe
 
 
 ---
-##Add into project
+##Installation
 1. **git:**
 ```
 $ git clone git://github.com/kelp404/NyaruDB.git
@@ -82,6 +81,7 @@ There is a member named 'key' in the document. Key is unique and datatype is NSS
 If the document has no 'key' when inserted, it will be automatically generated.  
 
 + Normal Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`  
+**(items just allow `NSString`, `NSNumber`, `NSDate` and `NSNull` in the `NSArray`)**  
 + Index Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`  
 
 
@@ -240,6 +240,8 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 - (void)removeAll;
 // waiting for data writing
 - (void)waiteForWriting;
+// clear cache
+- (void)clearCache;
 
 #pragma mark - Query
 - (NyaruQuery *)all;
@@ -304,3 +306,17 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 + index is case insensitive
 + a field of the document should be same data type which is index
 + sort query allow only one
+
+
+##History
++ 1.3  
+file header -> `nyaruko `  
+replace JSONKit with NyaruCollection.serialize()
+
++ 1.2  
+file header -> `(」・ω・)」うー！(／・ω・)／にゃー！1\n`  
+optimize performance  
+new query syntax
+
++ 1.1  
+file header -> `(」・ω・)」うー！(／・ω・)／にゃー！ \n`  

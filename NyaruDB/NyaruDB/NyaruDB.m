@@ -5,61 +5,8 @@
 //  Created by Kelp on 2013/02/18.
 //
 /*
- Normal Field Datatype:
- NSNull
- NSNumber (true: 1, false: 0)
- NSDate
- NSString
- NSArray
- NSDictionary
- 
- Schema Datatype:
- NSNull
- NSNumber (true: 1, false: 0)
- NSDate
- NSString
- */
-/*
- Database:
- NyaruCollection: Members
- NyaruCollection: Tickets
- ...................
- 
- NyaruCollection:
- Schema (_schema) {name.schema}
- NyaruSchema: 0, "key"
- NyaruSchema: 1, "email"
- ...................
- 
- Unique Index (_index)           {name.index}    schema is 'key'
- Dictionary type index
- Key: value of key
- Value: NyaruKey (value in memory when field is Index)
- Index (_index)                      {name.index}
- Array type index
- 
- Document                            {name.document}
- JSON data
- JSON data
- ..................
- 
- ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
- 
- Attention:
- limit length of name of field is 255
- limit of datas is 4,294,967,295
- limit of document size is 4G
- key is unique and it is NSString
- key does not provide searching by query
- key is case sensitive
- index is case insensitive
- a field of data should be same data type which is schema
- sort query allow only one
- 
- ←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙←↖↑↗→↘↓↙
- 
  Document formate
- Data is Document content
+ [K]<0xFFFFFFFF>{key}[SNTLDA]<0xFFFFFFFF>{value}
  
  Schema formate
  Previous    　 FF | FF | FF | FF |
@@ -71,7 +18,6 @@
  Document Offset    FF | FF | FF | FF |
  Document Length   FF | FF | FF | FF |
  Block Length         FF | FF | FF | FF |
- 
  */
 
 

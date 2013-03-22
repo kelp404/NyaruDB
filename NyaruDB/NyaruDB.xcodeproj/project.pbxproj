@@ -18,8 +18,6 @@
 		21A877AC16D35ADD00B5DDA8 /* NyaruIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */; };
 		21A877AF16D37E7600B5DDA8 /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */; };
 		21A877B016D37E7600B5DDA8 /* NyaruQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */; };
-		21AFC773161ECACB0086027B /* JSONKit-Nyaru.h in Headers */ = {isa = PBXBuildFile; fileRef = 21AFC771161ECACB0086027B /* JSONKit-Nyaru.h */; };
-		21AFC774161ECACB0086027B /* JSONKit-Nyaru.m in Sources */ = {isa = PBXBuildFile; fileRef = 21AFC772161ECACB0086027B /* JSONKit-Nyaru.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		21CCD81D16D3C2C400168102 /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */; };
 		21CCD81E16D3C2C400168102 /* NyaruQueryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */; };
 		21DF5CD016D31E6F00405E0E /* NyaruIndexBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */; };
@@ -57,8 +55,6 @@
 		21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndex.m; sourceTree = "<group>"; };
 		21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQuery.h; sourceTree = "<group>"; };
 		21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQuery.m; sourceTree = "<group>"; };
-		21AFC771161ECACB0086027B /* JSONKit-Nyaru.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JSONKit-Nyaru.h"; sourceTree = "<group>"; };
-		21AFC772161ECACB0086027B /* JSONKit-Nyaru.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "JSONKit-Nyaru.m"; sourceTree = "<group>"; };
 		21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQueryCell.h; sourceTree = "<group>"; };
 		21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQueryCell.m; sourceTree = "<group>"; };
 		21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndexBlock.h; sourceTree = "<group>"; };
@@ -100,24 +96,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2185601F15D7469B00245243 /* External */ = {
-			isa = PBXGroup;
-			children = (
-				21DFF67D15F83BA900615275 /* JSONKit */,
-			);
-			name = External;
-			sourceTree = "<group>";
-		};
-		21DFF67D15F83BA900615275 /* JSONKit */ = {
-			isa = PBXGroup;
-			children = (
-				21AFC771161ECACB0086027B /* JSONKit-Nyaru.h */,
-				21AFC772161ECACB0086027B /* JSONKit-Nyaru.m */,
-			);
-			name = JSONKit;
-			path = External/JSONKit;
-			sourceTree = "<group>";
-		};
 		21EAAD6C15B1003500835B47 = {
 			isa = PBXGroup;
 			children = (
@@ -167,7 +145,6 @@
 				21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */,
 				21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */,
 				21DF5CCF16D31E6F00405E0E /* NyaruIndexBlock.m */,
-				2185601F15D7469B00245243 /* External */,
 				21EAAD7D15B1003600835B47 /* Supporting Files */,
 			);
 			path = NyaruDB;
@@ -207,7 +184,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21AFC773161ECACB0086027B /* JSONKit-Nyaru.h in Headers */,
 				216CDDC716D2385D00A26FE0 /* NyaruDB.h in Headers */,
 				216CDDCB16D23A8300A26FE0 /* NyaruConfig.h in Headers */,
 				216CDDCF16D23F5400A26FE0 /* NyaruCollection.h in Headers */,
@@ -318,7 +294,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21AFC774161ECACB0086027B /* JSONKit-Nyaru.m in Sources */,
 				216CDDC816D2385D00A26FE0 /* NyaruDB.m in Sources */,
 				216CDDD016D23F5400A26FE0 /* NyaruCollection.m in Sources */,
 				21DF5CD116D31E6F00405E0E /* NyaruIndexBlock.m in Sources */,
