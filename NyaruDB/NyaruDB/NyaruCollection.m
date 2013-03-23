@@ -1036,7 +1036,7 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
     NSData *dataKey;                        // key data
     unsigned char valueType;            // value type [SNTL]
     unsigned char *bufferValue;         // value buffer
-    unsigned long bufferValueLength = 0;    // value bugger length
+    unsigned int bufferValueLength = 0;    // value bugger length
     
     // content
     for (key in document.allKeys) {
@@ -1081,7 +1081,7 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         
         // get nsdata of key
         dataKey = [key dataUsingEncoding:NSUTF8StringEncoding];
-        unsigned long dataKeyLength = dataKey.length;
+        unsigned int dataKeyLength = dataKey.length;
         
         // realloc
         NSUInteger offset = bufferLength;
@@ -1107,7 +1107,7 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
     free(buffer);
     return result;
 }
-NYARU_BURST_LINK unsigned char *serializeString(unsigned long *length, NSString *source)
+NYARU_BURST_LINK unsigned char *serializeString(unsigned int *length, NSString *source)
 {
     NSData *data = [source dataUsingEncoding:NSUTF8StringEncoding];
     *length = data.length;
@@ -1116,7 +1116,7 @@ NYARU_BURST_LINK unsigned char *serializeString(unsigned long *length, NSString 
     
     return buffer;
 }
-NYARU_BURST_LINK unsigned char *serializeDate(unsigned long *length, NSDate *source)
+NYARU_BURST_LINK unsigned char *serializeDate(unsigned int *length, NSDate *source)
 {
     double data = [source timeIntervalSince1970];
     *length = 8;
@@ -1125,7 +1125,7 @@ NYARU_BURST_LINK unsigned char *serializeDate(unsigned long *length, NSDate *sou
     
     return buffer;
 }
-NYARU_BURST_LINK unsigned char *serializeNumber(unsigned long *length, NSNumber *source)
+NYARU_BURST_LINK unsigned char *serializeNumber(unsigned int *length, NSNumber *source)
 {
     CFNumberRef dataNumber = (__bridge CFNumberRef)source;
     *length = CFNumberGetByteSize(dataNumber) + 1;
@@ -1140,11 +1140,11 @@ NYARU_BURST_LINK unsigned char *serializeNumber(unsigned long *length, NSNumber 
     
     return buffer;
 }
-NYARU_BURST_LINK unsigned char *serializeArray(unsigned long *length, NSArray *source)
+NYARU_BURST_LINK unsigned char *serializeArray(unsigned int *length, NSArray *source)
 {
     *length = 0;
     unsigned char *buffer = NULL;
-    unsigned long itemLength = 0;
+    unsigned int itemLength = 0;
     unsigned char itemType;
     for (id item in source) {
         unsigned char *itemData = NULL;
@@ -1198,9 +1198,9 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
     NSMutableDictionary *result = [NSMutableDictionary new];
     const unsigned char *content = data.bytes;
     NSString *key;
-    unsigned long keyLength = 0;
+    unsigned int keyLength = 0;
     unsigned char valueType;
-    unsigned long valueLength = 0;
+    unsigned int valueLength = 0;
     NSUInteger index = 0;
     unsigned char *tempData;
     NSMutableDictionary *tempDictionary;
@@ -1256,7 +1256,7 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
     
     return result;
 }
-NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
     if (valueLength <= 0) {
         return @"";
@@ -1267,14 +1267,14 @@ NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUIn
     free(tempData);
     return result;
 }
-NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
     double tempDouble = 0.0;
     memcpy(&tempDouble, &content[offset + keyLength + 10], 8);
     NSDate *result = [NSDate dateWithTimeIntervalSince1970:tempDouble];
     return result;
 }
-NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
     if (valueLength <= 0) { return @0; }
     
@@ -1284,7 +1284,7 @@ NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUIn
     free(tempData);
     return result;
 }
-NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned long keyLength, unsigned long valueLength)
+NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
     if (valueLength <= 0) {
         return [NSMutableArray new];
@@ -1296,7 +1296,7 @@ NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, 
     
     while (arrayOffset <= arrayBound) {
         // fetch value length
-        unsigned long itemLength = 0;
+        unsigned int itemLength = 0;
         memcpy(&itemLength, &content[arrayOffset + 1], 4);
         
         // fetch value
