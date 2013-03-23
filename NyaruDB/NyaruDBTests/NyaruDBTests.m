@@ -327,14 +327,14 @@
     [collection waiteForWriting];
     
     timer = [NSDate date];
-    collection.all.fetch;
+    if (collection.all.fetch) { };
     NSLog(@"------------------------------------------------");
     NSLog(@"fetch 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
     NSLog(@"------------------------------------------------");
     
     timer = [NSDate date];
     for (NSInteger index = 0; index < 10; index++) {
-        [collection where:@"group" greaterEqual:[NSNumber numberWithInt:arc4random() % 512]].fetch;
+        if ([collection where:@"group" greaterEqual:[NSNumber numberWithInt:arc4random() % 512]].fetch) { }
     }
     NSLog(@"------------------------------------------------");
     NSLog(@"search documents in 1k data for 10 times cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
