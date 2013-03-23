@@ -12,15 +12,13 @@
 @class NyaruKey;
 @class NyaruIndex;
 
-
-enum {
-    NyaruSchemaTypeNumber = 0,
-    NyaruSchemaTypeString = 1,
-    NyaruSchemaTypeDate = 2,
-    NyaruSchemaTypeNil = 3,
-    NyaruSchemaTypeUnknow = 4
-};
-typedef NSUInteger NyaruSchemaType;
+typedef enum {
+    NyaruSchemaTypeNumber = 0U,
+    NyaruSchemaTypeString = 1U,
+    NyaruSchemaTypeDate = 2U,
+    NyaruSchemaTypeNil = 3U,
+    NyaruSchemaTypeUnknow = 4U
+} NyaruSchemaType;
 
 
 /**

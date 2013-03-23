@@ -10,29 +10,28 @@
 
 
 #define QUERY_OPERATION_MASK 0x3F
-enum {
-    NyaruQueryUnequal = 0,
-    NyaruQueryEqual = 1,                // suport unique schema
+typedef enum {
+    NyaruQueryUnequal = 0U,
+    NyaruQueryEqual = 1U,                // suport unique schema
     
-    NyaruQueryLess = 2,
-    NyaruQueryLessEqual = 3,
+    NyaruQueryLess = 2U,
+    NyaruQueryLessEqual = 3U,
     
-    NyaruQueryGreater = 4,
-    NyaruQueryGreaterEqual = 5,
+    NyaruQueryGreater = 4U,
+    NyaruQueryGreaterEqual = 5U,
     
-    NyaruQueryLike = 0x30,               // only for NSString
+    NyaruQueryLike = 0x30U,               // only for NSString
 //    NyaruQueryBeginningOf = 0x10,    // only for NSString
 //    NyaruQueryEndOf = 0x20,             // only for NSString
     
-    NyaruQueryIntersection = 0x40,
-    NyaruQueryUnion = 0x00,
+    NyaruQueryIntersection = 0x40U,
+    NyaruQueryUnion = 0x00U,
     
-    NyaruQueryAll = 0x80,
+    NyaruQueryAll = 0x80U,
     
-    NyaruQueryOrderASC = 0x100,
-    NyaruQueryOrderDESC = 0x200,
-};
-typedef NSUInteger NyaruQueryOperation;
+    NyaruQueryOrderASC = 0x100U,
+    NyaruQueryOrderDESC = 0x200U,
+} NyaruQueryOperation;
 
 
 @interface NyaruQueryCell : NSObject
