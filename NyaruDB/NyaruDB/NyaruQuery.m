@@ -15,12 +15,20 @@
 
 @synthesize queries = _queries;
 
-- (id)initWithCollection:(NyaruCollection *)collection
+- (id)init
 {
     self = [super init];
     if (self) {
-        _collection = collection;
         _queries = [NSMutableArray new];
+    }
+    return self;
+}
+
+- (id)initWithCollection:(NyaruCollection *)collection
+{
+    self = [self init];
+    if (self) {
+        _collection = collection;
     }
     return self;
 }
