@@ -30,12 +30,12 @@
 {
     self = [super init];
     if (self) {
-        if (name == nil || name.length == 0) {
+        if (name == nil || name.length == 0U) {
             @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"name is nil or empty." userInfo:nil]);
         }
         
         _name = name;
-        _idCount = 0;
+        _idCount = 0U;
         _accessQueue = dispatch_queue_create([[NSString stringWithFormat:@"NyaruDB.Access.%@", name] cStringUsingEncoding:NSUTF8StringEncoding], NULL);
         _documentCache = [NSCache new];
         [_documentCache setCountLimit:NYARU_CACHE_LIMIT];
@@ -92,8 +92,8 @@
         
         // check all file exists
         if (!([[NSFileManager defaultManager] fileExistsAtPath:_documentFilePath] &&
-            [[NSFileManager defaultManager] fileExistsAtPath:_indexFilePath] &&
-            [[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath])) {
+              [[NSFileManager defaultManager] fileExistsAtPath:_indexFilePath] &&
+              [[NSFileManager defaultManager] fileExistsAtPath:_schemaFilePath])) {
             @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"file miss" userInfo:nil];
         }
         
@@ -124,20 +124,20 @@
 }
 - (void)createIndex:(NSString *)indexName
 {
-    if (indexName == nil || indexName.length == 0) { return; }
+    if (indexName == nil || indexName.length == 0U) { return; }
     
     dispatch_async(_accessQueue, ^{
         // check exist
         if ([_schemas objectForKey:indexName]) { return; }
         
         NyaruSchema *lastSchema = getLastSchema(_schemas);
-        unsigned int previous = 0;
+        unsigned int previous = 0U;
         if (lastSchema) {
             previous = lastSchema.offsetInFile;
         }
         
         NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
-        NyaruSchema *schema = [[NyaruSchema alloc] initWithName:indexName previousOffser:previous nextOffset:0];
+        NyaruSchema *schema = [[NyaruSchema alloc] initWithName:indexName previousOffser:previous nextOffset:0U];
         schema.offsetInFile = [file seekToEndOfFile];
         [file writeData:schema.dataFormate];
         
@@ -165,13 +165,13 @@
         if (schema) {
             NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
             unsigned int offset;
-            if (schema.previousOffsetInFile > 0) {
+            if (schema.previousOffsetInFile > 0U) {
                 // set next offset of previous schema
                 offset = schema.nextOffsetInFile;
-                [file seekToFileOffset:schema.previousOffsetInFile + 4];
+                [file seekToFileOffset:schema.previousOffsetInFile + 4U];
                 [file writeData:[NSData dataWithBytes:&offset length:sizeof(offset)]];
             }
-            else if (schema.nextOffsetInFile > 0) {
+            else if (schema.nextOffsetInFile > 0U) {
                 // set previous offset of next schema
                 offset = schema.previousOffsetInFile;
                 [file seekToFileOffset:schema.nextOffsetInFile];
@@ -201,15 +201,15 @@
     }
     
     NSMutableDictionary *doc = [document mutableCopy];
-    if ([[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NYARU_KEY]).length == 0) {
+    if ([[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NYARU_KEY]).length == 0U) {
         static const char map[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        char *keyPrefix = malloc(9);
+        char *keyPrefix = malloc(9U);
         NSUInteger selector;
-        for (NSUInteger index = 0; index < 8; index++) {
+        for (NSUInteger index = 0U; index < 8U; index++) {
             selector = arc4random() % 52;
             keyPrefix[index] = map[selector];
         }
-        keyPrefix[8] = '\0';
+        keyPrefix[8U] = '\0';
         
         time_t t;
         time(&t);
@@ -222,7 +222,7 @@
     // serialize document
     __block NSData *docData = serialize(doc);
     
-    if (docData.length == 0) {
+    if (docData.length == 0U) {
         @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document serialized failed." userInfo:nil];
         return nil;
     }
@@ -247,8 +247,8 @@
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
             
             // remove data in .index
-            unsigned int data = 0;
-            [fileIndex seekToFileOffset:existKey.indexOffset + 4];
+            unsigned int data = 0U;
+            [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
             [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
             
@@ -257,13 +257,13 @@
             }
         }
         
-        unsigned int documentOffset = 0;
+        unsigned int documentOffset = 0U;
         unsigned int documentLength = docData.length;
-        unsigned int blockLength = 0;
-        unsigned int indexOffset = 0;
+        unsigned int blockLength = 0U;
+        unsigned int indexOffset = 0U;
         
         // get index offset
-        for (NSUInteger blockIndex = 0; blockIndex < _clearedIndexBlock.count; blockIndex++) {
+        for (NSUInteger blockIndex = 0U; blockIndex < _clearedIndexBlock.count; blockIndex++) {
             NyaruIndexBlock *block = [_clearedIndexBlock objectAtIndex:blockIndex];
             if (block.blockLength >= documentLength) {
                 // old document block could be reuse
@@ -271,7 +271,7 @@
                 
                 // read old document block offset
                 [fileIndex seekToFileOffset:indexOffset];
-                NSData *documentOffsetData = [fileIndex readDataOfLength:4];
+                NSData *documentOffsetData = [fileIndex readDataOfLength:4U];
                 [documentOffsetData getBytes:&documentOffset length:sizeof(documentOffset)];
                 [fileDocument seekToFileOffset:documentOffset];
                 
@@ -282,7 +282,7 @@
                 break;
             }
         }
-        if (indexOffset == 0) {
+        if (indexOffset == 0U) {
             documentOffset = [fileDocument seekToEndOfFile];
             indexOffset = [fileIndex seekToEndOfFile];
             blockLength = documentLength;
@@ -334,8 +334,8 @@
         [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
         
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
-        unsigned int data = 0;
-        [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+        unsigned int data = 0U;
+        [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
         [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
         [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
         
@@ -358,8 +358,8 @@
             // remove cache
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
             
-            unsigned int data = 0;
-            [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4];
+            unsigned int data = 0U;
+            [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
             [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
             
@@ -413,9 +413,9 @@
         NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, YES);
         NSMutableDictionary *item;
         fetchLimit += skip;
-        if (fetchLimit == 0) { fetchLimit = keys.count; }
+        if (fetchLimit == 0U) { fetchLimit = keys.count; }
         else if (fetchLimit > keys.count) { fetchLimit = keys.count; }
-    
+        
         NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
         
         result = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
@@ -433,7 +433,7 @@
     __block NSArray *result;
     dispatch_sync(_accessQueue, ^(void) {
         NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
-        if (skip == 0 && limit == keys.count) {
+        if (skip == 0U && limit == keys.count) {
             // fetch all
             result = keys;
             return;
@@ -441,7 +441,7 @@
         
         NSUInteger fetchLimit = limit;
         fetchLimit += skip;
-        if (fetchLimit == 0) { fetchLimit = keys.count; }
+        if (fetchLimit == 0U) { fetchLimit = keys.count; }
         else if (fetchLimit > keys.count) { fetchLimit = keys.count; }
         
         NSMutableArray *resultTemp = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
@@ -570,7 +570,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
         
         if (query.operation == (NyaruQueryAll | NyaruQueryUnion)) {
             // union all
-            if (queries.count == 1) {
+            if (queries.count == 1U) {
                 // high speed return all NyaruKeys
                 if (isReturnNyaruKey) {
                     return [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allValues;
@@ -739,6 +739,8 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
                 [result addObjectsFromArray:schema.allNilIndexes];
             }
             break;
+        default:
+            break;
     }
     
     return result;
@@ -757,7 +759,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, Nya
         // DESC
         for (NyaruIndex *index in schema.allNotNilIndexes) {
             for (NSString *key in [[index keySet] allObjects]) {
-                [result insertObject:key atIndex:0];
+                [result insertObject:key atIndex:0U];
             }
         }
         [result addObjectsFromArray:schema.allNilIndexes];
@@ -782,7 +784,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, Nya
 NYARU_BURST_LINK NSArray *filterEqual(NSArray *allIndexes, id target, NyaruSchemaType type)
 {
     NSRange range = findEqualRange(allIndexes, target, type);
-    if (range.length > 0) {
+    if (range.length > 0U) {
         // found equal value
         return [[allIndexes objectAtIndex:range.location] keySet].allObjects;
     }
@@ -801,10 +803,10 @@ NYARU_BURST_LINK NSMutableArray *filterUnequal(NSArray *allIndexes, id target, N
     NSMutableArray *result = [NSMutableArray new];
     
     NSRange range = findEqualRange(allIndexes, target, type);
-    if (range.length > 0) {
+    if (range.length > 0U) {
         // found equal value
         NSUInteger max = range.location == NSUIntegerMax ? allIndexes.count : range.location;
-        for (NSUInteger index = 0; index < max; index++) {
+        for (NSUInteger index = 0U; index < max; index++) {
             [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
         }
         for (NSUInteger index = range.location + range.length; index < allIndexes.count; index++) {
@@ -834,17 +836,17 @@ NYARU_BURST_LINK NSMutableArray *filterLess(NSArray *allIndexes, id target, Nyar
     
     NSRange range = findEqualRange(allIndexes, target, type);
     // no less data
-    if (range.location == NSUIntegerMax && range.length == 0) { return result; }
+    if (range.location == NSUIntegerMax && range.length == 0U) { return result; }
     
-    if (range.location != NSUIntegerMax && range.location != 0) {
-        NSUInteger max = range.length > 0 ? range.location - 1 : range.location;
-        for (NSUInteger index = 0; index <= max; index++) {
+    if (range.location != NSUIntegerMax && range.location != 0U) {
+        NSUInteger max = range.length > 0U ? range.location - 1U : range.location;
+        for (NSUInteger index = 0U; index <= max; index++) {
             // add less datas
             [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
         }
     }
     
-    if (includeEqual && range.length > 0) {
+    if (includeEqual && range.length > 0U) {
         // add equal datas
         [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
     }
@@ -865,22 +867,22 @@ NYARU_BURST_LINK NSArray *filterGreater(NSArray *allIndexes, id target, NyaruSch
     
     NSRange range = findEqualRange(allIndexes, target, type);
     // no greater data
-    if (range.location == allIndexes.count && range.length == 0 && !includeEqual) { return result; }
-    if (range.location == NSUIntegerMax && range.length == 0) {
+    if (range.location == allIndexes.count && range.length == 0U && !includeEqual) { return result; }
+    if (range.location == NSUIntegerMax && range.length == 0U) {
         // all data is greater
-        for (NSUInteger index = 0; index < allIndexes.count; index++) {
+        for (NSUInteger index = 0U; index < allIndexes.count; index++) {
             // add greater datas
             [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
         }
         return result;
     }
     
-    for (NSUInteger index = range.location + 1; index < allIndexes.count; index++) {
+    for (NSUInteger index = range.location + 1U; index < allIndexes.count; index++) {
         // add greater datas
         [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
     }
     
-    if (includeEqual && range.length > 0) {
+    if (includeEqual && range.length > 0U) {
         // add equal datas
         [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
     }
@@ -909,13 +911,13 @@ NYARU_BURST_LINK NSMutableArray *filterLike(NSArray *allIndexes, NSString *targe
 /**
  Find equal items in the array.
  If there are no equal items then return final up bound, and length = 0;
-    ([0, 2, 4], target=-1) => (NSUIntegerMax, 0)
-    ([0, 2, 4], target=0) => (0, 1)
-    ([0, 2, 4], target=1) => (0, 0)
-    ([0, 2, 4], target=2) => (1, 1)
-    ([0, 2, 4], target=3) => (1, 0)
-    ([0, 2, 4], target=4) => (2, 1)
-    ([0, 2, 4], target=5) => (2, 0)
+ ([0, 2, 4], target=-1) => (NSUIntegerMax, 0)
+ ([0, 2, 4], target=0) => (0, 1)
+ ([0, 2, 4], target=1) => (0, 0)
+ ([0, 2, 4], target=2) => (1, 1)
+ ([0, 2, 4], target=3) => (1, 0)
+ ([0, 2, 4], target=4) => (2, 1)
+ ([0, 2, 4], target=5) => (2, 0)
  */
 NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaType type)
 {
@@ -923,27 +925,27 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     
     // array.count : 0 ~ 1
     switch (array.count) {
-        case 0:
-            return NSMakeRange(NSUIntegerMax, 0);
-        case 1:
-            compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], target, type);
+        case 0U:
+            return NSMakeRange(NSUIntegerMax, 0U);
+        case 1U:
+            compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], target, type);
             // target < array[0]
-            if (compResult == NSOrderedDescending) { return NSMakeRange(NSUIntegerMax, 0); }
+            if (compResult == NSOrderedDescending) { return NSMakeRange(NSUIntegerMax, 0U); }
             // target == array[0]
-            else if (compResult == NSOrderedSame) { return NSMakeRange(0, 1); }
+            else if (compResult == NSOrderedSame) { return NSMakeRange(0U, 1U); }
             // target > array[0]
-            else { return NSMakeRange(0, 0); }
+            else { return NSMakeRange(0U, 0U); }
     }
     
     // compare the first
-    compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], target, type);
+    compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], target, type);
     switch (compResult) {
         case NSOrderedSame:
             // target == array[0]
-            return NSMakeRange(0, 1);
+            return NSMakeRange(0U, 1U);
         case NSOrderedDescending:
             // target < array[0]
-            return NSMakeRange(NSUIntegerMax, 0);
+            return NSMakeRange(NSUIntegerMax, 0U);
         case NSOrderedAscending: break;
     }
     // compare the last
@@ -951,16 +953,16 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     switch (compResult) {
         case NSOrderedSame:
             // index == array[last]
-            return NSMakeRange(array.count - 1, 1);
+            return NSMakeRange(array.count - 1U, 1U);
         case NSOrderedAscending:
             // target > array[last]
-            return NSMakeRange(array.count - 1, 0);
+            return NSMakeRange(array.count - 1U, 0U);
         case NSOrderedDescending: break;
     }
     
-    NSUInteger upBound = 1;
-    NSUInteger downBound = array.count - 2;
-    NSUInteger targetIndex = (upBound + downBound) / 2;
+    NSUInteger upBound = 1U;
+    NSUInteger downBound = array.count - 2U;
+    NSUInteger targetIndex = (upBound + downBound) / 2U;
     
     while (upBound <= downBound) {
         compResult = compare([(NyaruIndex *)[array objectAtIndex:targetIndex] value], target, type);
@@ -968,23 +970,23 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
         switch (compResult) {
             case NSOrderedSame:
                 // target == array[targetIndex]
-                return NSMakeRange(targetIndex, 1);
+                return NSMakeRange(targetIndex, 1U);
             case NSOrderedDescending:
                 // index.value < array[targetIndex]
-                downBound = targetIndex - 1;
-                targetIndex = (upBound + downBound) / 2;
+                downBound = targetIndex - 1U;
+                targetIndex = (upBound + downBound) / 2U;
                 break;
             case NSOrderedAscending:
                 // index.value > array[targetIndex]
-                upBound = targetIndex + 1;
-                targetIndex = (upBound + downBound) / 2;
+                upBound = targetIndex + 1U;
+                targetIndex = (upBound + downBound) / 2U;
                 if (targetIndex < upBound) { targetIndex = upBound; }
                 break;
         }
     }
     
     // did not find the same value in the array.
-    return NSMakeRange(upBound, 0);
+    return NSMakeRange(upBound, 0U);
 }
 #pragma mark - compare value1 and value2
 /**
@@ -1022,7 +1024,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2)
  
  Member of document format:
  [K]<0xFFFFFFFF>{key}[SNTLDA]<0xFFFFFFFF>{value}
-        (length)
+ (length)
  
  @param document: NSDictionary
  @return: NSData
@@ -1032,16 +1034,16 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
     NSString *key;  // key of the document
     id value;       // value of the document
     unsigned char *buffer = NULL;       // result data buffer
-    NSUInteger bufferLength = 0;        // buffer length
+    NSUInteger bufferLength = 0U;       // buffer length
     NSData *dataKey;                        // key data
     unsigned char valueType;            // value type [SNTL]
     unsigned char *bufferValue;         // value buffer
-    unsigned int bufferValueLength = 0;    // value bugger length
+    unsigned int bufferValueLength = 0U;   // value bugger length
     
     // content
     for (key in document.allKeys) {
         // key of the document should be NSString and not empty
-        if (![key isKindOfClass:NSString.class] || key.length == 0) { continue; }
+        if (![key isKindOfClass:NSString.class] || key.length == 0U) { continue; }
         
         value = [document objectForKey:key];
         
@@ -1056,7 +1058,7 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         }
         else if ([value isKindOfClass:NSNull.class]) {
             valueType = 'L';
-            bufferValueLength = 0;
+            bufferValueLength = 0U;
         }
         else if ([value isKindOfClass:NSNumber.class]) {
             valueType = 'N';
@@ -1085,19 +1087,19 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         
         // realloc
         NSUInteger offset = bufferLength;
-        bufferLength += dataKeyLength + bufferValueLength + 10;
+        bufferLength += dataKeyLength + bufferValueLength + 10U;
         buffer = reallocf(buffer, bufferLength);
         
         // set format
         buffer[offset] = 'K';
-        memcpy(&buffer[offset + 1], &dataKeyLength, 4);
-        buffer[offset + dataKeyLength + 5] = valueType;
-        memcpy(&buffer[offset + dataKeyLength + 6], &bufferValueLength, 4);
+        memcpy(&buffer[offset + 1U], &dataKeyLength, 4U);
+        buffer[offset + dataKeyLength + 5U] = valueType;
+        memcpy(&buffer[offset + dataKeyLength + 6U], &bufferValueLength, 4U);
         
         // copy key
-        memcpy(&buffer[offset + 5], dataKey.bytes, dataKey.length);
+        memcpy(&buffer[offset + 5U], dataKey.bytes, dataKey.length);
         // copy value
-        memcpy(&buffer[offset + dataKeyLength + 10], bufferValue, bufferValueLength);
+        memcpy(&buffer[offset + dataKeyLength + 10U], bufferValue, bufferValueLength);
         
         // free
         free(bufferValue);
@@ -1119,32 +1121,32 @@ NYARU_BURST_LINK unsigned char *serializeString(unsigned int *length, NSString *
 NYARU_BURST_LINK unsigned char *serializeDate(unsigned int *length, NSDate *source)
 {
     double data = [source timeIntervalSince1970];
-    *length = 8;
-    unsigned char *buffer = malloc(8);
-    memcpy(buffer, &data, 8);
+    *length = 8U;
+    unsigned char *buffer = malloc(8U);
+    memcpy(buffer, &data, 8U);
     
     return buffer;
 }
 NYARU_BURST_LINK unsigned char *serializeNumber(unsigned int *length, NSNumber *source)
 {
     CFNumberRef dataNumber = (__bridge CFNumberRef)source;
-    *length = CFNumberGetByteSize(dataNumber) + 1;
+    *length = CFNumberGetByteSize(dataNumber) + 1U;
     CFNumberType numberType = CFNumberGetType(dataNumber);
-    unsigned char *tempData = malloc(*length - 1);
+    unsigned char *tempData = malloc(*length - 1U);
     CFNumberGetValue(dataNumber, numberType, tempData);
     
     unsigned char *buffer = malloc(*length);
-    buffer[0] = numberType;
-    memcpy(&buffer[1], tempData, *length - 1);
+    buffer[0U] = numberType;
+    memcpy(&buffer[1U], tempData, *length - 1U);
     free(tempData);
     
     return buffer;
 }
 NYARU_BURST_LINK unsigned char *serializeArray(unsigned int *length, NSArray *source)
 {
-    *length = 0;
+    *length = 0U;
     unsigned char *buffer = NULL;
-    unsigned int itemLength = 0;
+    unsigned int itemLength = 0U;
     unsigned char itemType;
     for (id item in source) {
         unsigned char *itemData = NULL;
@@ -1163,23 +1165,23 @@ NYARU_BURST_LINK unsigned char *serializeArray(unsigned int *length, NSArray *so
         }
         else if ([item isKindOfClass:NSNull.class]) {
             itemType = 'L';
-            itemLength = 0;
+            itemLength = 0U;
         }
         else { continue; }
         
         NSUInteger offset = *length;
-        *length = itemLength + 5;
-        if (offset == 0) {  // first item
+        *length = itemLength + 5U;
+        if (offset == 0U) {  // first item
             buffer = malloc(*length);
         }
         else {
             buffer = reallocf(buffer, *length);
         }
         buffer[offset] = itemType;
-        memcpy(&buffer[offset + 1], &itemLength, 4);
-        memcpy(&buffer[offset + 5], itemData, itemLength);
+        memcpy(&buffer[offset + 1U], &itemLength, 4U);
+        memcpy(&buffer[offset + 5U], itemData, itemLength);
         
-        if (itemLength == 0) { continue; }
+        if (itemLength == 0U) { continue; }
         free(itemData);
     }
     return buffer;
@@ -1198,27 +1200,27 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
     NSMutableDictionary *result = [NSMutableDictionary new];
     const unsigned char *content = data.bytes;
     NSString *key;
-    unsigned int keyLength = 0;
+    unsigned int keyLength = 0U;
     unsigned char valueType;
-    unsigned int valueLength = 0;
-    NSUInteger index = 0;
+    unsigned int valueLength = 0U;
+    NSUInteger index = 0U;
     unsigned char *tempData;
     NSMutableDictionary *tempDictionary;
     
     while (index < data.length) {
         if (content[index] == 'K') {
             // fetch key length
-            memcpy(&keyLength, &content[index + 1], 4);
+            memcpy(&keyLength, &content[index + 1U], 4U);
             // fetch key
             tempData = malloc(keyLength);
-            memcpy(tempData, &content[index + 5], keyLength);
+            memcpy(tempData, &content[index + 5U], keyLength);
             key = [[NSString alloc] initWithBytes:tempData length:keyLength encoding:NSUTF8StringEncoding];
             free(tempData);
             
             // fetch value length
-            memcpy(&valueLength, &content[index + keyLength + 6], 4);
+            memcpy(&valueLength, &content[index + keyLength + 6U], 4U);
             // fetch value
-            valueType = content[index + keyLength + 5];
+            valueType = content[index + keyLength + 5U];
             switch (valueType) {
                 case 'S':   // NSString
                     [result setObject:deserializeString(content, index, keyLength, valueLength) forKey:key];
@@ -1233,12 +1235,12 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
                     [result setObject:deserializeNumber(content, index, keyLength, valueLength) forKey:key];
                     break;
                 case 'D':   // NSDictionary
-                    if (valueLength <= 0) {
+                    if (valueLength <= 0U) {
                         [result setObject:[NSMutableDictionary new] forKey:key];
                         break;
                     }
                     tempData = malloc(valueLength);
-                    memcpy(tempData, &content[index + keyLength + 10], valueLength);
+                    memcpy(tempData, &content[index + keyLength + 10U], valueLength);
                     tempDictionary = deserialize([NSData dataWithBytes:tempData length:valueLength]);
                     [result setObject:tempDictionary forKey:key];
                     free(tempData);
@@ -1247,8 +1249,8 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
                     [result setObject:deserializeArray(content, index, keyLength, valueLength) forKey:key];
                     break;
             }
-        
-            index += keyLength + valueLength + 10;
+            
+            index += keyLength + valueLength + 10U;
             continue;
         }
         index++;
@@ -1258,11 +1260,11 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
 }
 NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
-    if (valueLength <= 0) {
+    if (valueLength <= 0U) {
         return @"";
     }
     unsigned char *tempData = malloc(valueLength);
-    memcpy(tempData, &content[offset + keyLength + 10], valueLength);
+    memcpy(tempData, &content[offset + keyLength + 10U], valueLength);
     NSString *result = [[NSString alloc] initWithBytes:tempData length:valueLength encoding:NSUTF8StringEncoding];
     free(tempData);
     return result;
@@ -1270,51 +1272,51 @@ NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUIn
 NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
     double tempDouble = 0.0;
-    memcpy(&tempDouble, &content[offset + keyLength + 10], 8);
+    memcpy(&tempDouble, &content[offset + keyLength + 10U], 8U);
     NSDate *result = [NSDate dateWithTimeIntervalSince1970:tempDouble];
     return result;
 }
 NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
-    if (valueLength <= 0) { return @0; }
+    if (valueLength <= 0U) { return @0; }
     
     unsigned char *tempData = malloc(valueLength);
-    memcpy(tempData, &content[offset + keyLength + 11], valueLength - 1);
-    NSNumber *result = (NSNumber *)CFBridgingRelease(CFNumberCreate(NULL, content[offset + keyLength + 10], tempData));
+    memcpy(tempData, &content[offset + keyLength + 11U], valueLength - 1U);
+    NSNumber *result = (NSNumber *)CFBridgingRelease(CFNumberCreate(NULL, content[offset + keyLength + 10U], tempData));
     free(tempData);
     return result;
 }
 NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength)
 {
-    if (valueLength <= 0) {
+    if (valueLength <= 0U) {
         return [NSMutableArray new];
     }
     
     NSMutableArray *result = [NSMutableArray new];
-    NSUInteger arrayOffset = offset + keyLength + 10;
+    NSUInteger arrayOffset = offset + keyLength + 10U;
     NSUInteger arrayBound = arrayOffset + valueLength;
     
     while (arrayOffset <= arrayBound) {
         // fetch value length
-        unsigned int itemLength = 0;
-        memcpy(&itemLength, &content[arrayOffset + 1], 4);
+        unsigned int itemLength = 0U;
+        memcpy(&itemLength, &content[arrayOffset + 1U], 4U);
         
         // fetch value
         switch (content[arrayOffset]) {
             case 'S':   // NSString
-                [result addObject:deserializeString(content, arrayOffset, -5, itemLength)];
+                [result addObject:deserializeString(content, arrayOffset, -5U, itemLength)];
                 break;
             case 'T':   // NSDate
-                [result addObject:deserializeDate(content, arrayOffset, -5, itemLength)];
+                [result addObject:deserializeDate(content, arrayOffset, -5U, itemLength)];
                 break;
             case 'L':   // NSNull
                 [result addObject:[NSNull null]];
                 break;
             case 'N':   // NSNumber
-                [result addObject:deserializeNumber(content, arrayOffset, -5, itemLength)];
+                [result addObject:deserializeNumber(content, arrayOffset, -5U, itemLength)];
                 break;
         }
-        arrayOffset += itemLength + 5;
+        arrayOffset += itemLength + 5U;
     }
     return result;
 }
@@ -1369,8 +1371,8 @@ NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
     while (file.offsetInFile < fileSize) {
         offset = file.offsetInFile;
         // get length of key
-        data = [NSMutableData dataWithData:[file readDataOfLength:9]];
-        [[data subdataWithRange:NSMakeRange(8, 1)] getBytes:&length length:1];
+        data = [NSMutableData dataWithData:[file readDataOfLength:9U]];
+        [[data subdataWithRange:NSMakeRange(8U, 1U)] getBytes:&length length:1U];
         
         // read data of schema name
         [data appendData:[file readDataOfLength:length]];
@@ -1378,7 +1380,7 @@ NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
         NyaruSchema *schema = [[NyaruSchema alloc] initWithData:data andOffset:offset];
         [result setObject:schema forKey:schema.name];
         
-        if (schema.nextOffsetInFile == 0) {
+        if (schema.nextOffsetInFile == 0U) {
             // this is last of schema
             break;
         }
@@ -1410,17 +1412,17 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
         // read index
         unsigned int indexOffset = fileIndex.offsetInFile;
         unsigned int documentOffset;
-        unsigned int documentLength = 0;
-        unsigned int blockLength = 0;
-        NSData *indexData = [fileIndex readDataOfLength:12];
+        unsigned int documentLength = 0U;
+        unsigned int blockLength = 0U;
+        NSData *indexData = [fileIndex readDataOfLength:12U];
         
-        [[indexData subdataWithRange:NSMakeRange(4, 4)] getBytes:&documentLength length:sizeof(documentLength)];
-        if (documentLength == 0) {
+        [[indexData subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&documentLength length:sizeof(documentLength)];
+        if (documentLength == 0U) {
             [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
-        [[indexData subdataWithRange:NSMakeRange(0, 4)] getBytes:&documentOffset length:sizeof(documentOffset)];
-        [[indexData subdataWithRange:NSMakeRange(8, 4)] getBytes:&blockLength length:sizeof(blockLength)];
+        [[indexData subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&documentOffset length:sizeof(documentOffset)];
+        [[indexData subdataWithRange:NSMakeRange(8U, 4U)] getBytes:&blockLength length:sizeof(blockLength)];
         
         // read document
         [fileDocument seekToFileOffset:documentOffset];
@@ -1470,17 +1472,17 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         // read index
         unsigned int indexOffset = fileIndex.offsetInFile;
         unsigned int documentOffset;
-        unsigned int documentLength = 0;
-        unsigned int blockLength = 0;
-        NSData *indexData = [fileIndex readDataOfLength:12];
+        unsigned int documentLength = 0U;
+        unsigned int blockLength = 0U;
+        NSData *indexData = [fileIndex readDataOfLength:12U];
         
-        [[indexData subdataWithRange:NSMakeRange(4, 4)] getBytes:&documentLength length:sizeof(documentLength)];
-        if (documentLength == 0) {
+        [[indexData subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&documentLength length:sizeof(documentLength)];
+        if (documentLength == 0U) {
             [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
-        [[indexData subdataWithRange:NSMakeRange(0, 4)] getBytes:&documentOffset length:sizeof(documentOffset)];
-        [[indexData subdataWithRange:NSMakeRange(8, 4)] getBytes:&blockLength length:sizeof(blockLength)];
+        [[indexData subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&documentOffset length:sizeof(documentOffset)];
+        [[indexData subdataWithRange:NSMakeRange(8U, 4U)] getBytes:&blockLength length:sizeof(blockLength)];
         
         // read document
         [fileDocument seekToFileOffset:documentOffset];
@@ -1503,7 +1505,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
 NYARU_BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas)
 {
     for (NyaruSchema *schema in allSchemas.allValues) {
-        if (schema.nextOffsetInFile == 0) {
+        if (schema.nextOffsetInFile == 0U) {
             return schema;
         }
     }

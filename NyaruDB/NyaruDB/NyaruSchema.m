@@ -27,9 +27,9 @@
 {
     self = [super init];
     if (self) {
-        [[data subdataWithRange:NSMakeRange(0, 4)] getBytes:&_previousOffsetInFile length:4];
-        [[data subdataWithRange:NSMakeRange(4, 4)] getBytes:&_nextOffsetInFile length:4];
-        _name = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(9, data.length - 9)] encoding:NSUTF8StringEncoding];
+        [[data subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&_previousOffsetInFile length:4U];
+        [[data subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&_nextOffsetInFile length:4U];
+        _name = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(9U, data.length - 9U)] encoding:NSUTF8StringEncoding];
         _offsetInFile = offset;
         _unique = [_name isEqualToString:NYARU_KEY];
         
@@ -49,10 +49,10 @@
 {
     self = [super init];
     if (self) {
-        if (name == nil || name.length == 0) {
+        if (name == nil || name.length == 0U) {
             return nil;
         }
-        if ([name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > 0xff) {
+        if ([name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > 0xffU) {
             @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"len of name is over 255" userInfo:nil]);
         }
         
@@ -114,17 +114,17 @@
 {
     [_indexKey removeObjectForKey:key];
     
-    for (NSUInteger index = 0; index < _indexNil.count; index++) {
+    for (NSUInteger index = 0U; index < _indexNil.count; index++) {
         if ([[_indexNil objectAtIndex:index] isEqualToString:key]) {
             [_indexNil removeObjectAtIndex:index];
             return;
         }
     }
-    for (NSUInteger index = 0; index < _index.count; index++) {
+    for (NSUInteger index = 0U; index < _index.count; index++) {
         NyaruIndex *nyaruIndex = [_index objectAtIndex:index];
         if ([nyaruIndex.keySet intersectsSet:[NSSet setWithObject:key]]) {
             [nyaruIndex.keySet removeObject:key];
-            if (nyaruIndex.keySet.count == 0) {
+            if (nyaruIndex.keySet.count == 0U) {
                 [_index removeObjectAtIndex:index];
             }
             return;
@@ -159,6 +159,7 @@
     }
     
     switch (_schemaType) {
+        default:
         case NyaruSchemaTypeUnknow:
             // check schema type
             if ([value isKindOfClass:NSNumber.class]) { _schemaType = NyaruSchemaTypeNumber; }
@@ -200,11 +201,11 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
     // array.count : 0 ~ 2
     NSComparisonResult compResult;
     switch (array.count) {
-        case 0:
+        case 0U:
             [array addObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key]];
             return;
-        case 1:
-            compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], insertValue, schemaType);
+        case 1U:
+            compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], insertValue, schemaType);
             switch (compResult) {
                 case NSOrderedAscending:
                     // index > array[0]
@@ -212,26 +213,26 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
                     break;
                 case NSOrderedSame:
                     // index == array[0]
-                    [[[array objectAtIndex:0] keySet] addObject:key];
+                    [[[array objectAtIndex:0U] keySet] addObject:key];
                     break;
                 case NSOrderedDescending:
                     // index < array[0]
-                    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0];
+                    [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0U];
                     break;
             }
             return;
     }
     
     // compare the first
-    compResult = compare([(NyaruIndex *)[array objectAtIndex:0] value], insertValue, schemaType);
+    compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], insertValue, schemaType);
     if (compResult == NSOrderedDescending) {
         // index < array[0]
-        [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0];
+        [array insertObject:[[NyaruIndex alloc] initWithIndexValue:insertValue key:key] atIndex:0U];
         return;
     }
     else if (compResult == NSOrderedSame) {
         // index == array[0]
-        [[[array objectAtIndex:0] keySet] addObject:key];
+        [[[array objectAtIndex:0U] keySet] addObject:key];
         return;
     }
     // compare the last
@@ -247,9 +248,9 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
         return;
     }
     
-    NSUInteger upBound = 1;
-    NSUInteger downBound = array.count - 2;
-    NSUInteger targetIndex = (upBound + downBound) / 2;
+    NSUInteger upBound = 1U;
+    NSUInteger downBound = array.count - 2U;
+    NSUInteger targetIndex = (upBound + downBound) / 2U;
     
     while (upBound <= downBound) {
         compResult = compare([(NyaruIndex *)[array objectAtIndex:targetIndex] value], insertValue, schemaType);
@@ -261,13 +262,13 @@ NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSStri
                 return;
             case NSOrderedDescending:
                 // index.value < array[targetIndex]
-                downBound = targetIndex - 1;
-                targetIndex = (upBound + downBound) / 2;
+                downBound = targetIndex - 1U;
+                targetIndex = (upBound + downBound) / 2U;
                 break;
             case NSOrderedAscending:
                 // index.value > array[targetIndex]
-                upBound = targetIndex + 1;
-                targetIndex = (upBound + downBound) / 2;
+                upBound = targetIndex + 1U;
+                targetIndex = (upBound + downBound) / 2U;
                 if (targetIndex < upBound) { targetIndex = upBound; }
                 break;
         }
