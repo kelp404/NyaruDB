@@ -26,6 +26,13 @@
 #import "NyaruCollection.h"
 
 
+// these are for passing Cocoapods Travis CI build [function-declaration]
+@interface NyaruDB()
+NYARU_BURST_LINK NSMutableDictionary *loadCollections(NSString *databasePath);
+@end
+
+
+
 @implementation NyaruDB
 
 static NyaruDB *_instance;

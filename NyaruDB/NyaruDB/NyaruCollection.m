@@ -16,6 +16,50 @@
 #import "NyaruQueryCell.h"
 
 
+// these are for passing Cocoapods Travis CI build [function-declaration]
+@interface NyaruCollection()
+NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas, NSArray *queries, BOOL isReturnNyaruKey);
+NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell *query);
+NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, NyaruQueryCell *query);
+NYARU_BURST_LINK NSArray *filterEqual(NSArray *allIndexes, id target, NyaruSchemaType type);
+NYARU_BURST_LINK NSMutableArray *filterUnequal(NSArray *allIndexes, id target, NyaruSchemaType type);
+NYARU_BURST_LINK NSMutableArray *filterLess(NSArray *allIndexes, id target, NyaruSchemaType type, BOOL includeEqual);
+NYARU_BURST_LINK NSArray *filterGreater(NSArray *allIndexes, id target, NyaruSchemaType type, BOOL includeEqual);
+NYARU_BURST_LINK NSMutableArray *filterLike(NSArray *allIndexes, NSString *target, NyaruSchemaType type);
+NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaType type);
+
+#pragma mark - compare value1 and value2
+NYARU_BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType);
+NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
+
+#pragma mark - Serializer
+NYARU_BURST_LINK NSData *serialize(NSDictionary *document);
+NYARU_BURST_LINK unsigned char *serializeString(unsigned int *length, NSString *source);
+NYARU_BURST_LINK unsigned char *serializeDate(unsigned int *length, NSDate *source);
+NYARU_BURST_LINK unsigned char *serializeNumber(unsigned int *length, NSNumber *source);
+NYARU_BURST_LINK unsigned char *serializeArray(unsigned int *length, NSArray *source);
+NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data);
+NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength);
+NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength);
+NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength);
+NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned int keyLength, unsigned int valueLength);
+
+#pragma mark - fetch
+NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruKey, NSCache *documentCache, NSFileHandle *fileDocument);
+
+#pragma mark - Loader
+NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path);
+NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *clearedIndexBlock, NSString *indexFilePath, NSString *documentFilePath);
+NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionary *schemas, NSMutableArray *clearedIndexBlock, NSString *indexFilePath, NSString *documentFilePath);
+
+#pragma mark - Others
+NYARU_BURST_LINK NyaruSchema *getLastSchema(NSDictionary *allSchemas);
+NYARU_BURST_LINK BOOL isNyaruHeaderOK(NSString *path);
+NYARU_BURST_LINK void fileDelete(NSString *path);
+@end
+
+
+
 @implementation NyaruCollection
 
 @synthesize name = _name;

@@ -12,6 +12,15 @@
 #import "NyaruKey.h"
 
 
+// these are for passing Cocoapods Travis CI build [function-declaration]
+@interface NyaruSchema()
+NYARU_BURST_LINK void insertIndexIntoArrayWithSort(NSMutableArray *array, NSString *key, id insertValue, NyaruSchemaType schemaType);
+NYARU_BURST_LINK NSComparisonResult compare(id value1, id value2, NyaruSchemaType schemaType);
+NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
+@end
+
+
+
 @implementation NyaruSchema
 
 @synthesize name = _name;
