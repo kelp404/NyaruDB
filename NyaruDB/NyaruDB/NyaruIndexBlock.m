@@ -20,7 +20,7 @@
  @param length block length
  @return NyaruIndexBlock instance
  */
-- (id)initWithOffset:(NSUInteger)offset andLength:(NSUInteger)length
+- (id)initWithOffset:(unsigned)offset andLength:(unsigned)length
 {
     self = [super init];
     if (self) {
@@ -30,7 +30,7 @@
     return self;
 }
 
-+ (NyaruIndexBlock *)indexBlockWithOffset:(NSUInteger)offset andLength:(NSUInteger)length
++ (NyaruIndexBlock *)indexBlockWithOffset:(unsigned)offset andLength:(unsigned)length
 {
     NyaruIndexBlock *instance = [[NyaruIndexBlock alloc] initWithOffset:offset andLength:length];
     return instance;

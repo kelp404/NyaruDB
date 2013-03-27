@@ -13,11 +13,11 @@
 /**
  NyaruDB index offset.
  */
-@property (nonatomic, readonly) NSUInteger indexOffset;
+@property (nonatomic, readonly) unsigned indexOffset;
 /**
  NyaruDB index block length.
  */
-@property (nonatomic, readonly) NSUInteger blockLength;
+@property (nonatomic, readonly) unsigned blockLength;
 
 /**
  Get a NyaruIndexBlock instance.
@@ -25,7 +25,7 @@
  @param length block length
  @return NyaruIndexBlock instance
  */
-+ (NyaruIndexBlock *)indexBlockWithOffset:(NSUInteger)offset andLength:(NSUInteger)length;
++ (NyaruIndexBlock *)indexBlockWithOffset:(unsigned)offset andLength:(unsigned)length;
 
 
 @end

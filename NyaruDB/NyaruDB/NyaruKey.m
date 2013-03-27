@@ -15,7 +15,7 @@
 @synthesize documentLength = _documentLength;
 @synthesize blockLength = _blockLength;
 
-- (id)initWithIndexOffset:(unsigned int)index documentOffset:(unsigned int)offset documentLength:(unsigned int)length blockLength:(unsigned int)blockLength
+- (id)initWithIndexOffset:(unsigned)index documentOffset:(unsigned)offset documentLength:(unsigned)length blockLength:(unsigned)blockLength
 {
     self = [super init];
     if (self) {

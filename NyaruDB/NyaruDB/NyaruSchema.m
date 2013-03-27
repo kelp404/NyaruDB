@@ -32,7 +32,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 
 
 #pragma mark - Init
-- (id)initWithData:(NSData *)data andOffset:(NSUInteger)offset
+- (id)initWithData:(NSData *)data andOffset:(unsigned)offset
 {
     self = [super init];
     if (self) {
@@ -54,7 +54,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
     }
     return self;
 }
-- (id)initWithName:(NSString *)name previousOffser:(unsigned int)previous nextOffset:(unsigned int)next
+- (id)initWithName:(NSString *)name previousOffser:(unsigned)previous nextOffset:(unsigned)next
 {
     self = [super init];
     if (self) {

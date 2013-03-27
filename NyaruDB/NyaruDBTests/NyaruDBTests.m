@@ -323,7 +323,9 @@
         }
     });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+#if IOS
     dispatch_release(group);
+#endif
     STAssertEquals(co.all.count, 1000U, nil);
 }
 

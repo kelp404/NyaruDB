@@ -20,23 +20,31 @@
 
 #pragma mark - Static methods
 /**
- Get the shared instance.
+ Get the shared instance for iOS.
  @return NyaruDB shared instance
  */
 + (id)instance;
 
 /**
- Remove all database. if you init database error, maybe need to call this message.
+ Remove all database for iOS.
+ if you init database error, maybe need to call this message.
  */
 + (void)reset;
 
 
 #pragma mark - Init
 /**
- Init NyaruDB.
+ Init NyaruDB for iOS.
+ The folder of NyaruDB is /your-app/Documents/NyaruDB
  @return NyaruDB instance
  */
 - (id)init;
+/**
+ Init NyaruDB for OS X.
+ @param path Database files are in this path.
+ @return NyaruDB instance
+ */
+- (id)initWithPath:(NSString *)path;
 
 
 #pragma mark - Collection
@@ -57,5 +65,11 @@
  */
 - (void)removeCollection:(NSString *)name;
 - (void)removeAllCollections;
+
+/**
+ Close all file handles and collections for OS X.
+ Before release instance you should invoke this method.
+ */
+- (void)close;
 
 @end

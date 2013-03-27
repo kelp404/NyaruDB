@@ -10,7 +10,7 @@ Kelp https://twitter.com/kelp404
 
 
 NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS.  
-It is a key-document NoSQL database. You could search data by a field of the document.
+It is a key-document NoSQL database. You could search data by fields of the document.
 
 
 ##Feature

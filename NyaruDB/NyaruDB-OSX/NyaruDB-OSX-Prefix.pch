@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'NyaruDB-OSX' target in the 'NyaruDB-OSX' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+    #define OS_X true
+#endif

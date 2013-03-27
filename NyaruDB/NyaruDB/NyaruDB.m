@@ -92,6 +92,26 @@ static NyaruDB *_instance;
     }
     return self;
 }
+- (id)initWithPath:(NSString *)path
+{
+    self = [super init];
+    if (self) {
+        _databasePath = path;
+        
+        // if database path does not exists then create it
+        if (![[NSFileManager defaultManager] fileExistsAtPath:_databasePath]) {
+            NSError *error = nil;
+            [[NSFileManager defaultManager] createDirectoryAtPath:_databasePath withIntermediateDirectories:YES attributes:nil error:&error];
+            if (error) {
+                @throw([NSException exceptionWithName:NYARU_PRODUCT reason:error.description userInfo:error.userInfo]);
+            }
+        }
+        
+        // load collections
+        _collections = loadCollections(_databasePath);
+    }
+    return self;
+}
 
 
 #pragma mark - Collection
@@ -133,6 +153,15 @@ static NyaruDB *_instance;
     for (NyaruCollection *collection in collections) {
         [collection close];
         [collection removeCollectionFiles];
+    }
+}
+
+
+#pragma mark - Close
+- (void)close
+{
+    for (NyaruCollection *co in _collections.allValues) {
+        [co close];
     }
 }
 

@@ -50,9 +50,9 @@ typedef enum {
 /**
  Schema's data offset in the file.
  */
-@property (nonatomic) unsigned int offsetInFile;
-@property (nonatomic) unsigned int previousOffsetInFile;
-@property (nonatomic) unsigned int nextOffsetInFile;
+@property (nonatomic) unsigned offsetInFile;
+@property (nonatomic) unsigned previousOffsetInFile;
+@property (nonatomic) unsigned nextOffsetInFile;
 /**
  Schema name.
  */
@@ -72,11 +72,11 @@ typedef enum {
 /**
  Get NyaruSchema instance with schema data and offset in the file.
  */
-- (id)initWithData:(NSData *)data andOffset:(NSUInteger)offset;
+- (id)initWithData:(NSData *)data andOffset:(unsigned)offset;
 /**
  Create a new NyaruSchema then get the instance.
  */
-- (id)initWithName:(NSString *)name previousOffser:(unsigned int)previous nextOffset:(unsigned int)next;
+- (id)initWithName:(NSString *)name previousOffser:(unsigned)previous nextOffset:(unsigned)next;
 
 #pragma mark - Get Binary Data For Write Schema File
 - (NSData *)dataFormate;
