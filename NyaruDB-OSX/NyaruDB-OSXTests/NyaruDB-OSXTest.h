@@ -1,6 +1,6 @@
 //
 //  NyaruDB-OSXTest.h
-//  NyaruDB
+//  NyaruDB-OSX
 //
 //  Created by Kelp on 2013/03/27.
 //

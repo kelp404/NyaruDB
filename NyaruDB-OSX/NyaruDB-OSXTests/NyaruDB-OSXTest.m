@@ -1,6 +1,6 @@
 //
 //  NyaruDB-OSXTest.m
-//  NyaruDB
+//  NyaruDB-OSX
 //
 //  Created by Kelp on 2013/03/27.
 //
@@ -19,7 +19,7 @@
     NyaruDB *db = [[NyaruDB alloc] initWithPath:PATH];
     NyaruCollection *co = [db collectionForName:@"init"];
     [co removeAll];
-
+    
     [db close];
 }
 

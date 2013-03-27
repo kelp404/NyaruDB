@@ -12,33 +12,6 @@
 		216CDDCB16D23A8300A26FE0 /* NyaruConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC916D23A8300A26FE0 /* NyaruConfig.h */; };
 		216CDDCF16D23F5400A26FE0 /* NyaruCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */; };
 		216CDDD016D23F5400A26FE0 /* NyaruCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */; };
-		217CCE501702CC5D00053E5B /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21EAAD8815B1003600835B47 /* SenTestingKit.framework */; };
-		217CCE541702CC5D00053E5B /* NyaruDB-OSX.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 217CCE3D1702CC5C00053E5B /* NyaruDB-OSX.dylib */; };
-		217CCE5A1702CC5D00053E5B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 217CCE581702CC5D00053E5B /* InfoPlist.strings */; };
-		217CCE641702CEA900053E5B /* NyaruDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDC616D2385D00A26FE0 /* NyaruDB.m */; };
-		217CCE651702CEA900053E5B /* NyaruQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */; };
-		217CCE661702CEA900053E5B /* NyaruCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */; };
-		217CCE671702CEA900053E5B /* NyaruQueryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */; };
-		217CCE681702CEA900053E5B /* NyaruSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DF5CD316D32C4300405E0E /* NyaruSchema.m */; };
-		217CCE691702CEA900053E5B /* NyaruKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877A616D35AD200B5DDA8 /* NyaruKey.m */; };
-		217CCE6A1702CEA900053E5B /* NyaruIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */; };
-		217CCE6B1702CEA900053E5B /* NyaruIndexBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DF5CCF16D31E6F00405E0E /* NyaruIndexBlock.m */; };
-		217CCE6C1702CEBA00053E5B /* NyaruConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC916D23A8300A26FE0 /* NyaruConfig.h */; };
-		217CCE6D1702CEBA00053E5B /* NyaruDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC516D2385D00A26FE0 /* NyaruDB.h */; };
-		217CCE6E1702CEBA00053E5B /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */; };
-		217CCE6F1702CEBA00053E5B /* NyaruCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */; };
-		217CCE701702CEBA00053E5B /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */; };
-		217CCE711702CEBA00053E5B /* NyaruSchema.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DF5CD216D32C4300405E0E /* NyaruSchema.h */; };
-		217CCE721702CEBA00053E5B /* NyaruKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877A516D35AD200B5DDA8 /* NyaruKey.h */; };
-		217CCE731702CEBA00053E5B /* NyaruIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877A916D35ADD00B5DDA8 /* NyaruIndex.h */; };
-		217CCE741702CEBA00053E5B /* NyaruIndexBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = 21DF5CCE16D31E6F00405E0E /* NyaruIndexBlock.h */; };
-		217CCE761702CF0C00053E5B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 217CCE751702CF0C00053E5B /* Cocoa.framework */; };
-		217CCE781702D0D000053E5B /* NyaruQueryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 21B63C1216FFE56800540C33 /* NyaruQueryTest.m */; };
-		217CCE791702D0D000053E5B /* NyaruSchemaTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 21E5EE7A16FD2C6900702B25 /* NyaruSchemaTest.m */; };
-		217CCE7A1702D0D000053E5B /* NyaruKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83D16FC623600E5C746 /* NyaruKeyTest.m */; };
-		217CCE7B1702D0D000053E5B /* NyaruIndexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83716FC5FEE00E5C746 /* NyaruIndexTest.m */; };
-		217CCE7C1702D0D000053E5B /* NyaruIndexBlockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83416FC5AAD00E5C746 /* NyaruIndexBlockTest.m */; };
-		217CCE7F1702E02100053E5B /* NyaruDB-OSXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 217CCE7E1702E02100053E5B /* NyaruDB-OSXTest.m */; };
 		219BB83516FC5AAD00E5C746 /* NyaruIndexBlockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83416FC5AAD00E5C746 /* NyaruIndexBlockTest.m */; };
 		219BB83816FC5FEE00E5C746 /* NyaruIndexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83716FC5FEE00E5C746 /* NyaruIndexTest.m */; };
 		219BB83E16FC623600E5C746 /* NyaruKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 219BB83D16FC623600E5C746 /* NyaruKeyTest.m */; };
@@ -65,13 +38,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		217CCE521702CC5D00053E5B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 21EAAD6E15B1003500835B47 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 217CCE3C1702CC5C00053E5B;
-			remoteInfo = "NyaruDB-OSX";
-		};
 		21EAAD8D15B1003600835B47 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 21EAAD6E15B1003500835B47 /* Project object */;
@@ -82,19 +48,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		214AD53F170304B70016B261 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		214AD540170304B70016B261 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		214AD541170304B70016B261 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		216CDDC516D2385D00A26FE0 /* NyaruDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruDB.h; sourceTree = "<group>"; };
 		216CDDC616D2385D00A26FE0 /* NyaruDB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruDB.m; sourceTree = "<group>"; };
 		216CDDC916D23A8300A26FE0 /* NyaruConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruConfig.h; sourceTree = "<group>"; };
 		216CDDCD16D23F5400A26FE0 /* NyaruCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruCollection.h; sourceTree = "<group>"; };
 		216CDDCE16D23F5400A26FE0 /* NyaruCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruCollection.m; sourceTree = "<group>"; };
-		217CCE3D1702CC5C00053E5B /* NyaruDB-OSX.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "NyaruDB-OSX.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
-		217CCE461702CC5C00053E5B /* NyaruDB-OSX-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NyaruDB-OSX-Prefix.pch"; sourceTree = "<group>"; };
-		217CCE4F1702CC5D00053E5B /* NyaruDB-OSXTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "NyaruDB-OSXTests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		217CCE571702CC5D00053E5B /* NyaruDB-OSXTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NyaruDB-OSXTests-Info.plist"; sourceTree = "<group>"; };
-		217CCE591702CC5D00053E5B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		217CCE751702CF0C00053E5B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
-		217CCE7D1702E02100053E5B /* NyaruDB-OSXTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NyaruDB-OSXTest.h"; sourceTree = "<group>"; };
-		217CCE7E1702E02100053E5B /* NyaruDB-OSXTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NyaruDB-OSXTest.m"; sourceTree = "<group>"; };
 		219BB83316FC5AAD00E5C746 /* NyaruIndexBlockTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndexBlockTest.h; sourceTree = "<group>"; };
 		219BB83416FC5AAD00E5C746 /* NyaruIndexBlockTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndexBlockTest.m; sourceTree = "<group>"; };
 		219BB83616FC5FEE00E5C746 /* NyaruIndexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruIndexTest.h; sourceTree = "<group>"; };
@@ -129,23 +91,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		217CCE3A1702CC5C00053E5B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE761702CF0C00053E5B /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		217CCE4B1702CC5C00053E5B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE501702CC5D00053E5B /* SenTestingKit.framework in Frameworks */,
-				217CCE541702CC5D00053E5B /* NyaruDB-OSX.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		21EAAD7415B1003600835B47 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -167,39 +112,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		217CCE441702CC5C00053E5B /* NyaruDB-OSX */ = {
+		214AD53E170304B70016B261 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				217CCE451702CC5C00053E5B /* Supporting Files */,
+				214AD53F170304B70016B261 /* AppKit.framework */,
+				214AD540170304B70016B261 /* CoreData.framework */,
+				214AD541170304B70016B261 /* Foundation.framework */,
 			);
-			path = "NyaruDB-OSX";
-			sourceTree = "<group>";
-		};
-		217CCE451702CC5C00053E5B /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				217CCE461702CC5C00053E5B /* NyaruDB-OSX-Prefix.pch */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		217CCE551702CC5D00053E5B /* NyaruDB-OSXTests */ = {
-			isa = PBXGroup;
-			children = (
-				217CCE561702CC5D00053E5B /* Supporting Files */,
-				217CCE7D1702E02100053E5B /* NyaruDB-OSXTest.h */,
-				217CCE7E1702E02100053E5B /* NyaruDB-OSXTest.m */,
-			);
-			path = "NyaruDB-OSXTests";
-			sourceTree = "<group>";
-		};
-		217CCE561702CC5D00053E5B /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				217CCE571702CC5D00053E5B /* NyaruDB-OSXTests-Info.plist */,
-				217CCE581702CC5D00053E5B /* InfoPlist.strings */,
-			);
-			name = "Supporting Files";
+			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
 		21EAAD6C15B1003500835B47 = {
@@ -207,8 +127,6 @@
 			children = (
 				21EAAD7C15B1003600835B47 /* NyaruDB */,
 				21EAAD9015B1003600835B47 /* NyaruDBTests */,
-				217CCE441702CC5C00053E5B /* NyaruDB-OSX */,
-				217CCE551702CC5D00053E5B /* NyaruDB-OSXTests */,
 				21EAAD7915B1003600835B47 /* Frameworks */,
 				21EAAD7815B1003600835B47 /* Products */,
 			);
@@ -219,8 +137,6 @@
 			children = (
 				21EAAD7715B1003600835B47 /* libNyaruDB.a */,
 				21EAAD8715B1003600835B47 /* NyaruDBTests.octest */,
-				217CCE3D1702CC5C00053E5B /* NyaruDB-OSX.dylib */,
-				217CCE4F1702CC5D00053E5B /* NyaruDB-OSXTests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -231,6 +147,7 @@
 				21EAAD7A15B1003600835B47 /* Foundation.framework */,
 				217CCE751702CF0C00053E5B /* Cocoa.framework */,
 				21EAAD8815B1003600835B47 /* SenTestingKit.framework */,
+				214AD53E170304B70016B261 /* Other Frameworks */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -300,22 +217,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		217CCE3B1702CC5C00053E5B /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE6C1702CEBA00053E5B /* NyaruConfig.h in Headers */,
-				217CCE6D1702CEBA00053E5B /* NyaruDB.h in Headers */,
-				217CCE6E1702CEBA00053E5B /* NyaruQuery.h in Headers */,
-				217CCE6F1702CEBA00053E5B /* NyaruCollection.h in Headers */,
-				217CCE701702CEBA00053E5B /* NyaruQueryCell.h in Headers */,
-				217CCE711702CEBA00053E5B /* NyaruSchema.h in Headers */,
-				217CCE721702CEBA00053E5B /* NyaruKey.h in Headers */,
-				217CCE731702CEBA00053E5B /* NyaruIndex.h in Headers */,
-				217CCE741702CEBA00053E5B /* NyaruIndexBlock.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		21EAAD7515B1003600835B47 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -335,42 +236,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		217CCE3C1702CC5C00053E5B /* NyaruDB-OSX */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 217CCE621702CC5D00053E5B /* Build configuration list for PBXNativeTarget "NyaruDB-OSX" */;
-			buildPhases = (
-				217CCE391702CC5C00053E5B /* Sources */,
-				217CCE3A1702CC5C00053E5B /* Frameworks */,
-				217CCE3B1702CC5C00053E5B /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "NyaruDB-OSX";
-			productName = "NyaruDB-OSX";
-			productReference = 217CCE3D1702CC5C00053E5B /* NyaruDB-OSX.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
-		};
-		217CCE4E1702CC5C00053E5B /* NyaruDB-OSXTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 217CCE631702CC5D00053E5B /* Build configuration list for PBXNativeTarget "NyaruDB-OSXTests" */;
-			buildPhases = (
-				217CCE4A1702CC5C00053E5B /* Sources */,
-				217CCE4B1702CC5C00053E5B /* Frameworks */,
-				217CCE4C1702CC5C00053E5B /* Resources */,
-				217CCE4D1702CC5C00053E5B /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				217CCE531702CC5D00053E5B /* PBXTargetDependency */,
-			);
-			name = "NyaruDB-OSXTests";
-			productName = "NyaruDB-OSXTests";
-			productReference = 217CCE4F1702CC5D00053E5B /* NyaruDB-OSXTests.octest */;
-			productType = "com.apple.product-type.bundle";
-		};
 		21EAAD7615B1003600835B47 /* NyaruDB */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 21EAAD9B15B1003600835B47 /* Build configuration list for PBXNativeTarget "NyaruDB" */;
@@ -430,21 +295,11 @@
 			targets = (
 				21EAAD7615B1003600835B47 /* NyaruDB */,
 				21EAAD8615B1003600835B47 /* NyaruDBTests */,
-				217CCE3C1702CC5C00053E5B /* NyaruDB-OSX */,
-				217CCE4E1702CC5C00053E5B /* NyaruDB-OSXTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		217CCE4C1702CC5C00053E5B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE5A1702CC5D00053E5B /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		21EAAD8415B1003600835B47 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -456,19 +311,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		217CCE4D1702CC5C00053E5B /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
 		21EAAD8515B1003600835B47 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -485,34 +327,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		217CCE391702CC5C00053E5B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE641702CEA900053E5B /* NyaruDB.m in Sources */,
-				217CCE651702CEA900053E5B /* NyaruQuery.m in Sources */,
-				217CCE661702CEA900053E5B /* NyaruCollection.m in Sources */,
-				217CCE671702CEA900053E5B /* NyaruQueryCell.m in Sources */,
-				217CCE681702CEA900053E5B /* NyaruSchema.m in Sources */,
-				217CCE691702CEA900053E5B /* NyaruKey.m in Sources */,
-				217CCE6A1702CEA900053E5B /* NyaruIndex.m in Sources */,
-				217CCE6B1702CEA900053E5B /* NyaruIndexBlock.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		217CCE4A1702CC5C00053E5B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				217CCE781702D0D000053E5B /* NyaruQueryTest.m in Sources */,
-				217CCE791702D0D000053E5B /* NyaruSchemaTest.m in Sources */,
-				217CCE7A1702D0D000053E5B /* NyaruKeyTest.m in Sources */,
-				217CCE7B1702D0D000053E5B /* NyaruIndexTest.m in Sources */,
-				217CCE7C1702D0D000053E5B /* NyaruIndexBlockTest.m in Sources */,
-				217CCE7F1702E02100053E5B /* NyaruDB-OSXTest.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		21EAAD7315B1003600835B47 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -544,11 +358,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		217CCE531702CC5D00053E5B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 217CCE3C1702CC5C00053E5B /* NyaruDB-OSX */;
-			targetProxy = 217CCE521702CC5D00053E5B /* PBXContainerItemProxy */;
-		};
 		21EAAD8E15B1003600835B47 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 21EAAD7615B1003600835B47 /* NyaruDB */;
@@ -557,14 +366,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		217CCE581702CC5D00053E5B /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				217CCE591702CC5D00053E5B /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		21EAAD9315B1003600835B47 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -576,98 +377,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		217CCE5E1702CC5D00053E5B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_EMPTY_BODY = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
-				);
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NyaruDB-OSX/NyaruDB-OSX-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		217CCE5F1702CC5D00053E5B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_EMPTY_BODY = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/Xcode.app/Contents/Developer/Library/Frameworks\"",
-				);
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NyaruDB-OSX/NyaruDB-OSX-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
-		217CCE601702CC5D00053E5B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_EMPTY_BODY = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NyaruDB-OSX/NyaruDB-OSX-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				INFOPLIST_FILE = "NyaruDB-OSXTests/NyaruDB-OSXTests-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Debug;
-		};
-		217CCE611702CC5D00053E5B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_WARN_EMPTY_BODY = YES;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"";
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "NyaruDB-OSX/NyaruDB-OSX-Prefix.pch";
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				INFOPLIST_FILE = "NyaruDB-OSXTests/NyaruDB-OSXTests-Info.plist";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				WRAPPER_EXTENSION = octest;
-			};
-			name = Release;
-		};
 		21EAAD9915B1003600835B47 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -777,22 +486,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		217CCE621702CC5D00053E5B /* Build configuration list for PBXNativeTarget "NyaruDB-OSX" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				217CCE5E1702CC5D00053E5B /* Debug */,
-				217CCE5F1702CC5D00053E5B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-		};
-		217CCE631702CC5D00053E5B /* Build configuration list for PBXNativeTarget "NyaruDB-OSXTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				217CCE601702CC5D00053E5B /* Debug */,
-				217CCE611702CC5D00053E5B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-		};
 		21EAAD7115B1003500835B47 /* Build configuration list for PBXProject "NyaruDB" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
