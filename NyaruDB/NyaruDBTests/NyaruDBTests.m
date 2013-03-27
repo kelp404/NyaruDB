@@ -300,6 +300,33 @@
     }
 }
 
+- (void)test10Multithread
+{
+    NyaruDB *db = [NyaruDB instance];
+    NyaruCollection *co = [db collectionForName:@"10"];
+    [co removeAll];
+    
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (NSUInteger index = 0; index < 500; index++) {
+            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+        }
+    });
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (NSUInteger index = 0; index < 500; index++) {
+            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+        }
+    });
+    dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        for (NSUInteger index = 0; index < 10; index++) {
+            if (co.all.fetch) { }
+        }
+    });
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+    dispatch_release(group);
+    STAssertEquals(co.all.count, 1000U, nil);
+}
+
 - (void)test20Speed
 {
     NyaruDB *db = [NyaruDB instance];
