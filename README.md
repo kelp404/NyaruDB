@@ -9,7 +9,7 @@ Kelp https://twitter.com/kelp404
 [MIT]: http://www.opensource.org/licenses/mit-license.php
 
 
-NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS.  
+NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS and OS X.  
 It is a key-document NoSQL database. You could search data by fields of the document.
 
 
@@ -87,16 +87,30 @@ If the document has no 'key' when inserted, it will be automatically generated.
 
 
 ---
+##Instance
+`[NyaruDB instance]` returns a static NyaruDB instance, and database path is `/your-app/Documents/NyaruDB`. This method is for **iOS**.  
+`[[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"]` this method is for **OS X**.  
+NyaruDB will scan all documents in collections when `[NyaruDB init]`, so do not call `init` too much.  
+In OS X you should make a static instance by yourself.  
+
+
 ##Create Collection
 ```objective-c
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
+
 NyaruCollection *collectioin = [db collectionForName:@"collectionName"];
 ```
 
 
 ##Create Index
 ```objective-c
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
 [collection createIndex:@"email"];
@@ -107,7 +121,10 @@ NyaruCollection *collection = [db collectionForName:@"collectionName"];
 
 ##Insert Data
 ```objective-c
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
 NSDictionary *document = @{ @"email": @"kelp@phate.org",
@@ -130,7 +147,10 @@ You could use `and`(Intersection) or `union` to append query.
 
 ```objective-c
 // search the document the 'key' is equal to 'IjkhMGIT752091136'
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSArray *documents = [[co where:@"key" equal:@"IjkhMGIT752091136"] fetch];
@@ -142,7 +162,10 @@ for (NSMutableDictionary *document in documents) {
 
 ```objective-c
 // search documents the 'date' is greater than now, and sort by date with DESC
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSDate *date = [NSDate date];
@@ -156,7 +179,10 @@ for (NSMutableDictionary *document in documents) {
 ```objective-c
 // search documents the 'date' is greater than now, and 'type' is equal to 2
 // then sort by date with ASC
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSDate *date = [NSDate date];
@@ -169,7 +195,10 @@ for (NSMutableDictionary *document in documents) {
 
 ```objective-c
 // search documents 'type' == 1 or 'type' == 3
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSArray *documents = [[[co where:@"type" equal:@1] union:@"type" equal:@3] fetch];
@@ -181,7 +210,10 @@ for (NSMutableDictionary *document in documents) {
 
 ```objective-c
 // count documents 'type' == 1
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 NSUInteger count = [[co where:@"type" equal:@1] count];
@@ -194,7 +226,11 @@ NSLog(@"%u", count);
 ##Delete Data
 ```objective-c
 // delete data by key
+/* iOS */
 NyaruDB *db = [NyaruDB instance];
+// /* OS X */
+// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
+
 // create collection
 NyaruCollection *co = [db collectionForName:@"collectionName"];
 [co createIndex:@"number"];
@@ -214,8 +250,30 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 ##Class
 **NyaruDB interface**
 ```Objective-C
+/**
+ Get the shared instance for iOS.
+ @return NyaruDB shared instance
+ */
 + (id)instance;
+/**
+ Remove all database for iOS.
+ if you init database error, maybe need to call this message.
+ */
 + (void)reset;
+
+
+/**
+ Init NyaruDB for OS X.
+ @param path Database files are in this path.
+ @return NyaruDB instance
+ */
+- (id)initWithPath:(NSString *)path;
+/**
+ Close all file handles and collections for OS X.
+ Before release instance you should invoke this method.
+ */
+- (void)close;
+
 
 - (NSArray *)collections;
 - (NyaruCollection *)collectionForName:(NSString *)name;
