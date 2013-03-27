@@ -1146,7 +1146,9 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         memcpy(&buffer[offset + dataKeyLength + 10U], bufferValue, bufferValueLength);
         
         // free
-        free(bufferValue);
+        if (bufferValueLength > 0) {
+            free(bufferValue);
+        }
     }
     
     NSData *result = [NSData dataWithBytes:buffer length:bufferLength];
