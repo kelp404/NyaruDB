@@ -315,8 +315,8 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
                 
                 // read old document block offset
                 [fileIndex seekToFileOffset:indexOffset];
-                NSData *documentOffsetData = [fileIndex readDataOfLength:4U];
-                [documentOffsetData getBytes:&documentOffset length:sizeof(documentOffset)];
+                NSData *documentOffsetData = [fileIndex readDataOfLength:sizeof(documentOffset)];
+                memcpy(&documentOffset, documentOffsetData.bytes, sizeof(documentOffset));
                 [fileDocument seekToFileOffset:documentOffset];
                 
                 // if reuse document block, update index data
@@ -1138,9 +1138,9 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         
         // set format
         buffer[offset] = 'K';
-        memcpy(&buffer[offset + 1U], &dataKeyLength, 4U);
+        memcpy(&buffer[offset + 1U], &dataKeyLength, sizeof(unsigned));
         buffer[offset + dataKeyLength + 5U] = valueType;
-        memcpy(&buffer[offset + dataKeyLength + 6U], &bufferValueLength, 4U);
+        memcpy(&buffer[offset + dataKeyLength + 6U], &bufferValueLength, sizeof(unsigned));
         
         // copy key
         memcpy(&buffer[offset + 5U], dataKey.bytes, dataKey.length);
@@ -1226,7 +1226,7 @@ NYARU_BURST_LINK unsigned char *serializeArray(unsigned *length, NSArray *source
             buffer = reallocf(buffer, *length);
         }
         buffer[offset] = itemType;
-        memcpy(&buffer[offset + 1U], &itemLength, 4U);
+        memcpy(&buffer[offset + 1U], &itemLength, sizeof(unsigned));
         memcpy(&buffer[offset + 5U], itemData, itemLength);
         
         if (itemLength == 0U) { continue; }
@@ -1258,7 +1258,7 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
     while (index < data.length) {
         if (content[index] == 'K') {
             // fetch key length
-            memcpy(&keyLength, &content[index + 1U], 4U);
+            memcpy(&keyLength, &content[index + 1U], sizeof(unsigned));
             // fetch key
             tempData = malloc(keyLength);
             memcpy(tempData, &content[index + 5U], keyLength);
@@ -1266,7 +1266,7 @@ NYARU_BURST_LINK NSMutableDictionary *deserialize(NSData *data)
             free(tempData);
             
             // fetch value length
-            memcpy(&valueLength, &content[index + keyLength + 6U], 4U);
+            memcpy(&valueLength, &content[index + keyLength + 6U], sizeof(unsigned));
             // fetch value
             valueType = content[index + keyLength + 5U];
             switch (valueType) {
@@ -1320,7 +1320,7 @@ NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUIn
 NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned keyLength, unsigned valueLength)
 {
     double tempDouble = 0.0;
-    memcpy(&tempDouble, &content[offset + keyLength + 10U], 8U);
+    memcpy(&tempDouble, &content[offset + keyLength + 10U], sizeof(double));
     NSDate *result = [NSDate dateWithTimeIntervalSince1970:tempDouble];
     return result;
 }
@@ -1347,7 +1347,7 @@ NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, 
     while (arrayOffset <= arrayBound) {
         // fetch value length
         unsigned itemLength = 0U;
-        memcpy(&itemLength, &content[arrayOffset + 1U], 4U);
+        memcpy(&itemLength, &content[arrayOffset + 1U], sizeof(unsigned));
         
         // fetch value
         switch (content[arrayOffset]) {
@@ -1420,7 +1420,8 @@ NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
         offset = (unsigned)file.offsetInFile;
         // get length of key
         data = [NSMutableData dataWithData:[file readDataOfLength:9U]];
-        [[data subdataWithRange:NSMakeRange(8U, 1U)] getBytes:&length length:1U];
+        const unsigned char *buffer = data.bytes;
+        memcpy(&length, &buffer[8], sizeof(unsigned char));
         
         // read data of schema name
         [data appendData:[file readDataOfLength:length]];
@@ -1463,14 +1464,15 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
         unsigned documentLength = 0U;
         unsigned blockLength = 0U;
         NSData *indexData = [fileIndex readDataOfLength:12U];
+        const unsigned char *buffer = indexData.bytes;
         
-        [[indexData subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&documentLength length:sizeof(documentLength)];
+        memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
             [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
-        [[indexData subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&documentOffset length:sizeof(documentOffset)];
-        [[indexData subdataWithRange:NSMakeRange(8U, 4U)] getBytes:&blockLength length:sizeof(blockLength)];
+        memcpy(&documentOffset, buffer, sizeof(documentOffset));
+        memcpy(&blockLength, &buffer[8], sizeof(blockLength));
         
         // read document
         [fileDocument seekToFileOffset:documentOffset];
@@ -1497,6 +1499,7 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
 
 /**
  Load indexes in this collection for search data.
+ This method will be invoked when user created a new Index.
  @param schema the new schema
  @param schemas _schemas
  @param clearedIndexBlock _clearedIndexBlock
@@ -1523,14 +1526,15 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         unsigned documentLength = 0U;
         unsigned blockLength = 0U;
         NSData *indexData = [fileIndex readDataOfLength:12U];
+        const unsigned char *buffer = indexData.bytes;
         
-        [[indexData subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&documentLength length:sizeof(documentLength)];
+        memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
             [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
-        [[indexData subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&documentOffset length:sizeof(documentOffset)];
-        [[indexData subdataWithRange:NSMakeRange(8U, 4U)] getBytes:&blockLength length:sizeof(blockLength)];
+        memcpy(&documentOffset, buffer, sizeof(documentOffset));
+        memcpy(&blockLength, &buffer[8], sizeof(blockLength));
         
         // read document
         [fileDocument seekToFileOffset:documentOffset];

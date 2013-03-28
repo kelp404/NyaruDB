@@ -36,9 +36,10 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 {
     self = [super init];
     if (self) {
-        [[data subdataWithRange:NSMakeRange(0U, 4U)] getBytes:&_previousOffsetInFile length:4U];
-        [[data subdataWithRange:NSMakeRange(4U, 4U)] getBytes:&_nextOffsetInFile length:4U];
-        _name = [[NSString alloc] initWithData:[data subdataWithRange:NSMakeRange(9U, data.length - 9U)] encoding:NSUTF8StringEncoding];
+        const unsigned char *buffer = data.bytes;
+        memcpy(&_previousOffsetInFile, buffer, sizeof(unsigned));
+        memcpy(&_nextOffsetInFile, &buffer[4], sizeof(unsigned));
+        _name = [[NSString alloc] initWithBytes:&buffer[9] length:(data.length - 9U) encoding:NSUTF8StringEncoding];
         _offsetInFile = offset;
         _unique = [_name isEqualToString:NYARU_KEY];
         
