@@ -26,7 +26,7 @@
     @try {
         db = [NyaruDB instance];
     }
-    @catch (NSException *exception) {
+    @catch (__unused NSException *exception) {
         [NyaruDB reset];
         db = [NyaruDB instance];
     }

@@ -54,7 +54,7 @@ static NyaruDB *_instance;
     @try {
         if (_instance) { [_instance removeAllCollections]; }
     }
-    @catch (NSException *exception) { }
+    @catch (__unused NSException *exception) { }
     _instance = nil;
     
     NSString *path = ((NSArray *)NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)).lastObject;

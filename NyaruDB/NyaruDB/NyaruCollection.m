@@ -1393,7 +1393,7 @@ NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruK
         result = deserialize(documentData);
         [documentCache setObject:result forKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
     }
-    @catch (NSException *exception) { }
+    @catch (__unused NSException *exception) { }
     
     return result;
 }
