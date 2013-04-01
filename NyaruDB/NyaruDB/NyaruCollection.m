@@ -43,6 +43,9 @@ NYARU_BURST_LINK NSString *deserializeString(const unsigned char *content, NSUIn
 NYARU_BURST_LINK NSDate *deserializeDate(const unsigned char *content, NSUInteger offset, unsigned keyLength, unsigned valueLength);
 NYARU_BURST_LINK NSNumber *deserializeNumber(const unsigned char *content, NSUInteger offset, unsigned keyLength, unsigned valueLength);
 NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, NSUInteger offset, unsigned keyLength, unsigned valueLength);
+NYARU_BURST_LINK NSString *deserializeArrayString(const unsigned char *content, NSUInteger offset, unsigned valueLength);
+NYARU_BURST_LINK NSDate *deserializeArrayDate(const unsigned char *content, NSUInteger offset, unsigned valueLength);
+NYARU_BURST_LINK NSNumber *deserializeArrayNumber(const unsigned char *content, NSUInteger offset, unsigned valueLength);
 
 #pragma mark - fetch
 NYARU_BURST_LINK NSMutableDictionary *fetchDocumentWithNyaruKey(NyaruKey *nyaruKey, NSCache *documentCache, NSFileHandle *fileDocument);
@@ -1352,20 +1355,48 @@ NYARU_BURST_LINK NSMutableArray *deserializeArray(const unsigned char *content, 
         // fetch value
         switch (content[arrayOffset]) {
             case 'S':   // NSString
-                [result addObject:deserializeString(content, arrayOffset, -5U, itemLength)];
+                [result addObject:deserializeArrayString(content, arrayOffset, itemLength)];
                 break;
             case 'T':   // NSDate
-                [result addObject:deserializeDate(content, arrayOffset, -5U, itemLength)];
+                [result addObject:deserializeArrayDate(content, arrayOffset, itemLength)];
                 break;
             case 'L':   // NSNull
                 [result addObject:[NSNull null]];
                 break;
             case 'N':   // NSNumber
-                [result addObject:deserializeNumber(content, arrayOffset, -5U, itemLength)];
+                [result addObject:deserializeArrayNumber(content, arrayOffset, itemLength)];
                 break;
         }
         arrayOffset += itemLength + 5U;
     }
+    return result;
+}
+NYARU_BURST_LINK NSString *deserializeArrayString(const unsigned char *content, NSUInteger offset, unsigned valueLength)
+{
+    if (valueLength <= 0U) {
+        return @"";
+    }
+    unsigned char *tempData = malloc(valueLength);
+    memcpy(tempData, &content[offset + 5U], valueLength);
+    NSString *result = [[NSString alloc] initWithBytes:tempData length:valueLength encoding:NSUTF8StringEncoding];
+    free(tempData);
+    return result;
+}
+NYARU_BURST_LINK NSDate *deserializeArrayDate(const unsigned char *content, NSUInteger offset, unsigned valueLength)
+{
+    double tempDouble = 0.0;
+    memcpy(&tempDouble, &content[offset + 5U], sizeof(double));
+    NSDate *result = [NSDate dateWithTimeIntervalSince1970:tempDouble];
+    return result;
+}
+NYARU_BURST_LINK NSNumber *deserializeArrayNumber(const unsigned char *content, NSUInteger offset, unsigned valueLength)
+{
+    if (valueLength <= 0U) { return @0; }
+    
+    unsigned char *tempData = malloc(valueLength);
+    memcpy(tempData, &content[offset + 6U], valueLength - 1U);
+    NSNumber *result = (NSNumber *)CFBridgingRelease(CFNumberCreate(NULL, content[offset + 5U], tempData));
+    free(tempData);
     return result;
 }
 
