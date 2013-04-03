@@ -20,6 +20,11 @@
     dispatch_queue_t _accessQueue;
     
     /**
+     If key is missing, null or empty then it will be generated in this dispatch.
+     */
+    dispatch_queue_t _keyGeneratorQueue;
+    
+    /**
      A field in the document for search.
      { key: schema name, value: NyaruSchema }
      */

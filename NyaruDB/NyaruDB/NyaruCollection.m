@@ -84,6 +84,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         _name = name;
         _idCount = 0U;
         _accessQueue = dispatch_queue_create([[NSString stringWithFormat:@"NyaruDB.Access.%@", name] cStringUsingEncoding:NSUTF8StringEncoding], NULL);
+        _keyGeneratorQueue = dispatch_queue_create("NyaruDB.key.generator", NULL);
         _documentCache = [NSCache new];
         [_documentCache setCountLimit:NYARU_CACHE_LIMIT];
         _clearedIndexBlock = [NSMutableArray new];
@@ -248,22 +249,18 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     }
     
     NSMutableDictionary *doc = [document mutableCopy];
-    if ([[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] || ((NSString *)[doc objectForKey:NYARU_KEY]).length == 0U) {
-        static const char map[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        char *keyPrefix = malloc(9U);
-        NSUInteger selector;
-        for (NSUInteger index = 0U; index < 8U; index++) {
-            selector = arc4random() % 52;
-            keyPrefix[index] = map[selector];
-        }
-        keyPrefix[8U] = '\0';
-        
-        time_t t;
-        time(&t);
-        mktime(gmtime(&t));
-        t = ((t << 16) & 0x7FFFFFFF) | (_idCount++ & 0xFFFF);
-        [doc setObject:[NSString stringWithFormat:@"%s%lu", keyPrefix, t] forKey:NYARU_KEY];
-        free(keyPrefix);
+    if ([doc objectForKey:NYARU_KEY] == nil ||
+            [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
+            [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
+        // If key is missing, null or empty then generate it.
+        dispatch_sync(_keyGeneratorQueue, ^{
+            // if generate in different dispatches, it may be the same.
+            CFUUIDRef uuid = CFUUIDCreate(NULL);
+            CFStringRef result = CFUUIDCreateString(NULL, uuid);
+            [doc setObject:[NSString stringWithString:(__bridge NSString *)result] forKey:NYARU_KEY];
+            CFRelease(result);
+            CFRelease(uuid);
+        });
     }
     
     // serialize document
@@ -294,9 +291,9 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
             
             // remove data in .index
-            unsigned data = 0U;
+            unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
-            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+            [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
             [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
@@ -381,9 +378,9 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
         
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
-        unsigned data = 0U;
+        unsigned zeroData = 0U;
         [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
-        [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+        [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
         [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
         
         for (NyaruSchema *schema in _schemas.allValues) {
@@ -405,9 +402,9 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             // remove cache
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
             
-            unsigned data = 0U;
+            unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
-            [fileIndex writeData:[NSData dataWithBytes:&data length:sizeof(data)]];
+            [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
             [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
@@ -589,6 +586,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     });
 #if IOS
     dispatch_release(_accessQueue);
+    dispatch_release(_keyGeneratorQueue);
 #endif
 }
 
