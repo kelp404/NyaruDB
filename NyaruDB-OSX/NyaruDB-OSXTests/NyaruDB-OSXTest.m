@@ -48,10 +48,10 @@
     STAssertEqualObjects([check objectForKey:@"null"], [doc objectForKey:@"null"], nil);
     STAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"sub"], [subDict objectForKey:@"sub"], nil);
     STAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"empty"], [subDict objectForKey:@"empty"], nil);
-    STAssertEqualObjects([[check objectForKey:@"array"] objectAtIndex:0], [array objectAtIndex:0], nil);
-    STAssertEqualObjects([[check objectForKey:@"array"] objectAtIndex:1], [array objectAtIndex:1], nil);
-    STAssertEqualObjects([[check objectForKey:@"array"] objectAtIndex:2], [array objectAtIndex:2], nil);
-    STAssertEqualObjects([[check objectForKey:@"array"] objectAtIndex:3], [array objectAtIndex:3], nil);
+    STAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:0]], nil);
+    STAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:1]], nil);
+    STAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:2]], nil);
+    STAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:3]], nil);
     
     [db close];
 }
