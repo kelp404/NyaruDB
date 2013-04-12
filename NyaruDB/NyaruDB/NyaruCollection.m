@@ -1219,7 +1219,7 @@ NYARU_BURST_LINK unsigned char *serializeArray(unsigned *length, NSArray *source
         else { continue; }
         
         NSUInteger offset = *length;
-        *length = itemLength + 5U;
+        *length += itemLength + 5U;
         if (offset == 0U) {  // first item
             buffer = malloc(*length);
         }
