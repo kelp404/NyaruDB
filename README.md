@@ -127,12 +127,12 @@ NyaruDB *db = [NyaruDB instance];
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *collection = [db collectionForName:@"collectionName"];
-NSDictionary *document = @{ @"email": @"kelp@phate.org",
+NSDictionary *document = @{@"email": @"kelp@phate.org",
     @"name": @"Kelp",
     @"phone": @"0123456789",
     @"date": [NSDate date],
     @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
-    @"number": @100 };
+    @"number": @100};
 [collection insert:document];
 ```
 
