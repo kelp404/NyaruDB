@@ -65,7 +65,7 @@ $ pod install
 ---
 ##Management Tool
 ####<a href="https://github.com/kelp404/NyaruDB-Control" target="_blank">NyaruDB Control</a>  
-<img src='https://raw.github.com/kelp404/NyaruDB-Control/master/_images/screenshot00.png' witdh='850px' height='501px'/>
+<img src='https://raw.github.com/kelp404/NyaruDB-Control/master/_images/screenshot00.png' witdh='850px' height='503px'/>
 
 
 
