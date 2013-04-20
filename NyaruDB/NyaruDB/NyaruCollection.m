@@ -584,7 +584,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         [_schemas removeAllObjects];
         [_clearedIndexBlock removeAllObjects];
     });
-#if IOS
+#if TARGET_OS_IPHONE
     dispatch_release(_accessQueue);
     dispatch_release(_keyGeneratorQueue);
 #endif
