@@ -58,6 +58,11 @@
  @param name collection name
  @return NyaruCollection / nil
  */
+- (NyaruCollection *)collection:(NSString *)name;
+/**
+ Please use [NyaruDB collection:name]
+ This method just for 1.3, It will be removed in 1.4.
+ */
 - (NyaruCollection *)collectionForName:(NSString *)name;
 /**
  Remove the collection with name.
