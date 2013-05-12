@@ -28,7 +28,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"test01"];
+    NyaruCollection *collection = [db collection:@"test01"];
     STAssertNotNil(collection, @"nil!!");
     [db removeCollection:@"test01"];
 }
@@ -36,7 +36,7 @@
 - (void)test02InsertAndRemoveDocument
 {
     NyaruDB *db = [NyaruDB instance];
-    NyaruCollection *collection = [db collectionForName:@"nya"];
+    NyaruCollection *collection = [db collection:@"nya"];
     [collection removeAll];
     STAssertEquals(collection.count, 0U, nil);
     
@@ -61,7 +61,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"nya"];
+    NyaruCollection *collection = [db collection:@"nya"];
     [collection removeAllindexes];
     STAssertEquals(collection.allIndexes.count, 1U, nil);
     [collection createIndex:@"updateTime"];
@@ -89,7 +89,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"04"];
-    NyaruCollection *co = [db collectionForName:@"04"];
+    NyaruCollection *co = [db collection:@"04"];
     [co createIndex:@"string"];
     
     for (NSInteger index = 0; index < 10; index++) {
@@ -137,7 +137,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"05"];
-    NyaruCollection *co = [db collectionForName:@"05"];
+    NyaruCollection *co = [db collection:@"05"];
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 10; index++) {
@@ -182,7 +182,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"06"];
-    NyaruCollection *co = [db collectionForName:@"06"];
+    NyaruCollection *co = [db collection:@"06"];
     [co createIndex:@"date"];
     
     for (NSInteger index = 1; index <= 10; index++) {
@@ -205,7 +205,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"07"];
-    NyaruCollection *co = [db collectionForName:@"07"];
+    NyaruCollection *co = [db collection:@"07"];
     
     NSDictionary *subDict = @{@"sub": @"data", @"empty": @""};
     NSArray *array = @[@"A", @-1, [NSNull null], @""];
@@ -237,7 +237,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"08"];
-    NyaruCollection *co = [db collectionForName:@"08"];
+    NyaruCollection *co = [db collection:@"08"];
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 32; index++) {
@@ -273,7 +273,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"09"];
-    NyaruCollection *co = [db collectionForName:@"09"];
+    NyaruCollection *co = [db collection:@"09"];
     [co createIndex:@"number"];
     [co createIndex:@"name"];
     
@@ -304,7 +304,7 @@
 - (void)test10Multithread
 {
     NyaruDB *db = [NyaruDB instance];
-    NyaruCollection *co = [db collectionForName:@"10"];
+    NyaruCollection *co = [db collection:@"10"];
     [co removeAll];
     
     dispatch_group_t group = dispatch_group_create();
@@ -334,7 +334,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"speed"];
+    NyaruCollection *collection = [db collection:@"speed"];
     [collection removeAll];
     [collection createIndex:@"group"];
     

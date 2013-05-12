@@ -30,7 +30,7 @@
         [NyaruDB reset];
         db = [NyaruDB instance];
     }
-    _co = [db collectionForName:@"demo"];
+    _co = [db collection:@"demo"];
     [_co createIndex:@"updateTime"];
     
     // set up date formatter
@@ -71,7 +71,7 @@
     NyaruDB *db = [NyaruDB instance];
     
     [db removeCollection:@"speed"];
-    NyaruCollection *collection = [db collectionForName:@"speed"];
+    NyaruCollection *collection = [db collection:@"speed"];
     [collection createIndex:@"group"];
     
     NSDate *timer = [NSDate date];
