@@ -127,6 +127,7 @@ NyaruCollection *collection = [db collection:@"collectionName"];
 
 
 ##Insert Data
+If there is a document has the same 'key', it will be replace with the new document. (update document)
 ```objective-c
 /* iOS */
 NyaruDB *db = [NyaruDB instance];
@@ -140,7 +141,7 @@ NSDictionary *document = @{@"email": @"kelp@phate.org",
     @"date": [NSDate date],
     @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
     @"number": @100};
-[collection insert:document];
+[collection put:document];
 ```
 
 
@@ -241,9 +242,9 @@ NyaruDB *db = [NyaruDB instance];
 // create collection
 NyaruCollection *co = [db collection:@"collectionName"];
 [co createIndex:@"number"];
-[co insert:@{@"number" : @100}];
-[co insert:@{@"number" : @200}];
-[co insert:@{@"number" : @10}];
+[co put:@{@"number" : @100}];
+[co put:@{@"number" : @200}];
+[co put:@{@"number" : @10}];
 
 // remove by query
 [[co where:@"number" equal:@10] remove];
@@ -299,8 +300,8 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (void)removeAllindexes;
 
 #pragma mark - Document
-// insert document
-- (NSMutableDictionary *)insert:(NSDictionary *)document;
+// put document
+- (NSMutableDictionary *)put:(NSDictionary *)document;
 // remove all documents (directly remove files)
 - (void)removeAll;
 // waiting for data writing

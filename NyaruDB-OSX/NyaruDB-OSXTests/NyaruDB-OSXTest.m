@@ -38,7 +38,7 @@
                           @"null": [NSNull null],
                           @"sub": subDict,
                           @"array": array};
-    [co insert:doc];
+    [co put:doc];
     [co waiteForWriting];
     [co clearCache];
     NSDictionary *check = co.all.fetch.lastObject;

@@ -41,12 +41,12 @@
     STAssertEquals(collection.count, 0U, nil);
     
     // insert with key
-    NSString *key = [[collection insert:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
+    NSString *key = [[collection put:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
     STAssertEquals(collection.count, 1U, nil);
     STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"data"], @"value", nil);
     
     // insert without key
-    key = [[collection insert:@{@"name": @"Kelp"}] objectForKey:@"key"];
+    key = [[collection put:@{@"name": @"Kelp"}] objectForKey:@"key"];
     STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", nil);
     // then remove it
     [[collection where:@"key" equal:key] remove];
@@ -79,9 +79,9 @@
     
     // insert document into collection which has other indexes
     NSDate *time = [NSDate date];
-    [collection insert:@{@"name": @"Kelp"}];
-    [collection insert:@{@"name": @"Kelp X", @"updateTime": time}];
-    [collection insert:@{@"name": @"Kelp"}];
+    [collection put:@{@"name": @"Kelp"}];
+    [collection put:@{@"name": @"Kelp X", @"updateTime": time}];
+    [collection put:@{@"name": @"Kelp"}];
     STAssertEqualObjects([[collection where:@"updateTime" equal:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", nil);
 }
 
@@ -93,9 +93,9 @@
     [co createIndex:@"string"];
     
     for (NSInteger index = 0; index < 10; index++) {
-        [co insert:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
+        [co put:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
     }
-    [co insert:@{@"string": @"B5", @"data": @"data00"}];
+    [co put:@{@"string": @"B5", @"data": @"data00"}];
     // count
     STAssertEquals([co where:@"string" equal:@"B0"].count, 1U, nil);
     STAssertEquals([co where:@"string" equal:@"B5"].count, 2U, nil);
@@ -141,9 +141,9 @@
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 10; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInteger:index], @"data": @"data00"}];
+        [co put:@{@"number": [NSNumber numberWithInteger:index], @"data": @"data00"}];
     }
-    [co insert:@{@"number": @5, @"data": @"data00"}];
+    [co put:@{@"number": @5, @"data": @"data00"}];
     // count
     STAssertEquals([co where:@"number" equal:@0].count, 1U, nil);
     STAssertEquals([co where:@"number" equal:@5].count, 2U, nil);
@@ -186,7 +186,7 @@
     [co createIndex:@"date"];
     
     for (NSInteger index = 1; index <= 10; index++) {
-        [co insert:@{@"date": [NSDate dateWithTimeIntervalSince1970:index * 100]}];
+        [co put:@{@"date": [NSDate dateWithTimeIntervalSince1970:index * 100]}];
     }
     for (NSUInteger index = 1; index <= 10; index++) {
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:index * 100];
@@ -216,7 +216,7 @@
                           @"null": [NSNull null],
                           @"sub": subDict,
                           @"array": array};
-    [co insert:doc];
+    [co put:doc];
     [co waiteForWriting];
     [co clearCache];
     NSDictionary *check = co.all.fetch.lastObject;
@@ -241,8 +241,8 @@
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 32; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
-        [co insert:@{}];
+        [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
+        [co put:@{}];
     }
     NSNumber *previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
@@ -278,9 +278,9 @@
     [co createIndex:@"name"];
     
     for (NSInteger index = 0; index < 100; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10],
+        [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 10],
          @"name": @"Kelp"}];
-        [co insert:@{@"name": @"cc"}];
+        [co put:@{@"name": @"cc"}];
     }
     
     NSNumber *previous = nil;
@@ -310,12 +310,12 @@
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (NSUInteger index = 0; index < 500; index++) {
-            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+            [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
         }
     });
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (NSUInteger index = 0; index < 500; index++) {
-            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+            [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
         }
     });
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -340,7 +340,7 @@
     
     NSDate *timer = [NSDate date];
     for (NSInteger loop = 0; loop < 1000; loop++) {
-        [collection insert:@{
+        [collection put:@{
          @"name": @"Test",
          @"url": @"https://github.com/Kelp404/NyaruDB",
          @"phone": @"0123456",
