@@ -241,6 +241,125 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 
 
 #pragma mark - Document
+- (NSMutableDictionary *)put:(NSDictionary *)document
+{
+    if (document == nil) {
+        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document could not be nil." userInfo:nil];
+        return nil;
+    }
+    
+    NSMutableDictionary *doc = [document mutableCopy];
+    if ([doc objectForKey:NYARU_KEY] == nil ||
+        [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
+        [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
+        // If key is missing, null or empty then generate it.
+        dispatch_sync(_keyGeneratorQueue, ^{
+            // if generate in different dispatches, it may be the same.
+            CFUUIDRef uuid = CFUUIDCreate(NULL);
+            CFStringRef result = CFUUIDCreateString(NULL, uuid);
+            [doc setObject:[NSString stringWithString:(__bridge NSString *)result] forKey:NYARU_KEY];
+            CFRelease(result);
+            CFRelease(uuid);
+        });
+    }
+    
+    // serialize document
+    __block NSData *docData = serialize(doc);
+    
+    if (docData.length == 0U) {
+        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document serialized failed." userInfo:nil];
+        return nil;
+    }
+    
+    // write data with GCD
+    dispatch_async(_accessQueue, ^(void) {
+        // document key
+        NSString *docKey = [doc objectForKey:NYARU_KEY];
+        
+        // io handle
+        NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
+        NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
+        
+        // check key is exist
+        NyaruKey *existKey = [((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:docKey];
+        if (existKey) {
+            // remove cache
+            [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
+            
+            // remove data in .index
+            unsigned zeroData = 0U;
+            [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
+            [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
+            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
+            
+            for (NyaruSchema *schema in _schemas.allValues) {
+                [schema removeWithKey:docKey];
+            }
+        }
+        
+        unsigned documentOffset = 0U;
+        unsigned documentLength = (unsigned)docData.length;
+        unsigned blockLength = 0U;
+        unsigned indexOffset = 0U;
+        
+        // get index offset
+        for (NSUInteger blockIndex = 0U; blockIndex < _clearedIndexBlock.count; blockIndex++) {
+            NyaruIndexBlock *block = [_clearedIndexBlock objectAtIndex:blockIndex];
+            if (block.blockLength >= documentLength) {
+                // old document block could be reuse
+                indexOffset = block.indexOffset;
+                
+                // read old document block offset
+                [fileIndex seekToFileOffset:indexOffset];
+                NSData *documentOffsetData = [fileIndex readDataOfLength:sizeof(documentOffset)];
+                memcpy(&documentOffset, documentOffsetData.bytes, sizeof(documentOffset));
+                [fileDocument seekToFileOffset:documentOffset];
+                
+                // if reuse document block, update index data
+                [fileIndex seekToFileOffset:indexOffset];
+                
+                [_clearedIndexBlock removeObjectAtIndex:blockIndex];
+                break;
+            }
+        }
+        if (indexOffset == 0U) {
+            documentOffset = (unsigned)[fileDocument seekToEndOfFile];
+            indexOffset = (unsigned)[fileIndex seekToEndOfFile];
+            blockLength = documentLength;
+        }
+        
+        // push key and index
+        for (NyaruSchema *schema in _schemas.allValues) {
+            if (schema.unique) {
+                NyaruKey *key = [[NyaruKey alloc] initWithIndexOffset:indexOffset
+                                                       documentOffset:documentOffset
+                                                       documentLength:documentLength
+                                                          blockLength:blockLength];
+                [schema pushNyaruKey:docKey nyaruKey:key];
+            }
+            else {
+                [schema pushNyaruIndex:docKey value:[doc objectForKey:schema.name]];
+            }
+        }
+        
+        // write document
+        [fileDocument writeData:docData];
+        [_documentCache setObject:doc forKey:[NSNumber numberWithUnsignedInt:documentOffset]];
+        
+        // write index
+        NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
+        [indexData appendBytes:&documentLength length:sizeof(documentLength)];
+        [indexData appendBytes:&blockLength length:sizeof(blockLength)];
+        [fileIndex writeData:indexData];
+        
+        // close files
+        [fileDocument closeFile];
+        [fileIndex closeFile];
+        docData = nil;
+    });
+    
+    return doc;
+}
 - (NSMutableDictionary *)insert:(NSDictionary *)document
 {
     if (document == nil) {

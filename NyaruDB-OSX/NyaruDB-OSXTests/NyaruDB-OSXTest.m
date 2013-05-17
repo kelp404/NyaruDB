@@ -17,7 +17,7 @@
 - (void)testInit
 {
     NyaruDB *db = [[NyaruDB alloc] initWithPath:PATH];
-    NyaruCollection *co = [db collectionForName:@"init"];
+    NyaruCollection *co = [db collection:@"init"];
     [co removeAll];
     
     [db close];
@@ -27,7 +27,7 @@
 {
     NyaruDB *db = [[NyaruDB alloc] initWithPath:PATH];
     [db removeCollection:@"07"];
-    NyaruCollection *co = [db collectionForName:@"07"];
+    NyaruCollection *co = [db collection:@"07"];
     
     NSDictionary *subDict = @{@"sub": @"data", @"empty": @""};
     NSArray *array = @[@"A", @-1, [NSNull null], @""];
@@ -38,7 +38,7 @@
                           @"null": [NSNull null],
                           @"sub": subDict,
                           @"array": array};
-    [co insert:doc];
+    [co put:doc];
     [co waiteForWriting];
     [co clearCache];
     NSDictionary *check = co.all.fetch.lastObject;

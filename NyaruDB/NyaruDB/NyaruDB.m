@@ -115,7 +115,7 @@ static NyaruDB *_instance;
 
 
 #pragma mark - Collection
-- (NyaruCollection *)collectionForName:(NSString *)name
+- (NyaruCollection *)collection:(NSString *)name
 {
     if (name == nil || name.length == 0U) { return nil; }
     
@@ -131,6 +131,10 @@ static NyaruDB *_instance;
         }
         return collection;
     }
+}
+- (NyaruCollection *)collectionForName:(NSString *)name
+{
+    return [self collection:name];
 }
 - (NSArray *)collections
 {

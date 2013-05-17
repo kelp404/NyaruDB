@@ -30,7 +30,7 @@
         [NyaruDB reset];
         db = [NyaruDB instance];
     }
-    _co = [db collectionForName:@"demo"];
+    _co = [db collection:@"demo"];
     [_co createIndex:@"updateTime"];
     
     // set up date formatter
@@ -58,7 +58,7 @@
 - (void)clickInsertDocument:(id)sender
 {
     NSInteger random = arc4random() % 100;
-    [_co insert:@{@"title": [NSString stringWithFormat:@"Nyaru %i", random],
+    [_co put:@{@"title": [NSString stringWithFormat:@"Nyaru %i", random],
      @"updateTime": [NSDate date]}];
     
     [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
@@ -71,12 +71,12 @@
     NyaruDB *db = [NyaruDB instance];
     
     [db removeCollection:@"speed"];
-    NyaruCollection *collection = [db collectionForName:@"speed"];
+    NyaruCollection *collection = [db collection:@"speed"];
     [collection createIndex:@"group"];
     
     NSDate *timer = [NSDate date];
     for (NSInteger loop = 0; loop < 1000; loop++) {
-        [collection insert:@{
+        [collection put:@{
          @"name": @"Test",
          @"url": @"https://github.com/Kelp404/NyaruDB",
          @"phone": @"0123456",

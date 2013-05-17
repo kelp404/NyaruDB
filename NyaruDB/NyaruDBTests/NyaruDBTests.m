@@ -28,7 +28,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"test01"];
+    NyaruCollection *collection = [db collection:@"test01"];
     STAssertNotNil(collection, @"nil!!");
     [db removeCollection:@"test01"];
 }
@@ -36,17 +36,17 @@
 - (void)test02InsertAndRemoveDocument
 {
     NyaruDB *db = [NyaruDB instance];
-    NyaruCollection *collection = [db collectionForName:@"nya"];
+    NyaruCollection *collection = [db collection:@"nya"];
     [collection removeAll];
     STAssertEquals(collection.count, 0U, nil);
     
     // insert with key
-    NSString *key = [[collection insert:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
+    NSString *key = [[collection put:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
     STAssertEquals(collection.count, 1U, nil);
     STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"data"], @"value", nil);
     
     // insert without key
-    key = [[collection insert:@{@"name": @"Kelp"}] objectForKey:@"key"];
+    key = [[collection put:@{@"name": @"Kelp"}] objectForKey:@"key"];
     STAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", nil);
     // then remove it
     [[collection where:@"key" equal:key] remove];
@@ -61,7 +61,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"nya"];
+    NyaruCollection *collection = [db collection:@"nya"];
     [collection removeAllindexes];
     STAssertEquals(collection.allIndexes.count, 1U, nil);
     [collection createIndex:@"updateTime"];
@@ -79,9 +79,9 @@
     
     // insert document into collection which has other indexes
     NSDate *time = [NSDate date];
-    [collection insert:@{@"name": @"Kelp"}];
-    [collection insert:@{@"name": @"Kelp X", @"updateTime": time}];
-    [collection insert:@{@"name": @"Kelp"}];
+    [collection put:@{@"name": @"Kelp"}];
+    [collection put:@{@"name": @"Kelp X", @"updateTime": time}];
+    [collection put:@{@"name": @"Kelp"}];
     STAssertEqualObjects([[collection where:@"updateTime" equal:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", nil);
 }
 
@@ -89,13 +89,13 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"04"];
-    NyaruCollection *co = [db collectionForName:@"04"];
+    NyaruCollection *co = [db collection:@"04"];
     [co createIndex:@"string"];
     
     for (NSInteger index = 0; index < 10; index++) {
-        [co insert:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
+        [co put:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
     }
-    [co insert:@{@"string": @"B5", @"data": @"data00"}];
+    [co put:@{@"string": @"B5", @"data": @"data00"}];
     // count
     STAssertEquals([co where:@"string" equal:@"B0"].count, 1U, nil);
     STAssertEquals([co where:@"string" equal:@"B5"].count, 2U, nil);
@@ -137,13 +137,13 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"05"];
-    NyaruCollection *co = [db collectionForName:@"05"];
+    NyaruCollection *co = [db collection:@"05"];
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 10; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInteger:index], @"data": @"data00"}];
+        [co put:@{@"number": [NSNumber numberWithInteger:index], @"data": @"data00"}];
     }
-    [co insert:@{@"number": @5, @"data": @"data00"}];
+    [co put:@{@"number": @5, @"data": @"data00"}];
     // count
     STAssertEquals([co where:@"number" equal:@0].count, 1U, nil);
     STAssertEquals([co where:@"number" equal:@5].count, 2U, nil);
@@ -182,11 +182,11 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"06"];
-    NyaruCollection *co = [db collectionForName:@"06"];
+    NyaruCollection *co = [db collection:@"06"];
     [co createIndex:@"date"];
     
     for (NSInteger index = 1; index <= 10; index++) {
-        [co insert:@{@"date": [NSDate dateWithTimeIntervalSince1970:index * 100]}];
+        [co put:@{@"date": [NSDate dateWithTimeIntervalSince1970:index * 100]}];
     }
     for (NSUInteger index = 1; index <= 10; index++) {
         NSDate *date = [NSDate dateWithTimeIntervalSince1970:index * 100];
@@ -205,7 +205,7 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"07"];
-    NyaruCollection *co = [db collectionForName:@"07"];
+    NyaruCollection *co = [db collection:@"07"];
     
     NSDictionary *subDict = @{@"sub": @"data", @"empty": @""};
     NSArray *array = @[@"A", @-1, [NSNull null], @""];
@@ -216,7 +216,7 @@
                           @"null": [NSNull null],
                           @"sub": subDict,
                           @"array": array};
-    [co insert:doc];
+    [co put:doc];
     [co waiteForWriting];
     [co clearCache];
     NSDictionary *check = co.all.fetch.lastObject;
@@ -237,12 +237,12 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"08"];
-    NyaruCollection *co = [db collectionForName:@"08"];
+    NyaruCollection *co = [db collection:@"08"];
     [co createIndex:@"number"];
     
     for (NSInteger index = 0; index < 32; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
-        [co insert:@{}];
+        [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 10]}];
+        [co put:@{}];
     }
     NSNumber *previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
@@ -273,14 +273,14 @@
 {
     NyaruDB *db = [NyaruDB instance];
     [db removeCollection:@"09"];
-    NyaruCollection *co = [db collectionForName:@"09"];
+    NyaruCollection *co = [db collection:@"09"];
     [co createIndex:@"number"];
     [co createIndex:@"name"];
     
     for (NSInteger index = 0; index < 100; index++) {
-        [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 10],
+        [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 10],
          @"name": @"Kelp"}];
-        [co insert:@{@"name": @"cc"}];
+        [co put:@{@"name": @"cc"}];
     }
     
     NSNumber *previous = nil;
@@ -304,18 +304,18 @@
 - (void)test10Multithread
 {
     NyaruDB *db = [NyaruDB instance];
-    NyaruCollection *co = [db collectionForName:@"10"];
+    NyaruCollection *co = [db collection:@"10"];
     [co removeAll];
     
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (NSUInteger index = 0; index < 500; index++) {
-            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+            [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
         }
     });
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         for (NSUInteger index = 0; index < 500; index++) {
-            [co insert:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
+            [co put:@{@"number": [NSNumber numberWithInt:arc4random() % 100], @"update": [NSDate date]}];
         }
     });
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -334,13 +334,13 @@
 {
     NyaruDB *db = [NyaruDB instance];
     
-    NyaruCollection *collection = [db collectionForName:@"speed"];
+    NyaruCollection *collection = [db collection:@"speed"];
     [collection removeAll];
     [collection createIndex:@"group"];
     
     NSDate *timer = [NSDate date];
     for (NSInteger loop = 0; loop < 1000; loop++) {
-        [collection insert:@{
+        [collection put:@{
          @"name": @"Test",
          @"url": @"https://github.com/Kelp404/NyaruDB",
          @"phone": @"0123456",

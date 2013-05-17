@@ -108,7 +108,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *collectioin = [db collectionForName:@"collectionName"];
+NyaruCollection *collectioin = [db collection:@"collectionName"];
 ```
 
 
@@ -119,7 +119,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *collection = [db collectionForName:@"collectionName"];
+NyaruCollection *collection = [db collection:@"collectionName"];
 [collection createIndex:@"email"];
 [collection createIndex:@"number"];
 [collection createIndex:@"date"];
@@ -127,20 +127,21 @@ NyaruCollection *collection = [db collectionForName:@"collectionName"];
 
 
 ##Insert Data
+If there is a document has the same 'key', it will be replace with the new document. (update document)
 ```objective-c
 /* iOS */
 NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *collection = [db collectionForName:@"collectionName"];
+NyaruCollection *collection = [db collection:@"collectionName"];
 NSDictionary *document = @{@"email": @"kelp@phate.org",
     @"name": @"Kelp",
     @"phone": @"0123456789",
     @"date": [NSDate date],
     @"text": @"(」・ω・)」うー！(／・ω・)／にゃー！",
     @"number": @100};
-[collection insert:document];
+[collection put:document];
 ```
 
 
@@ -159,7 +160,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 NSArray *documents = [[co where:@"key" equal:@"IjkhMGIT752091136"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
@@ -174,7 +175,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 NSDate *date = [NSDate date];
 NSArray *documents = [[[co where:@"date" greater:date] orderByDESC:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
@@ -191,7 +192,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 NSDate *date = [NSDate date];
 NSArray *documents = [[[[co where:@"date" greater:date] and:@"type" equal:@2] orderBy:@"date"] fetch];
 for (NSMutableDictionary *document in documents) {
@@ -207,7 +208,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 NSArray *documents = [[[co where:@"type" equal:@1] union:@"type" equal:@3] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
@@ -222,7 +223,7 @@ NyaruDB *db = [NyaruDB instance];
 // /* OS X */
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 NSUInteger count = [[co where:@"type" equal:@1] count];
 NSLog(@"%u", count);
 ```
@@ -239,11 +240,11 @@ NyaruDB *db = [NyaruDB instance];
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 // create collection
-NyaruCollection *co = [db collectionForName:@"collectionName"];
+NyaruCollection *co = [db collection:@"collectionName"];
 [co createIndex:@"number"];
-[co insert:@{@"number" : @100}];
-[co insert:@{@"number" : @200}];
-[co insert:@{@"number" : @10}];
+[co put:@{@"number" : @100}];
+[co put:@{@"number" : @200}];
+[co put:@{@"number" : @10}];
 
 // remove by query
 [[co where:@"number" equal:@10] remove];
@@ -283,7 +284,7 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 
 
 - (NSArray *)collections;
-- (NyaruCollection *)collectionForName:(NSString *)name;
+- (NyaruCollection *)collection:(NSString *)name;
 
 - (void)removeCollection:(NSString *)name;
 - (void)removeAllCollections;
@@ -299,8 +300,8 @@ NyaruCollection *co = [db collectionForName:@"collectionName"];
 - (void)removeAllindexes;
 
 #pragma mark - Document
-// insert document
-- (NSMutableDictionary *)insert:(NSDictionary *)document;
+// put document
+- (NSMutableDictionary *)put:(NSDictionary *)document;
 // remove all documents (directly remove files)
 - (void)removeAll;
 // waiting for data writing
