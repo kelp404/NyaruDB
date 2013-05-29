@@ -1084,6 +1084,7 @@ NYARU_BURST_LINK NSMutableArray *filterLike(NSArray *allIndexes, NSString *targe
  ([0, 2, 4], target=3) => (1, 0)
  ([0, 2, 4], target=4) => (2, 1)
  ([0, 2, 4], target=5) => (2, 0)
+ ([0, 2, 4, 6], target=5) => (2, 0)
  */
 NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaType type)
 {
@@ -1135,18 +1136,20 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
         
         switch (compResult) {
             case NSOrderedSame:
-                // target == array[targetIndex]
+                // array[targetIndex] = target
                 return NSMakeRange(targetIndex, 1U);
             case NSOrderedDescending:
-                // index.value < array[targetIndex]
+                // array[targetIndex] > target
                 downBound = targetIndex - 1U;
                 targetIndex = (upBound + downBound) / 2U;
                 break;
             case NSOrderedAscending:
-                // index.value > array[targetIndex]
+                // array[targetIndex] < target
                 upBound = targetIndex + 1U;
                 targetIndex = (upBound + downBound) / 2U;
-                if (targetIndex < upBound) { targetIndex = upBound; }
+                if (targetIndex < upBound) {    // last
+                    return NSMakeRange(targetIndex, 0U);
+                }
                 break;
         }
     }

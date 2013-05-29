@@ -330,6 +330,23 @@
     STAssertEquals(co.all.count, 1000U, nil);
 }
 
+- (void)test11GreaterQuery
+{
+    NyaruDB *db = [NyaruDB instance];
+    
+    NyaruCollection *co = [db collection:@"s11"];
+    [co removeAll];
+    [co createIndex:@"n"];
+    
+    [co put:@{@"n": @0}];
+    [co put:@{@"n": @1}];
+    [co put:@{@"n": @2}];
+    [co put:@{@"n": @4}];
+    [co put:@{@"n": @6}];
+    
+    STAssertEquals([co where:@"n" greater:@5].count, 1U, nil);
+}
+
 - (void)test20Speed
 {
     NyaruDB *db = [NyaruDB instance];
