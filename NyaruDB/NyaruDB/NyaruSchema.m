@@ -59,7 +59,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 {
     self = [super init];
     if (self) {
-        if (!name || name.length == 0U) {
+        if (name.length == 0U) {
             return nil;
         }
         if ([name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > 0xffU) {

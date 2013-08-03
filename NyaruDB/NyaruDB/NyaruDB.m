@@ -117,7 +117,7 @@ static NyaruDB *_instance;
 #pragma mark - Collection
 - (NyaruCollection *)collection:(NSString *)name
 {
-    if (!name || name.length == 0U) { return nil; }
+    if (name.length == 0U) { return nil; }
     
     NyaruCollection *result = [_collections objectForKey:name];
     if (result) {

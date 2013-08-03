@@ -77,7 +77,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 {
     self = [super init];
     if (self) {
-        if (!name || name.length == 0U) {
+        if (name.length == 0U) {
             @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"name is nil or empty." userInfo:nil]);
         }
         
@@ -172,7 +172,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)createIndex:(NSString *)indexName
 {
-    if (!indexName || indexName.length == 0U) { return; }
+    if (indexName.length == 0U) { return; }
     
     dispatch_async(_accessQueue, ^{
         // check exist
