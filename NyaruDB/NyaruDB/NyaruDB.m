@@ -42,7 +42,7 @@ static NyaruDB *_instance;
 + (id)instance
 {
     @synchronized(_instance) {
-        if (_instance == nil) {
+        if (!_instance) {
             _instance = [self new];
         }
         return _instance;
@@ -117,7 +117,7 @@ static NyaruDB *_instance;
 #pragma mark - Collection
 - (NyaruCollection *)collection:(NSString *)name
 {
-    if (name == nil || name.length == 0U) { return nil; }
+    if (!name || name.length == 0U) { return nil; }
     
     NyaruCollection *result = [_collections objectForKey:name];
     if (result) {
