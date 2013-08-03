@@ -65,7 +65,6 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 
 @implementation NyaruCollection
 
-@synthesize name = _name;
 
 #pragma mark - Init
 /**

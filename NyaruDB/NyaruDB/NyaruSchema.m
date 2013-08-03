@@ -23,13 +23,6 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 
 @implementation NyaruSchema
 
-@synthesize name = _name;
-@synthesize offsetInFile = _offsetInFile;
-@synthesize previousOffsetInFile = _previousOffsetInFile;
-@synthesize nextOffsetInFile = _nextOffsetInFile;
-@synthesize unique = _unique;
-@synthesize schemaType = _schemaType;
-
 
 #pragma mark - Init
 - (id)initWithData:(NSData *)data andOffset:(unsigned)offset

@@ -10,8 +10,6 @@
 
 @implementation NyaruIndex
 
-@synthesize keySet = _keySet;
-@synthesize value = _value;
 
 - (id)init
 {
