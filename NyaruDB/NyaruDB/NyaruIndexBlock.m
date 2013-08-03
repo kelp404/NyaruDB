@@ -10,9 +10,6 @@
 
 @implementation NyaruIndexBlock
 
-@synthesize indexOffset = _indexOffset;
-@synthesize blockLength = _blockLength;
-
 
 /**
  Get a NyaruIndexBlock instance.

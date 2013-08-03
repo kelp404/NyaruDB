@@ -13,7 +13,6 @@
 
 @implementation NyaruQuery
 
-@synthesize queries = _queries;
 
 - (id)init
 {

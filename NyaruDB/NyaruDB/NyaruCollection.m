@@ -65,7 +65,6 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 
 @implementation NyaruCollection
 
-@synthesize name = _name;
 
 #pragma mark - Init
 /**
@@ -77,7 +76,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 {
     self = [super init];
     if (self) {
-        if (name == nil || name.length == 0U) {
+        if (name.length == 0U) {
             @throw([NSException exceptionWithName:NYARU_PRODUCT reason:@"name is nil or empty." userInfo:nil]);
         }
         
@@ -172,7 +171,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)createIndex:(NSString *)indexName
 {
-    if (indexName == nil || indexName.length == 0U) { return; }
+    if (indexName.length == 0U) { return; }
     
     dispatch_async(_accessQueue, ^{
         // check exist
@@ -233,7 +232,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)removeAllindexes
 {
-    for (NSString *index in [self allIndexes]) {
+    for (NSString *index in self.allIndexes) {
         if ([index isEqualToString:NYARU_KEY]) { continue; }
         [self removeIndex:index];
     }
@@ -243,13 +242,13 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 #pragma mark - Document
 - (NSMutableDictionary *)put:(NSDictionary *)document
 {
-    if (document == nil) {
+    if (!document) {
         @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document could not be nil." userInfo:nil];
         return nil;
     }
     
     NSMutableDictionary *doc = [document mutableCopy];
-    if ([doc objectForKey:NYARU_KEY] == nil ||
+    if (![doc objectForKey:NYARU_KEY] ||
         [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
         [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
         // If key is missing, null or empty then generate it.
@@ -362,13 +361,13 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (NSMutableDictionary *)insert:(NSDictionary *)document
 {
-    if (document == nil) {
+    if (!document) {
         @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document could not be nil." userInfo:nil];
         return nil;
     }
     
     NSMutableDictionary *doc = [document mutableCopy];
-    if ([doc objectForKey:NYARU_KEY] == nil ||
+    if (![doc objectForKey:NYARU_KEY] ||
             [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
             [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
         // If key is missing, null or empty then generate it.
@@ -749,7 +748,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
                 [resultKeys addObjectsFromArray:[(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allKeys];
             }
         }
-        else if (schema == nil) { continue; }
+        else if (!schema) { continue; }
         else if (query.operation == NyaruQueryOrderASC || query.operation == NyaruQueryOrderDESC) {
             // sort operation
             sortQuery = query;
@@ -837,7 +836,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
     else if ([query.value isKindOfClass:NSNumber.class]) { queryType = NyaruSchemaTypeNumber; }
     else if ([query.value isKindOfClass:NSString.class]) { queryType = NyaruSchemaTypeString; }
     else if ([query.value isKindOfClass:NSDate.class]) { queryType = NyaruSchemaTypeDate; }
-    else if (query.value == nil) { queryType = NyaruSchemaTypeNil; query.value = [NSNull null]; }
+    else if (!query.value) { queryType = NyaruSchemaTypeNil; query.value = [NSNull null]; }
     else { queryType = NyaruSchemaTypeString; query.value = [NSString stringWithFormat:@"%@", query.value]; }
     
     if (queryType != NyaruSchemaTypeNil && schema.schemaType != queryType) {
@@ -858,7 +857,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
         case NyaruQueryUnequal:
             if (queryType == NyaruSchemaTypeNil) {
                 for (NyaruIndex *index in schema.allNotNilIndexes) {
-                    [result addObject:[[index keySet] allObjects]];
+                    [result addObject:[index keySet].allObjects];
                 }
             }
             else {
@@ -885,7 +884,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
         case NyaruQueryGreater:
             if (queryType == NyaruSchemaTypeNil) {
                 for (NyaruIndex *index in schema.allNotNilIndexes) {
-                    [result addObject:[[index keySet] allObjects]];
+                    [result addObject:[index keySet].allObjects];
                 }
             }
             else { return filterGreater(schema.allNotNilIndexes, query.value, queryType, NO); }
@@ -894,7 +893,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
             if (queryType == NyaruSchemaTypeNil) {
                 [result addObjectsFromArray:schema.allNilIndexes];
                 for (NyaruIndex *index in schema.allNotNilIndexes) {
-                    [result addObject:[[index keySet] allObjects]];
+                    [result addObject:[index keySet].allObjects];
                 }
             }
             else { return filterGreater(schema.allNotNilIndexes, query.value, queryType, YES); }
@@ -924,7 +923,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, Nya
     if ((query.operation & NyaruQueryOrderDESC) == NyaruQueryOrderDESC) {
         // DESC
         for (NyaruIndex *index in schema.allNotNilIndexes) {
-            for (NSString *key in [[index keySet] allObjects]) {
+            for (NSString *key in [index keySet].allObjects) {
                 [result insertObject:key atIndex:0U];
             }
         }
@@ -934,7 +933,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithSortByIndexValue(NyaruSchema *schema, Nya
         // ASC
         [result addObjectsFromArray:schema.allNilIndexes];
         for (NyaruIndex *index in schema.allNotNilIndexes) {
-            [result addObjectsFromArray:[[index keySet] allObjects]];
+            [result addObjectsFromArray:[index keySet].allObjects];
         }
     }
     
@@ -982,7 +981,7 @@ NYARU_BURST_LINK NSMutableArray *filterUnequal(NSArray *allIndexes, id target, N
     else {
         // no equal value
         for (NyaruIndex *index in allIndexes) {
-            [result addObjectsFromArray:index.keySet.allObjects];
+            [result addObjectsFromArray:[index keySet].allObjects];
         }
     }
     

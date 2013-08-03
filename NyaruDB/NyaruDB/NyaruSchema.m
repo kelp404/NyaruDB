@@ -23,13 +23,6 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 
 @implementation NyaruSchema
 
-@synthesize name = _name;
-@synthesize offsetInFile = _offsetInFile;
-@synthesize previousOffsetInFile = _previousOffsetInFile;
-@synthesize nextOffsetInFile = _nextOffsetInFile;
-@synthesize unique = _unique;
-@synthesize schemaType = _schemaType;
-
 
 #pragma mark - Init
 - (id)initWithData:(NSData *)data andOffset:(unsigned)offset
@@ -59,7 +52,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 {
     self = [super init];
     if (self) {
-        if (name == nil || name.length == 0U) {
+        if (name.length == 0U) {
             return nil;
         }
         if ([name lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > 0xffU) {
@@ -163,7 +156,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 }
 - (void)pushNyaruIndex:(NSString *)key value:(id)value
 {
-    if ([value isKindOfClass:NSNull.class] || value == nil) {
+    if ([value isKindOfClass:NSNull.class] || !value) {
         [_indexNil addObject:key];
         return;
     }

@@ -246,7 +246,7 @@
     }
     NSNumber *previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
-        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
             if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
@@ -258,7 +258,7 @@
     
     previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderByDESC:@"number"] fetch]) {
-        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
             if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedAscending) {
@@ -287,7 +287,7 @@
     NSArray *documents = [[[[[co where:@"number" greaterEqual:@6] union:@"number" equal:@5] and:@"name" equal:@"kelp"] orderBy:@"number"] fetch];
     STAssertEquals(documents.count > 0, true, nil);
     for (NSMutableDictionary *doc in documents) {
-        if ([doc objectForKey:@"number"] == nil || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
             if ([@4 compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {

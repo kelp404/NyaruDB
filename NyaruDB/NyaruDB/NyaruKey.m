@@ -10,10 +10,6 @@
 
 @implementation NyaruKey
 
-@synthesize indexOffset = _indexOffset;
-@synthesize documentOffset = _documentOffset;
-@synthesize documentLength = _documentLength;
-@synthesize blockLength = _blockLength;
 
 - (id)initWithIndexOffset:(unsigned)index documentOffset:(unsigned)offset documentLength:(unsigned)length blockLength:(unsigned)blockLength
 {
