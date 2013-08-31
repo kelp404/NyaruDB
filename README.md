@@ -305,7 +305,7 @@ NyaruCollection *co = [db collection:@"collectionName"];
 // remove all documents (directly remove files)
 - (void)removeAll;
 // waiting for data writing
-- (void)waiteForWriting;
+- (void)waitForWriting;
 // clear cache
 - (void)clearCache;
 
