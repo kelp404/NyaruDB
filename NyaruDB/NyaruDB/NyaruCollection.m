@@ -482,7 +482,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     
     return doc;
 }
-- (void)waiteForWriting
+- (void)waitForWriting
 {
     dispatch_sync(_accessQueue, ^{ });
 }

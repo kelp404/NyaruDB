@@ -217,7 +217,7 @@
                           @"sub": subDict,
                           @"array": array};
     [co put:doc];
-    [co waiteForWriting];
+    [co waitForWriting];
     [co clearCache];
     NSDictionary *check = co.all.fetch.lastObject;
     STAssertEqualObjects([check objectForKey:@"key"], [doc objectForKey:@"key"], nil);
@@ -371,7 +371,7 @@
     NSLog(@"------------------------------------------------");
     NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
     NSLog(@"------------------------------------------------");
-    [collection waiteForWriting];
+    [collection waitForWriting];
     
     timer = [NSDate date];
     if (collection.all.fetch) { };

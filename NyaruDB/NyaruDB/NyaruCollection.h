@@ -97,7 +97,7 @@
  It will be removed in 1.4.
  */
 - (NSMutableDictionary *)insert:(NSDictionary *)document;
-- (void)waiteForWriting;
+- (void)waitForWriting;
 #pragma mark Remove
 - (void)removeByKey:(NSString *)documentKey;
 - (void)removeByQuery:(NSArray *)queries;

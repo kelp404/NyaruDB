@@ -90,7 +90,7 @@
     NSLog(@"------------------------------------------------");
     NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
     NSLog(@"------------------------------------------------");
-    [collection waiteForWriting];
+    [collection waitForWriting];
     
     timer = [NSDate date];
     if (collection.all.fetch) { }
