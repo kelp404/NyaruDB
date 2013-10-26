@@ -1,4 +1,4 @@
 [submodule "xctool"]
 	path = xctool
-	url = git@github.com:facebook/xctool.git
+	url = https://github.com/facebook/xctool.git
 	ignore = dirty
