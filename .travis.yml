@@ -2,6 +2,7 @@ language: objective-c
 
 script:
   - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB -sdk iphonesimulator build
-  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB test -test-sdk iphonesimulator
+# not support iphonesimulator on Travis-CI
+#  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB test -test-sdk iphonesimulator
   - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX build
   - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX test
