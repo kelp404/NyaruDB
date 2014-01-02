@@ -132,10 +132,6 @@ static NyaruDB *_instance;
         return collection;
     }
 }
-- (NyaruCollection *)collectionForName:(NSString *)name
-{
-    return [self collection:name];
-}
 - (NSArray *)collections
 {
     return _collections.allValues;
