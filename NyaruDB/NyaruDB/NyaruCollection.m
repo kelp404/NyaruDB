@@ -788,7 +788,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
     return result;
 }
 /**
- Get all NyaruIndexe.key in the schema and sort these by NyaruIndex.value.
+ Get all NyaruIndex.key in the schema and sort these by NyaruIndex.value.
  @param schema NyaruSchema
  @param query NyaruQueryCell
  @return @[NyaruIndex.key]
