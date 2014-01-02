@@ -503,42 +503,42 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (NyaruQuery *)all
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query unionAll];
+    return [query orAll];
 }
 - (NyaruQuery *)where:(NSString *)indexName equal:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName equal:value];
+    return [query or:indexName equal:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName notEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName notEqual:value];
+    return [query or:indexName notEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName less:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName less:value];
+    return [query or:indexName less:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName lessEqual:value];
+    return [query or:indexName lessEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName greater:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greater:value];
+    return [query or:indexName greater:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greaterEqual:value];
+    return [query or:indexName greaterEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName like:value];
+    return [query or:indexName like:value];
 }
 
 

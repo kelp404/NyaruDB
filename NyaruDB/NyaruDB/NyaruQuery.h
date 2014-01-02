@@ -39,14 +39,14 @@
 - (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Union
-- (NyaruQuery *)unionAll;
-- (NyaruQuery *)union:(NSString *)indexName equal:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName less:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greater:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value;
+- (NyaruQuery *)orAll;
+- (NyaruQuery *)or:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;

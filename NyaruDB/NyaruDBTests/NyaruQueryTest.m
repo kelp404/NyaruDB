@@ -16,7 +16,7 @@
 - (void)testQueryEqual
 {
     NyaruQuery *query = [NyaruQuery new];
-    query = [[query and:@"key" equal:@"a"] union:@"key" equal:@"b"];
+    query = [[query and:@"key" equal:@"a"] or:@"key" equal:@"b"];
     
     STAssertEqualObjects([(NyaruQueryCell *)[query.queries objectAtIndex:0] schemaName], @"key", nil);
     STAssertEquals([(NyaruQueryCell *)[query.queries objectAtIndex:0] operation], NyaruQueryIntersection | NyaruQueryEqual, nil);
@@ -30,7 +30,7 @@
 - (void)testQueryNotEqual
 {
     NyaruQuery *query = [NyaruQuery new];
-    query = [[query and:@"name" notEqual:@"a"] union:@"group" notEqual:@10];
+    query = [[query and:@"name" notEqual:@"a"] or:@"group" notEqual:@10];
     
     STAssertEqualObjects([(NyaruQueryCell *)[query.queries objectAtIndex:0] schemaName], @"name", nil);
     STAssertEquals([(NyaruQueryCell *)[query.queries objectAtIndex:0] operation], NyaruQueryIntersection | NyaruQueryUnequal, nil);
@@ -44,7 +44,7 @@
 - (void)testQueryGreater
 {
     NyaruQuery *query = [NyaruQuery new];
-    query = [[query and:@"number" greater:@10] union:@"group" greaterEqual:@12];
+    query = [[query and:@"number" greater:@10] or:@"group" greaterEqual:@12];
     
     STAssertEqualObjects([(NyaruQueryCell *)[query.queries objectAtIndex:0] schemaName], @"number", nil);
     STAssertEquals([(NyaruQueryCell *)[query.queries objectAtIndex:0] operation], NyaruQueryIntersection | NyaruQueryGreater, nil);
@@ -58,7 +58,7 @@
 - (void)testQueryLess
 {
     NyaruQuery *query = [NyaruQuery new];
-    query = [[query and:@"number" less:@10] union:@"group" lessEqual:@12];
+    query = [[query and:@"number" less:@10] or:@"group" lessEqual:@12];
     
     STAssertEqualObjects([(NyaruQueryCell *)[query.queries objectAtIndex:0] schemaName], @"number", nil);
     STAssertEquals([(NyaruQueryCell *)[query.queries objectAtIndex:0] operation], NyaruQueryIntersection | NyaruQueryLess, nil);

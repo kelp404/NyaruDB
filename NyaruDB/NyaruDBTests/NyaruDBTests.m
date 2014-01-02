@@ -284,7 +284,7 @@
     }
     
     NSNumber *previous = nil;
-    NSArray *documents = [[[[[co where:@"number" greaterEqual:@6] union:@"number" equal:@5] and:@"name" equal:@"kelp"] orderBy:@"number"] fetch];
+    NSArray *documents = [[[[[co where:@"number" greaterEqual:@6] or:@"number" equal:@5] and:@"name" equal:@"kelp"] orderBy:@"number"] fetch];
     STAssertEquals(documents.count > 0, true, nil);
     for (NSMutableDictionary *doc in documents) {
         if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }

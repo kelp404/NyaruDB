@@ -150,7 +150,7 @@ The field of the document which is `key` or `index` supports search.
 `key` supports `equal`.  
 `index` supports `equal`, `notEqual`, `less`, `lessEqual`, `greater`, `greaterEqual` and `like`.  
 
-You could use `and`(Intersection) or `union` to append query.  
+You could use `and`(Intersection) or `or` to append query.  
 
 
 ```objective-c
@@ -209,7 +209,7 @@ NyaruDB *db = [NyaruDB instance];
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collection:@"collectionName"];
-NSArray *documents = [[[co where:@"type" equal:@1] union:@"type" equal:@3] fetch];
+NSArray *documents = [[[co where:@"type" equal:@1] or:@“type" equal:@3] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
@@ -336,13 +336,13 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Union
-- (NyaruQuery *)union:(NSString *)indexName equal:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName less:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greater:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value;
+- (NyaruQuery *)or:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;
