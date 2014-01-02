@@ -289,7 +289,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
+            [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
                 [schema removeWithKey:docKey];
@@ -376,7 +376,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         unsigned zeroData = 0U;
         [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
         [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-        [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+        [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
         
         for (NyaruSchema *schema in _schemas.allValues) {
             [schema removeWithKey:documentKey];
@@ -400,7 +400,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+            [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
                 [schema removeWithKey:documentKey];
@@ -1495,7 +1495,7 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
         
         memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
-            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
+            [clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         memcpy(&documentOffset, buffer, sizeof(documentOffset));
@@ -1557,7 +1557,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         
         memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
-            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
+            [clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         memcpy(&documentOffset, buffer, sizeof(documentOffset));

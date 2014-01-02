@@ -29,11 +29,6 @@
 		214AD5D0170306D20016B261 /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B3170306890016B261 /* NyaruQuery.h */; };
 		214AD5D1170306D20016B261 /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B5170306890016B261 /* NyaruQueryCell.h */; };
 		214AD5D2170306D20016B261 /* NyaruSchema.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B7170306890016B261 /* NyaruSchema.h */; };
-		214AD5E71703071B0016B261 /* NyaruQueryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 214AD5D4170306F90016B261 /* NyaruQueryTest.m */; };
-		214AD5E81703071B0016B261 /* NyaruSchemaTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 214AD5D6170306F90016B261 /* NyaruSchemaTest.m */; };
-		214AD5E91703071B0016B261 /* NyaruKeyTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 214AD5D8170306F90016B261 /* NyaruKeyTest.m */; };
-		214AD5EA1703071B0016B261 /* NyaruIndexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 214AD5DA170306F90016B261 /* NyaruIndexTest.m */; };
-		214AD5EB1703071B0016B261 /* NyaruIndexBlockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 214AD5DC170306F90016B261 /* NyaruIndexBlockTest.m */; };
 		21552D6A170307C900616FDA /* NyaruDB-OSXTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 21552D69170307C900616FDA /* NyaruDB-OSXTest.m */; };
 /* End PBXBuildFile section */
 
@@ -75,16 +70,6 @@
 		214AD5B6170306890016B261 /* NyaruQueryCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NyaruQueryCell.m; path = ../../NyaruDB/NyaruDB/NyaruQueryCell.m; sourceTree = "<group>"; };
 		214AD5B7170306890016B261 /* NyaruSchema.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NyaruSchema.h; path = ../../NyaruDB/NyaruDB/NyaruSchema.h; sourceTree = "<group>"; };
 		214AD5B8170306890016B261 /* NyaruSchema.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NyaruSchema.m; path = ../../NyaruDB/NyaruDB/NyaruSchema.m; sourceTree = "<group>"; };
-		214AD5D3170306F90016B261 /* NyaruQueryTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NyaruQueryTest.h; path = ../../NyaruDB/NyaruDBTests/NyaruQueryTest.h; sourceTree = "<group>"; };
-		214AD5D4170306F90016B261 /* NyaruQueryTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NyaruQueryTest.m; path = ../../NyaruDB/NyaruDBTests/NyaruQueryTest.m; sourceTree = "<group>"; };
-		214AD5D5170306F90016B261 /* NyaruSchemaTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NyaruSchemaTest.h; path = ../../NyaruDB/NyaruDBTests/NyaruSchemaTest.h; sourceTree = "<group>"; };
-		214AD5D6170306F90016B261 /* NyaruSchemaTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NyaruSchemaTest.m; path = ../../NyaruDB/NyaruDBTests/NyaruSchemaTest.m; sourceTree = "<group>"; };
-		214AD5D7170306F90016B261 /* NyaruKeyTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NyaruKeyTest.h; path = ../../NyaruDB/NyaruDBTests/NyaruKeyTest.h; sourceTree = "<group>"; };
-		214AD5D8170306F90016B261 /* NyaruKeyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NyaruKeyTest.m; path = ../../NyaruDB/NyaruDBTests/NyaruKeyTest.m; sourceTree = "<group>"; };
-		214AD5D9170306F90016B261 /* NyaruIndexTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NyaruIndexTest.h; path = ../../NyaruDB/NyaruDBTests/NyaruIndexTest.h; sourceTree = "<group>"; };
-		214AD5DA170306F90016B261 /* NyaruIndexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NyaruIndexTest.m; path = ../../NyaruDB/NyaruDBTests/NyaruIndexTest.m; sourceTree = "<group>"; };
-		214AD5DB170306F90016B261 /* NyaruIndexBlockTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NyaruIndexBlockTest.h; path = ../../NyaruDB/NyaruDBTests/NyaruIndexBlockTest.h; sourceTree = "<group>"; };
-		214AD5DC170306F90016B261 /* NyaruIndexBlockTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NyaruIndexBlockTest.m; path = ../../NyaruDB/NyaruDBTests/NyaruIndexBlockTest.m; sourceTree = "<group>"; };
 		21552D68170307C900616FDA /* NyaruDB-OSXTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NyaruDB-OSXTest.h"; sourceTree = "<group>"; };
 		21552D69170307C900616FDA /* NyaruDB-OSXTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NyaruDB-OSXTest.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -188,16 +173,6 @@
 			children = (
 				21552D68170307C900616FDA /* NyaruDB-OSXTest.h */,
 				21552D69170307C900616FDA /* NyaruDB-OSXTest.m */,
-				214AD5D3170306F90016B261 /* NyaruQueryTest.h */,
-				214AD5D4170306F90016B261 /* NyaruQueryTest.m */,
-				214AD5D5170306F90016B261 /* NyaruSchemaTest.h */,
-				214AD5D6170306F90016B261 /* NyaruSchemaTest.m */,
-				214AD5D7170306F90016B261 /* NyaruKeyTest.h */,
-				214AD5D8170306F90016B261 /* NyaruKeyTest.m */,
-				214AD5D9170306F90016B261 /* NyaruIndexTest.h */,
-				214AD5DA170306F90016B261 /* NyaruIndexTest.m */,
-				214AD5DB170306F90016B261 /* NyaruIndexBlockTest.h */,
-				214AD5DC170306F90016B261 /* NyaruIndexBlockTest.m */,
 				214AD587170305AF0016B261 /* Supporting Files */,
 			);
 			path = "NyaruDB-OSXTests";
@@ -343,11 +318,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				214AD5E71703071B0016B261 /* NyaruQueryTest.m in Sources */,
-				214AD5E81703071B0016B261 /* NyaruSchemaTest.m in Sources */,
-				214AD5E91703071B0016B261 /* NyaruKeyTest.m in Sources */,
-				214AD5EA1703071B0016B261 /* NyaruIndexTest.m in Sources */,
-				214AD5EB1703071B0016B261 /* NyaruIndexBlockTest.m in Sources */,
 				21552D6A170307C900616FDA /* NyaruDB-OSXTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

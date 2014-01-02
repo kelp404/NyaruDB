@@ -27,11 +27,5 @@
     return self;
 }
 
-+ (NyaruIndexBlock *)indexBlockWithOffset:(unsigned)offset andLength:(unsigned)length
-{
-    NyaruIndexBlock *instance = [[NyaruIndexBlock alloc] initWithOffset:offset andLength:length];
-    return instance;
-}
-
 
 @end
