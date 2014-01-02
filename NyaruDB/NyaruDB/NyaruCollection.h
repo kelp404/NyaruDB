@@ -92,11 +92,6 @@
  @return: the put document.
  */
 - (NSMutableDictionary *)put:(NSDictionary *)document;
-/**
- Please use [NyaruCollection put:]
- It will be removed in 1.4.
- */
-- (NSMutableDictionary *)insert:(NSDictionary *)document;
 - (void)waitForWriting;
 #pragma mark Remove
 - (void)removeByKey:(NSString *)documentKey;
