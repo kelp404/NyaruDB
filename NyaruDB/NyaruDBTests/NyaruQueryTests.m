@@ -145,4 +145,98 @@
     XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
 }
 
+
+#pragma mark - or
+- (void)testOrEqual
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryEqual | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName equal:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrNotEqual
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryUnequal | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName notEqual:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrGreater
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryGreater | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName greater:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrGreaterEqual
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryGreaterEqual | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName greaterEqual:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrLess
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryLess | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName less:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrLessEqual
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryLessEqual | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName lessEqual:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+- (void)testOrLike
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryLike | NyaruQueryUnion;
+    cell.value = @"value";
+    [_query or:cell.schemaName like:cell.value];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertEqualObjects([_query.queries[0] value], cell.value, @"");
+}
+
+
 @end
