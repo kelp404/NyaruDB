@@ -25,8 +25,9 @@
 
 - (id)initWithCollection:(NyaruCollection *)collection
 {
-    self = [self init];
+    self = [super init];
     if (self) {
+        _queries = [NSMutableArray new];
         _collection = collection;
     }
     return self;
