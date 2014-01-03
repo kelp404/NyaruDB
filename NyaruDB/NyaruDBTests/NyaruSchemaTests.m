@@ -8,6 +8,8 @@
 
 #import <XCTest/XCTest.h>
 #import "NyaruSchema.h"
+#import "NyaruKey.h"
+
 
 @interface NyaruSchemaTests : XCTestCase {
     NyaruSchema *_ns;
@@ -31,6 +33,8 @@
     [super tearDown];
 }
 
+
+#pragma mark Schema.unique
 - (void)testUniqueOfSchemaAsKey
 {
     _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
@@ -40,6 +44,8 @@
     XCTAssertFalse(_ns.unique, @"");
 }
 
+
+#pragma mark Schema.schemaType
 - (void)testSchemaTypeString
 {
     _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
@@ -71,6 +77,21 @@
     XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@[@1]], @"");
 }
 
+
+#pragma mark Schema.allKeys
+- (void)testAllKeys
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
+    NyaruKey *nkA = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
+    NyaruKey *nkB = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
+    [_ns pushNyaruKey:@"a" nyaruKey:nkA];
+    [_ns pushNyaruKey:@"b" nyaruKey:nkB];
+    NSDictionary *assert = @{@"a": nkA, @"b": nkB};
+    XCTAssertEqualObjects(_ns.allKeys, assert, @"");
+}
+
+
+#pragma mark CreateSchema
 - (void)testCreateSchema
 {
     NyaruSchema *schema1 = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0U nextOffset:0U];
@@ -97,6 +118,8 @@
     XCTAssertEqual(schema2.schemaType, NyaruSchemaTypeUnknow, @"");
 }
 
+
+#pragma mark SchemaSerializer
 - (void)testSerializer
 {
     NyaruSchema *schema = [[NyaruSchema alloc] initWithName:@"key" previousOffser:10U nextOffset:30U];
