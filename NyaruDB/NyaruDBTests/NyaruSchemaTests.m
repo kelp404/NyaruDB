@@ -31,6 +31,46 @@
     [super tearDown];
 }
 
+- (void)testUniqueOfSchemaAsKey
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
+    XCTAssertTrue(_ns.unique, @"");
+    
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertFalse(_ns.unique, @"");
+}
+
+- (void)testSchemaTypeString
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:@"string"];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeString, @"");
+}
+
+- (void)testSchemaTypeNumber
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:@1];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeNumber, @"");
+}
+
+- (void)testSchemaTypeDate
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:[NSDate dateWithTimeIntervalSince1970:0]];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeDate, @"");
+}
+
+- (void)testSchemaTypeError
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@{@"a": @1}], @"");
+    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@[@1]], @"");
+}
+
 - (void)testCreateSchema
 {
     NyaruSchema *schema1 = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0U nextOffset:0U];
