@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import "NyaruSchema.h"
 #import "NyaruKey.h"
+#import "NyaruIndex.h"
 
 
 @interface NyaruSchemaTests : XCTestCase {
@@ -42,52 +43,6 @@
     
     _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
     XCTAssertFalse(_ns.unique, @"");
-}
-
-
-#pragma mark Schema.schemaType
-- (void)testSchemaTypeString
-{
-    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
-    [_ns pushNyaruIndex:@"000-000" value:@"string"];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeString, @"");
-}
-
-- (void)testSchemaTypeNumber
-{
-    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
-    [_ns pushNyaruIndex:@"000-000" value:@1];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeNumber, @"");
-}
-
-- (void)testSchemaTypeDate
-{
-    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
-    [_ns pushNyaruIndex:@"000-000" value:[NSDate dateWithTimeIntervalSince1970:0]];
-    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeDate, @"");
-}
-
-- (void)testSchemaTypeError
-{
-    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
-    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@{@"a": @1}], @"");
-    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@[@1]], @"");
-}
-
-
-#pragma mark Schema.allKeys
-- (void)testAllKeys
-{
-    _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
-    NyaruKey *nkA = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
-    NyaruKey *nkB = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
-    [_ns pushNyaruKey:@"a" nyaruKey:nkA];
-    [_ns pushNyaruKey:@"b" nyaruKey:nkB];
-    NSDictionary *assert = @{@"a": nkA, @"b": nkB};
-    XCTAssertEqualObjects(_ns.allKeys, assert, @"");
 }
 
 
@@ -132,6 +87,102 @@
     XCTAssertEqual(schema.offsetInFile, 20U, @"");
     XCTAssertEqual(schema.nextOffsetInFile, 30U, @"");
     XCTAssertEqual(schema.schemaType, NyaruSchemaTypeString, @"");
+}
+
+
+#pragma mark Schema.allKeys
+- (void)testAllKeys
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
+    NyaruKey *nkA = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
+    NyaruKey *nkB = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
+    [_ns pushNyaruKey:@"a" nyaruKey:nkA];
+    [_ns pushNyaruKey:@"b" nyaruKey:nkB];
+    NSDictionary *assert = @{@"a": nkA, @"b": nkB};
+    XCTAssertEqualObjects(_ns.allKeys, assert, @"");
+}
+
+
+#pragma mark Indexes of the Schema
+- (void)testAllNilIndexes
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqualObjects(_ns.allNilIndexes, @[], @"");
+    [_ns pushNyaruIndex:@"000-000" value:nil];
+    XCTAssertEqualObjects(_ns.allNilIndexes, @[@"000-000"], @"");
+    [_ns pushNyaruIndex:@"000-001" value:[NSNull null]];
+    NSArray *assert = @[@"000-000", @"000-001"];
+    XCTAssertEqualObjects(_ns.allNilIndexes, assert, @"");
+}
+
+- (void)testAllNotNilIndexes
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqualObjects(_ns.allNilIndexes, @[], @"");
+    
+    [_ns pushNyaruIndex:@"000-000" value:@"0"];
+    NyaruIndex *assert = [[NyaruIndex alloc] initWithIndexValue:@"0" key:@"000-000"];
+    XCTAssertEqualObjects([_ns.allNotNilIndexes[0] value], assert.value, @"");
+    XCTAssertEqualObjects([_ns.allNotNilIndexes[0] keySet], assert.keySet, @"");
+}
+
+
+#pragma mark Remove
+- (void)testRemoveAllKey
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"key" previousOffser:0 nextOffset:0];
+    NyaruKey *nkA = [[NyaruKey alloc] initWithIndexOffset:0 documentOffset:0 documentLength:0 blockLength:0];
+    [_ns pushNyaruKey:@"a" nyaruKey:nkA];
+    XCTAssertEqual(_ns.allKeys.count, 1U, @"");
+    
+    [_ns removeAll];
+    XCTAssertEqual(_ns.allKeys.count, 0U, @"");
+}
+
+- (void)testRemoveAllIndex
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    [_ns pushNyaruIndex:@"000-000" value:@"0"];
+    [_ns pushNyaruIndex:@"000-000" value:nil];
+    XCTAssertEqual(_ns.allNotNilIndexes.count, 1U, @"");
+    XCTAssertEqual(_ns.allNilIndexes.count, 1U, @"");
+    
+    [_ns removeAll];
+    XCTAssertEqual(_ns.allNotNilIndexes.count, 0U, @"");
+    XCTAssertEqual(_ns.allNilIndexes.count, 0U, @"");
+}
+
+
+#pragma mark Schema.schemaType
+- (void)testSchemaTypeString
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:@"string"];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeString, @"");
+}
+
+- (void)testSchemaTypeNumber
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:@1];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeNumber, @"");
+}
+
+- (void)testSchemaTypeDate
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeUnknow, @"");
+    [_ns pushNyaruIndex:@"000-000" value:[NSDate dateWithTimeIntervalSince1970:0]];
+    XCTAssertEqual(_ns.schemaType, NyaruSchemaTypeDate, @"");
+}
+
+- (void)testSchemaTypeError
+{
+    _ns = [[NyaruSchema alloc] initWithName:@"name" previousOffser:0 nextOffset:0];
+    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@{@"a": @1}], @"");
+    XCTAssertThrows([_ns pushNyaruIndex:@"000-000" value:@[@1]], @"");
 }
 
 @end
