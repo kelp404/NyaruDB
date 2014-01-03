@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2148774A18769290008A691E /* NyaruQueryCellTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2148774918769290008A691E /* NyaruQueryCellTests.m */; };
 		216CDDC716D2385D00A26FE0 /* NyaruDB.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC516D2385D00A26FE0 /* NyaruDB.h */; };
 		216CDDC816D2385D00A26FE0 /* NyaruDB.m in Sources */ = {isa = PBXBuildFile; fileRef = 216CDDC616D2385D00A26FE0 /* NyaruDB.m */; };
 		216CDDCB16D23A8300A26FE0 /* NyaruConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 216CDDC916D23A8300A26FE0 /* NyaruConfig.h */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2148774918769290008A691E /* NyaruQueryCellTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQueryCellTests.m; sourceTree = "<group>"; };
 		214AD53F170304B70016B261 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		214AD540170304B70016B261 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		214AD541170304B70016B261 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -180,6 +182,7 @@
 		21EAAD9015B1003600835B47 /* NyaruDBTests */ = {
 			isa = PBXGroup;
 			children = (
+				2148774918769290008A691E /* NyaruQueryCellTests.m */,
 				218D896A1875A0560086FBE8 /* NyaruSchemaTests.m */,
 				218D8962187591EC0086FBE8 /* NyaruKeyTests.m */,
 				218D8966187595730086FBE8 /* NyaruIndexTests.m */,
@@ -313,6 +316,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2148774A18769290008A691E /* NyaruQueryCellTests.m in Sources */,
 				218D896B1875A0560086FBE8 /* NyaruSchemaTests.m in Sources */,
 				218D8967187595730086FBE8 /* NyaruIndexTests.m in Sources */,
 				218D8963187591EC0086FBE8 /* NyaruKeyTests.m in Sources */,
