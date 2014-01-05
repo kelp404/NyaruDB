@@ -13,9 +13,6 @@
 @interface NyaruDB : NSObject {
     // key: collection name, value: collection
     NSMutableDictionary *_collections;
-    
-    // data base path
-    NSString *_databasePath;
 }
 
 #pragma mark - Static methods
@@ -30,6 +27,10 @@
  if you init database error, maybe need to call this message.
  */
 + (void)reset;
+
+
+#pragma mark - Properties
+@property (nonatomic, strong, readonly) NSString *databasePath;
 
 
 #pragma mark - Init
