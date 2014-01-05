@@ -239,4 +239,30 @@
 }
 
 
+#pragma mark - orderBy
+- (void)testOrderBy
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryOrderASC;
+    [_query orderBy:cell.schemaName];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertNil([_query.queries[0] value], @"");
+}
+
+- (void)testOrderByDESC
+{
+    NyaruQueryCell *cell = [NyaruQueryCell new];
+    cell.schemaName = @"name";
+    cell.operation = NyaruQueryOrderDESC;
+    [_query orderByDESC:cell.schemaName];
+    XCTAssertEqual(_query.queries.count, 1U, @"");
+    XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
+    XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
+    XCTAssertNil([_query.queries[0] value], @"");
+}
+
+
 @end
