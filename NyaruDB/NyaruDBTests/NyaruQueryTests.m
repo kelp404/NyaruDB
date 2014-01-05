@@ -54,7 +54,7 @@
 }
 
 
-#pragma mark - and
+#pragma mark - And
 - (void)testAndEqual
 {
     NyaruQueryCell *cell = [NyaruQueryCell new];
@@ -147,7 +147,7 @@
 }
 
 
-#pragma mark - or
+#pragma mark - Or
 - (void)testOrEqual
 {
     NyaruQueryCell *cell = [NyaruQueryCell new];
@@ -240,7 +240,7 @@
 }
 
 
-#pragma mark - orderBy
+#pragma mark - Order By
 - (void)testOrderBy
 {
     NyaruQueryCell *cell = [NyaruQueryCell new];
@@ -266,14 +266,46 @@
 }
 
 
-#pragma mark - count
+#pragma mark - Count
 - (void)testCount
 {
     id collection = [OCMockObject mockForClass:[NyaruCollection class]];
     _query = [[NyaruQuery alloc] initWithCollection:collection];
     [[collection expect] countByQuery:_query.queries];
     [[_query and:@"name" equal:@"value"] count];
-    [collection verify];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+
+#pragma mark - Fetch
+- (void)testFetch
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] fetchByQuery:_query.queries skip:0 limit:0];
+    [_query and:@"name" equal:@"value"];
+    [_query fetch];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+- (void)testFetchLimit
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] fetchByQuery:_query.queries skip:0 limit:1];
+    [_query and:@"name" equal:@"value"];
+    [_query fetch:1];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+- (void)testFetchLimitSkip
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] fetchByQuery:_query.queries skip:2 limit:1];
+    [_query and:@"name" equal:@"value"];
+    [_query fetch:1 skip:2];
+    XCTAssertNoThrow([collection verify], @"");
 }
 
 
