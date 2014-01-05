@@ -309,4 +309,16 @@
 }
 
 
+#pragma mark - Remove
+- (void)testRemove
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] removeByQuery:_query.queries];
+    [_query and:@"name" equal:@"value"];
+    [_query remove];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+
 @end
