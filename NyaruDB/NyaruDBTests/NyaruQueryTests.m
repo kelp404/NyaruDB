@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <OCMock/OCMock.h>
 #import "NyaruQuery.h"
 #import "NyaruCollection.h"
 #import "NyaruQueryCell.h"
@@ -262,6 +263,17 @@
     XCTAssertEqualObjects([_query.queries[0] schemaName], cell.schemaName, @"");
     XCTAssertEqual([_query.queries[0] operation], cell.operation, @"");
     XCTAssertNil([_query.queries[0] value], @"");
+}
+
+
+#pragma mark - count
+- (void)testCount
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] countByQuery:_query.queries];
+    [[_query and:@"name" equal:@"value"] count];
+    [collection verify];
 }
 
 
