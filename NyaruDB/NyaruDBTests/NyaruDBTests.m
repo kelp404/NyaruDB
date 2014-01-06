@@ -51,10 +51,35 @@
     XCTAssertEqualObjects(_db.databasePath, databasePath, @"");
 }
 
+
+#pragma mark - Collection
 - (void)testCollections
 {
-    [_db collection:@"collection"];
-    XCTAssertEqual(_db.collections.count, 1U, @"");
+    NyaruCollection *collection = [_db collection:@"collection"];
+    XCTAssertEqual(_db.collections[0], collection, @"");
+}
+
+- (void)testCollection
+{
+    NyaruCollection *collection = [_db collection:@"collection"];
+    XCTAssertEqual(_db.collections[0], collection, @"");
+}
+
+- (void)testRemoveCollection
+{
+    NyaruCollection *collection = [_db collection:@"collection"];
+    XCTAssertEqual(_db.collections[0], collection, @"");
+    [_db removeCollection:@"collection"];
+    XCTAssertEqual(_db.collections.count, 0U, @"");
+}
+
+- (void)testRevmoeAllCollections
+{
+    [_db collection:@"a"];
+    [_db collection:@"b"];
+    XCTAssertEqual(_db.collections.count, 2U, @"");
+    [_db removeAllCollections];
+    XCTAssertEqual(_db.collections.count, 0U, @"");
 }
 
 
