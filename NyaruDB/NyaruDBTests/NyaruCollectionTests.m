@@ -130,12 +130,28 @@
     XCTAssertEqual(matchs, 1, @"");
 }
 
+
+#pragma mark - Query
+- (void)testFetchEmptyData
+{
+    _collection = [_db collection:@"collection"];
+    XCTAssertNil([[_collection all] fetchFirst], @"");
+}
+
 - (void)testPutAndFetch
 {
     _collection = [_db collection:@"collection"];
     NSDictionary *doc = [_collection put:@{@"name": @"value"}];
     NSArray *documents = [[_collection all] fetch];
     XCTAssertEqualObjects(documents, @[doc], @"");
+}
+
+- (void)testPutAndFetchFirst
+{
+    _collection = [_db collection:@"collection"];
+    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
+    NSDictionary *document = [[_collection all] fetchFirst];
+    XCTAssertEqualObjects(document, doc, @"");
 }
 
 
