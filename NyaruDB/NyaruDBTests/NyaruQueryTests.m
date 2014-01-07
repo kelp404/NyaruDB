@@ -308,6 +308,16 @@
     XCTAssertNoThrow([collection verify], @"");
 }
 
+- (void)testFetchFirst
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    [[collection expect] fetchByQuery:_query.queries skip:0 limit:1];
+    [_query and:@"name" equal:@"value"];
+    [_query fetchFirst];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
 
 #pragma mark - Remove
 - (void)testRemove

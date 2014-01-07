@@ -355,6 +355,7 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (NSArray *)fetch;
 - (NSArray *)fetch:(NSUInteger)limit;
 - (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip;
+- (NSMutableDictionary *)fetchFirst;
 
 #pragma mark - Remove
 - (void)remove;

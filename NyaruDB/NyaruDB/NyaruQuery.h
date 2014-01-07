@@ -56,9 +56,28 @@
 - (NSUInteger)count;
 
 #pragma mark - Fetch
+/**
+ Fetch documents.
+ @return [NSMutableDictionary()]
+ */
 - (NSArray *)fetch;
+/**
+ Fetch documents with limit.
+ @param limit The result limit.
+ */
 - (NSArray *)fetch:(NSUInteger)limit;
+/**
+ Fetch documents with limit and skip.
+ @param limit The result limit.
+ @param skip The result skip.
+ */
 - (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip;
+/**
+ Fetch the first document.
+ If result is empty it will return nil.
+ @return nil or NSMutableDictionary()
+ */
+- (NSMutableDictionary *)fetchFirst;
 
 #pragma mark - Remove
 - (void)remove;

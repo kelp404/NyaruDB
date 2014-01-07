@@ -215,6 +215,16 @@
 {
     return [_collection fetchByQuery:_queries skip:skip limit:limit];
 }
+- (NSMutableDictionary *)fetchFirst
+{
+    NSArray *docs = [_collection fetchByQuery:_queries skip:0 limit:1];
+    if (docs.count == 0) {
+        return nil;
+    }
+    else {
+        return docs[0];
+    }
+}
 
 
 #pragma mark - Remove
