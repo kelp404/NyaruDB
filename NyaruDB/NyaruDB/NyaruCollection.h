@@ -76,6 +76,10 @@
 
 
 #pragma mark - Index
+/**
+ Get all indexes.
+ @return ["index name"]
+ */
 - (NSArray *)allIndexes;
 - (void)createIndex:(NSString *)indexName;
 - (void)removeIndex:(NSString *)indexName;

@@ -57,9 +57,87 @@
 
 - (void)testInitWithNewCollectionName
 {
-    _collection = [[NyaruCollection alloc] initWithNewCollectionName:@"collection" databasePath:TEST_PATH];
-    XCTAssertEqualObjects(_collection.name, @"collection", @"");
+    _collection = [[NyaruCollection alloc] initWithNewCollectionName:@"newCollection" databasePath:TEST_PATH];
+    XCTAssertEqualObjects(_collection.name, @"newCollection", @"");
 }
+
+
+#pragma mark - Index
+- (void)testAllIndexes
+{
+    _collection = [_db collection:@"collection"];
+    XCTAssertEqualObjects(_collection.allIndexes, @[@"key"], @"");
+}
+
+- (void)testCreateIndex
+{
+    _collection = [_db collection:@"collection"];
+    [_collection createIndex:@"index"];
+    NSArray *indexes = @[@"key", @"index"];
+    XCTAssertEqualObjects(_collection.allIndexes, indexes, @"");
+}
+
+- (void)testRemoveIndex
+{
+    _collection = [_db collection:@"collection"];
+    [_collection createIndex:@"index"];
+    [_collection removeIndex:@"index"];
+    XCTAssertEqualObjects(_collection.allIndexes, @[@"key"], @"");
+    XCTAssertThrows([_collection removeIndex:@"key"], @"");
+}
+
+- (void)testRemoveAllIndexes
+{
+    _collection = [_db collection:@"collection"];
+    [_collection createIndex:@"indexA"];
+    [_collection createIndex:@"indexB"];
+    XCTAssertNoThrow([_collection removeAllindexes], @"");
+    XCTAssertEqualObjects(_collection.allIndexes, @[@"key"], @"");
+}
+
+
+#pragma mark - Document
+- (void)testPutNilDocument
+{
+    _collection = [_db collection:@"collection"];
+    XCTAssertThrows([_collection put:nil], @"");
+}
+
+- (void)testPutDocumentWithoutKey
+{
+    _collection = [_db collection:@"collection"];
+    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
+    XCTAssertNotNil(doc[@"key"], @"");
+    XCTAssertEqualObjects(doc[@"name"], @"value", @"");
+}
+
+- (void)testPutDocumentWithoutNullKey
+{
+    _collection = [_db collection:@"collection"];
+    NSDictionary *doc = [_collection put:@{@"key": [NSNull null], @"name": @"value"}];
+    XCTAssertNotNil(doc[@"key"], @"");
+    XCTAssertEqualObjects(doc[@"name"], @"value", @"");
+}
+
+- (void)testTheKeyOfDocumentIsGUID
+{
+    _collection = [_db collection:@"collection"];
+    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^[A-F0-9]{8}(?:-[A-F0-9]{4}){3}-[A-F0-9]{12}$"
+                                                                           options:0 error:nil];
+    NSString *key = doc[@"key"];
+    NSInteger matchs = [regex numberOfMatchesInString:key options:0 range:NSMakeRange(0, key.length)];
+    XCTAssertEqual(matchs, 1, @"");
+}
+
+- (void)testPutAndFetch
+{
+    _collection = [_db collection:@"collection"];
+    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
+    NSArray *documents = [[_collection all] fetch];
+    XCTAssertEqualObjects(documents, @[doc], @"");
+}
+
 
 
 @end
