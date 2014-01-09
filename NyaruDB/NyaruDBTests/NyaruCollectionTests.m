@@ -9,6 +9,7 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMArg.h>
 #import "NyaruDB.h"
+#import "NyaruQueryCell.h"
 
 
 #define TEST_PATH @"/tmp/nyaruTests"
@@ -152,6 +153,21 @@
     NSDictionary *doc = [_collection put:@{@"name": @"value"}];
     NSDictionary *document = [[_collection all] fetchFirst];
     XCTAssertEqualObjects(document, doc, @"");
+}
+
+- (void)testQuery
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = _collection.query;
+    XCTAssertEqual(query.collection, _collection, @"");
+}
+
+- (void)testQueryAll
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection all];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryAll, @"");
 }
 
 
