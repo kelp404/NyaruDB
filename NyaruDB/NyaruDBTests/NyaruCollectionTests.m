@@ -170,6 +170,76 @@
     XCTAssertEqual([query.queries[0] operation], NyaruQueryAll, @"");
 }
 
+- (void)testQueryWhereEqual
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" equal:@"value"];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryEqual, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @"value", @"");
+}
+
+- (void)testQueryWhereNotEqual
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" notEqual:@"value"];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryUnequal, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @"value", @"");
+}
+
+- (void)testQueryWhereLess
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" less:@10];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryLess, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @10, @"");
+}
+
+- (void)testQueryWhereLessEqual
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" lessEqual:@10];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryLessEqual, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @10, @"");
+}
+
+- (void)testQueryWhereGreater
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" greater:@10];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryGreater, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @10, @"");
+}
+
+- (void)testQueryWhereGreaterEqual
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" greaterEqual:@10];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryGreaterEqual, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @10, @"");
+}
+
+- (void)testQueryWhereLike
+{
+    _collection = [_db collection:@"collection"];
+    NyaruQuery *query = [_collection where:@"name" like:@"value"];
+    XCTAssertEqual(query.collection, _collection, @"");
+    XCTAssertEqual([query.queries[0] operation], NyaruQueryLike, @"");
+    XCTAssertEqualObjects([query.queries[0] schemaName], @"name", @"");
+    XCTAssertEqualObjects([query.queries[0] value], @"value", @"");
+}
+
 
 
 @end
