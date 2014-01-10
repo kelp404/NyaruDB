@@ -241,5 +241,36 @@
 }
 
 
+#pragma mark - Count
+- (void)testCount
+{
+    _collection = [_db collection:@"collection"];
+    XCTAssertEqual(_collection.count, 0U, @"");
+    
+    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
+    XCTAssertEqual(_collection.count, 1U, @"");
+    
+    [[_collection where:@"key" equal:doc[@"key"]] remove];
+    XCTAssertEqual(_collection.count, 0U, @"");
+    
+    [_collection put:@{@"name": @1}];
+    [_collection put:@{@"name": @2}];
+    XCTAssertEqual(_collection.count, 2U, @"");
+}
+
+- (void)testCountWithQuery
+{
+    _collection = [_db collection:@"collection"];
+    [_collection createIndex:@"name"];
+    NSUInteger count = [[_collection where:@"name" equal:@1] count];
+    XCTAssertEqual(count, 0U, @"");
+    
+    [_collection put:@{@"name": @1}];
+    [_collection put:@{@"name": @1}];
+    count = [[_collection where:@"name" equal:@1] count];
+    XCTAssertEqual(count, 2U, @"");
+}
+
+
 
 @end
