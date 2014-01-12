@@ -84,14 +84,14 @@ typedef enum {
 #pragma mark - Push Key/Index
 /**
  Push NyaruKey into schema.
- @param key key of NyaruKey
+ @param key The key of the document.
  @param nyaruKey NyaruKey
  @return YES / NO
  */
 - (BOOL)pushNyaruKey:(NSString *)key nyaruKey:(NyaruKey *)nyaruKey;
 /**
  Push NyaruIndex into schema.
- @param key key of document
+ @param key The key of the document.
  @param value NyaruIndex.value
  */
 - (void)pushNyaruIndex:(NSString *)key value:(id)value;

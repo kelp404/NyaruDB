@@ -25,7 +25,7 @@
  @param length block length
  @return NyaruIndexBlock instance
  */
-+ (NyaruIndexBlock *)indexBlockWithOffset:(unsigned)offset andLength:(unsigned)length;
+- (id)initWithOffset:(unsigned)offset andLength:(unsigned)length;
 
 
 @end

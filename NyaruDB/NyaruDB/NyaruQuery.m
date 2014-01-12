@@ -25,8 +25,9 @@
 
 - (id)initWithCollection:(NyaruCollection *)collection
 {
-    self = [self init];
+    self = [super init];
     if (self) {
+        _queries = [NSMutableArray new];
         _collection = collection;
     }
     return self;
@@ -103,14 +104,14 @@
 
 
 #pragma mark - Union
-- (NyaruQuery *)unionAll
+- (NyaruQuery *)orAll
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.operation = NyaruQueryAll | NyaruQueryUnion;
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName equal:(id)value
+- (NyaruQuery *)or:(NSString *)indexName equal:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -119,7 +120,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value
+- (NyaruQuery *)or:(NSString *)indexName notEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -128,7 +129,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName less:(id)value
+- (NyaruQuery *)or:(NSString *)indexName less:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -137,7 +138,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value
+- (NyaruQuery *)or:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -146,7 +147,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName greater:(id)value
+- (NyaruQuery *)or:(NSString *)indexName greater:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -155,7 +156,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value
+- (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -164,7 +165,7 @@
     [_queries addObject:query];
     return self;
 }
-- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value
+- (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value
 {
     NyaruQueryCell *query = [NyaruQueryCell new];
     query.schemaName = indexName;
@@ -213,6 +214,16 @@
 - (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip
 {
     return [_collection fetchByQuery:_queries skip:skip limit:limit];
+}
+- (NSMutableDictionary *)fetchFirst
+{
+    NSArray *docs = [_collection fetchByQuery:_queries skip:0 limit:1];
+    if (docs.count == 0) {
+        return nil;
+    }
+    else {
+        return docs[0];
+    }
 }
 
 

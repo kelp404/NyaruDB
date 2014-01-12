@@ -39,14 +39,14 @@
 - (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Union
-- (NyaruQuery *)unionAll;
-- (NyaruQuery *)union:(NSString *)indexName equal:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName notEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName less:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName lessEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greater:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName greaterEqual:(id)value;
-- (NyaruQuery *)union:(NSString *)indexName like:(NSString *)value;
+- (NyaruQuery *)orAll;
+- (NyaruQuery *)or:(NSString *)indexName equal:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName notEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName less:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName lessEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greater:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value;
+- (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;
@@ -56,9 +56,28 @@
 - (NSUInteger)count;
 
 #pragma mark - Fetch
+/**
+ Fetch documents.
+ @return [NSMutableDictionary()]
+ */
 - (NSArray *)fetch;
+/**
+ Fetch documents with limit.
+ @param limit The result limit.
+ */
 - (NSArray *)fetch:(NSUInteger)limit;
+/**
+ Fetch documents with limit and skip.
+ @param limit The result limit.
+ @param skip The result skip.
+ */
 - (NSArray *)fetch:(NSUInteger)limit skip:(NSUInteger)skip;
+/**
+ Fetch the first document.
+ If result is empty it will return nil.
+ @return nil or NSMutableDictionary()
+ */
+- (NSMutableDictionary *)fetchFirst;
 
 #pragma mark - Remove
 - (void)remove;

@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "21EAAD7615B1003600835B47"
-               BuildableName = "libNyaruDB.a"
-               BlueprintName = "NyaruDB"
-               ReferencedContainer = "container:NyaruDB.xcodeproj">
+               BlueprintIdentifier = "21DC701C16D706C700EB0953"
+               BuildableName = "NyaruDBDemo.app"
+               BlueprintName = "NyaruDBDemo"
+               ReferencedContainer = "container:NyaruDBDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,13 +32,22 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "21EAAD8615B1003600835B47"
-               BuildableName = "NyaruDBTests.xctest"
-               BlueprintName = "NyaruDBTests"
-               ReferencedContainer = "container:NyaruDB.xcodeproj">
+               BlueprintIdentifier = "21DC704216D706C800EB0953"
+               BuildableName = "NyaruDBDemoTests.octest"
+               BlueprintName = "NyaruDBDemoTests"
+               ReferencedContainer = "container:NyaruDBDemo.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "21DC701C16D706C700EB0953"
+            BuildableName = "NyaruDBDemo.app"
+            BlueprintName = "NyaruDBDemo"
+            ReferencedContainer = "container:NyaruDBDemo.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -49,6 +58,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "21DC701C16D706C700EB0953"
+            BuildableName = "NyaruDBDemo.app"
+            BlueprintName = "NyaruDBDemo"
+            ReferencedContainer = "container:NyaruDBDemo.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -58,6 +76,15 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "21DC701C16D706C700EB0953"
+            BuildableName = "NyaruDBDemo.app"
+            BlueprintName = "NyaruDBDemo"
+            ReferencedContainer = "container:NyaruDBDemo.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

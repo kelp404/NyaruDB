@@ -20,9 +20,9 @@ typedef enum {
     NyaruQueryGreater = 4U,
     NyaruQueryGreaterEqual = 5U,
     
+    // empty 0x10U
+    // empty 0x20U
     NyaruQueryLike = 0x30U,               // only for NSString
-//    NyaruQueryBeginningOf = 0x10,    // only for NSString
-//    NyaruQueryEndOf = 0x20,             // only for NSString
     
     NyaruQueryIntersection = 0x40U,
     NyaruQueryUnion = 0x00U,

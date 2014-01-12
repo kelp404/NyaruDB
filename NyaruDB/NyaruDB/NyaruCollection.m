@@ -289,130 +289,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
-            
-            for (NyaruSchema *schema in _schemas.allValues) {
-                [schema removeWithKey:docKey];
-            }
-        }
-        
-        unsigned documentOffset = 0U;
-        unsigned documentLength = (unsigned)docData.length;
-        unsigned blockLength = 0U;
-        unsigned indexOffset = 0U;
-        
-        // get index offset
-        for (NSUInteger blockIndex = 0U; blockIndex < _clearedIndexBlock.count; blockIndex++) {
-            NyaruIndexBlock *block = [_clearedIndexBlock objectAtIndex:blockIndex];
-            if (block.blockLength >= documentLength) {
-                // old document block could be reuse
-                indexOffset = block.indexOffset;
-                
-                // read old document block offset
-                [fileIndex seekToFileOffset:indexOffset];
-                NSData *documentOffsetData = [fileIndex readDataOfLength:sizeof(documentOffset)];
-                memcpy(&documentOffset, documentOffsetData.bytes, sizeof(documentOffset));
-                [fileDocument seekToFileOffset:documentOffset];
-                
-                // if reuse document block, update index data
-                [fileIndex seekToFileOffset:indexOffset];
-                
-                [_clearedIndexBlock removeObjectAtIndex:blockIndex];
-                break;
-            }
-        }
-        if (indexOffset == 0U) {
-            documentOffset = (unsigned)[fileDocument seekToEndOfFile];
-            indexOffset = (unsigned)[fileIndex seekToEndOfFile];
-            blockLength = documentLength;
-        }
-        
-        // push key and index
-        for (NyaruSchema *schema in _schemas.allValues) {
-            if (schema.unique) {
-                NyaruKey *key = [[NyaruKey alloc] initWithIndexOffset:indexOffset
-                                                       documentOffset:documentOffset
-                                                       documentLength:documentLength
-                                                          blockLength:blockLength];
-                [schema pushNyaruKey:docKey nyaruKey:key];
-            }
-            else {
-                [schema pushNyaruIndex:docKey value:[doc objectForKey:schema.name]];
-            }
-        }
-        
-        // write document
-        [fileDocument writeData:docData];
-        [_documentCache setObject:doc forKey:[NSNumber numberWithUnsignedInt:documentOffset]];
-        
-        // write index
-        NSMutableData *indexData = [[NSMutableData alloc] initWithBytes:&documentOffset length:sizeof(documentOffset)];
-        [indexData appendBytes:&documentLength length:sizeof(documentLength)];
-        [indexData appendBytes:&blockLength length:sizeof(blockLength)];
-        [fileIndex writeData:indexData];
-        
-        // close files
-        [fileDocument closeFile];
-        [fileIndex closeFile];
-        docData = nil;
-    });
-    
-    return doc;
-}
-- (NSMutableDictionary *)insert:(NSDictionary *)document
-{
-    if (!document) {
-        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document could not be nil." userInfo:nil];
-        return nil;
-    }
-    
-    NSMutableDictionary *doc = [document mutableCopy];
-    if (![doc objectForKey:NYARU_KEY] ||
-            [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
-            [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
-        // If key is missing, null or empty then generate it.
-        dispatch_sync(_keyGeneratorQueue, ^{
-            // if generate in different dispatches, it may be the same.
-            CFUUIDRef uuid = CFUUIDCreate(NULL);
-            CFStringRef result = CFUUIDCreateString(NULL, uuid);
-            [doc setObject:[NSString stringWithString:(__bridge NSString *)result] forKey:NYARU_KEY];
-            CFRelease(result);
-            CFRelease(uuid);
-        });
-    }
-    
-    // serialize document
-    __block NSData *docData = serialize(doc);
-    
-    if (docData.length == 0U) {
-        @throw [NSException exceptionWithName:NYARU_PRODUCT reason:@"document serialized failed." userInfo:nil];
-        return nil;
-    }
-    
-    // write data with GCD
-    dispatch_async(_accessQueue, ^(void) {
-        // document key
-        NSString *docKey = [doc objectForKey:NYARU_KEY];
-        
-        // io handle
-        NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
-        NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
-        
-        // check key is exist
-        NyaruKey *existKey = [((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:docKey];
-        if (existKey) {
-            // if key is exist then remove it and write info in console
-#if DEBUG
-            NSLog(@"[NyaruDB]WARNING: key '%@' is exist. this document will be replace.", docKey);
-#endif
-            // remove cache
-            [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
-            
-            // remove data in .index
-            unsigned zeroData = 0U;
-            [fileIndex seekToFileOffset:existKey.indexOffset + 4U];
-            [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
+            [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:existKey.indexOffset andLength:existKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
                 [schema removeWithKey:docKey];
@@ -499,7 +376,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         unsigned zeroData = 0U;
         [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
         [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-        [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+        [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
         
         for (NyaruSchema *schema in _schemas.allValues) {
             [schema removeWithKey:documentKey];
@@ -523,7 +400,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
             unsigned zeroData = 0U;
             [fileIndex seekToFileOffset:nyaruKey.indexOffset + 4U];
             [fileIndex writeData:[NSData dataWithBytes:&zeroData length:sizeof(zeroData)]];
-            [_clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
+            [_clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:nyaruKey.indexOffset andLength:nyaruKey.blockLength]];
             
             for (NyaruSchema *schema in _schemas.allValues) {
                 [schema removeWithKey:documentKey];
@@ -626,42 +503,42 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (NyaruQuery *)all
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query unionAll];
+    return [query orAll];
 }
 - (NyaruQuery *)where:(NSString *)indexName equal:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName equal:value];
+    return [query or:indexName equal:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName notEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName notEqual:value];
+    return [query or:indexName notEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName less:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName less:value];
+    return [query or:indexName less:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName lessEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName lessEqual:value];
+    return [query or:indexName lessEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName greater:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greater:value];
+    return [query or:indexName greater:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName greaterEqual:value];
+    return [query or:indexName greaterEqual:value];
 }
 - (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value
 {
     NyaruQuery *query = [[NyaruQuery alloc] initWithCollection:self];
-    return [query union:indexName like:value];
+    return [query or:indexName like:value];
 }
 
 
@@ -911,7 +788,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
     return result;
 }
 /**
- Get all NyaruIndexe.key in the schema and sort these by NyaruIndex.value.
+ Get all NyaruIndex.key in the schema and sort these by NyaruIndex.value.
  @param schema NyaruSchema
  @param query NyaruQueryCell
  @return @[NyaruIndex.key]
@@ -1618,7 +1495,7 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
         
         memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
-            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
+            [clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         memcpy(&documentOffset, buffer, sizeof(documentOffset));
@@ -1680,7 +1557,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         
         memcpy(&documentLength, &buffer[4], sizeof(documentLength));
         if (documentLength == 0U) {
-            [clearedIndexBlock addObject:[NyaruIndexBlock indexBlockWithOffset:indexOffset andLength:blockLength]];
+            [clearedIndexBlock addObject:[[NyaruIndexBlock alloc] initWithOffset:indexOffset andLength:blockLength]];
             continue;
         }
         memcpy(&documentOffset, buffer, sizeof(documentOffset));
