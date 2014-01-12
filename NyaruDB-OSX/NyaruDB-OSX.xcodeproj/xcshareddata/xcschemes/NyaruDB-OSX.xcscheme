@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "214AD57E170305AF0016B261"
-               BuildableName = "NyaruDB-OSXTests.octest"
+               BuildableName = "NyaruDB-OSXTests.xctest"
                BlueprintName = "NyaruDB-OSXTests"
                ReferencedContainer = "container:NyaruDB-OSX.xcodeproj">
             </BuildableReference>
