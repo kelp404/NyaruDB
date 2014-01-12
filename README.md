@@ -209,7 +209,7 @@ NyaruDB *db = [NyaruDB instance];
 // NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 
 NyaruCollection *co = [db collection:@"collectionName"];
-NSArray *documents = [[[co where:@"type" equal:@1] or:@“type" equal:@3] fetch];
+NSArray *documents = [[[co where:@"type" equal:@1] or:@"type" equal:@3] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
