@@ -74,18 +74,19 @@
     NyaruCollection *collection = [db collection:@"speed"];
     [collection createIndex:@"group"];
     
+    NSMutableDictionary *doc = [[NSMutableDictionary alloc] initWithDictionary:@{
+                                                                                 @"name": @"Test",
+                                                                                 @"url": @"https://github.com/kelp404/NyaruDB",
+                                                                                 @"phone": @"0123456",
+                                                                                 @"address": @"1600 Amphitheatre Parkway Mountain View, CA 94043, USA",
+                                                                                 @"email": @"test@phate.org",
+                                                                                 @"level": @0,
+                                                                                 @"updateTime": @""
+                                                                                 }];
     NSDate *timer = [NSDate date];
     for (NSInteger loop = 0; loop < 1000; loop++) {
-        [collection put:@{
-         @"name": @"Test",
-         @"url": @"https://github.com/Kelp404/NyaruDB",
-         @"phone": @"0123456",
-         @"address": @"1600 Amphitheatre Parkway Mountain View, CA 94043, USA",
-         @"group": [NSNumber numberWithInt:arc4random() % 10],
-         @"email": @"test@phate.org",
-         @"level": @0,
-         @"updateTime": @""
-         }];
+        [doc setObject:[NSNumber numberWithInt:arc4random() % 512] forKey:@"group"];
+        [collection put:doc];
     }
     NSLog(@"------------------------------------------------");
     NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
