@@ -296,6 +296,8 @@
 - (void)testMultithread
 {
     NyaruCollection *co = [_db collection:@"10"];
+    [co createIndex:@"number"];
+    [co createIndex:@"update"];
     
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -339,18 +341,19 @@
     NyaruCollection *collection = [_db collection:@"speed"];
     [collection createIndex:@"group"];
     
-    NSDate *timer = [NSDate date];
-    for (NSInteger loop = 0; loop < 1000; loop++) {
-        [collection put:@{
+    NSMutableDictionary *doc = [[NSMutableDictionary alloc] initWithDictionary:@{
                           @"name": @"Test",
-                          @"url": @"https://github.com/Kelp404/NyaruDB",
+                          @"url": @"https://github.com/kelp404/NyaruDB",
                           @"phone": @"0123456",
                           @"address": @"1600 Amphitheatre Parkway Mountain View, CA 94043, USA",
-                          @"group": [NSNumber numberWithInt:arc4random() % 512],
                           @"email": @"test@phate.org",
                           @"level": @0,
                           @"updateTime": @""
                           }];
+    NSDate *timer = [NSDate date];
+    for (NSInteger loop = 0; loop < 1000; loop++) {
+        [doc setObject:[NSNumber numberWithInt:arc4random() % 512] forKey:@"group"];
+        [collection put:doc];
     }
     NSLog(@"------------------------------------------------");
     NSLog(@"insert 1k data cost : %f ms", [timer timeIntervalSinceNow] * -1000.0);
