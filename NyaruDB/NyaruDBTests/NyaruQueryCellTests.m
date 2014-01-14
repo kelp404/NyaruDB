@@ -41,24 +41,24 @@
 
 - (void)testNyaruQueryOperation
 {
-    XCTAssertEqual(NyaruQueryUnequal, 0, @"");
-    XCTAssertEqual(NyaruQueryEqual, 1, @"");
+    XCTAssertEqual(NyaruQueryUnequal, 0U, @"");
+    XCTAssertEqual(NyaruQueryEqual, 1U, @"");
     
-    XCTAssertEqual(NyaruQueryLess, 2, @"");
-    XCTAssertEqual(NyaruQueryLessEqual, 3, @"");
+    XCTAssertEqual(NyaruQueryLess, 2U, @"");
+    XCTAssertEqual(NyaruQueryLessEqual, 3U, @"");
     
-    XCTAssertEqual(NyaruQueryGreater, 4, @"");
-    XCTAssertEqual(NyaruQueryGreaterEqual, 5, @"");
+    XCTAssertEqual(NyaruQueryGreater, 4U, @"");
+    XCTAssertEqual(NyaruQueryGreaterEqual, 5U, @"");
 
-    XCTAssertEqual(NyaruQueryLike, 0x30, @"");
+    XCTAssertEqual(NyaruQueryLike, 0x30U, @"");
     
-    XCTAssertEqual(NyaruQueryIntersection, 0x40, @"");
-    XCTAssertEqual(NyaruQueryUnion, 0x00, @"");
+    XCTAssertEqual(NyaruQueryIntersection, 0x40U, @"");
+    XCTAssertEqual(NyaruQueryUnion, 0x00U, @"");
     
-    XCTAssertEqual(NyaruQueryAll, 0x80, @"");
+    XCTAssertEqual(NyaruQueryAll, 0x80U, @"");
     
-    XCTAssertEqual(NyaruQueryOrderASC, 0x100, @"");
-    XCTAssertEqual(NyaruQueryOrderDESC, 0x200, @"");
+    XCTAssertEqual(NyaruQueryOrderASC, 0x100U, @"");
+    XCTAssertEqual(NyaruQueryOrderDESC, 0x200U, @"");
 }
 
 @end

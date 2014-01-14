@@ -10,7 +10,7 @@
 
 
 #define QUERY_OPERATION_MASK 0x3F
-typedef enum {
+typedef NS_ENUM(NSUInteger, NyaruQueryOperation) {
     NyaruQueryUnequal = 0U,
     NyaruQueryEqual = 1U,                // suport unique schema
     
@@ -31,7 +31,7 @@ typedef enum {
     
     NyaruQueryOrderASC = 0x100U,
     NyaruQueryOrderDESC = 0x200U,
-} NyaruQueryOperation;
+};
 
 
 @interface NyaruQueryCell : NSObject
