@@ -223,10 +223,10 @@
     XCTAssertEqualObjects([check objectForKey:@"null"], [doc objectForKey:@"null"], @"");
     XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"sub"], [subDict objectForKey:@"sub"], @"");
     XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"empty"], [subDict objectForKey:@"empty"], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:0]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:1]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:2]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:[array objectAtIndex:3]], @"");
+    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[0]], @"");
+    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[1]], @"");
+    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[2]], @"");
+    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[3]], @"");
 }
 
 - (void)testOrder

@@ -303,7 +303,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         
         // get index offset
         for (NSUInteger blockIndex = 0U; blockIndex < _clearedIndexBlock.count; blockIndex++) {
-            NyaruIndexBlock *block = [_clearedIndexBlock objectAtIndex:blockIndex];
+            NyaruIndexBlock *block = _clearedIndexBlock[blockIndex];
             if (block.blockLength >= documentLength) {
                 // old document block could be reuse
                 indexOffset = block.indexOffset;
@@ -459,7 +459,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         
         result = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
         for (NSUInteger index = skip; index < fetchLimit; index++) {
-            item = fetchDocumentWithNyaruKey([keys objectAtIndex:index], _documentCache, fileDocument);
+            item = fetchDocumentWithNyaruKey(keys[index], _documentCache, fileDocument);
             if (item) { [result addObject:item]; }
         }
         [fileDocument closeFile];
@@ -485,7 +485,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         
         NSMutableArray *resultTemp = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
         for (NSUInteger index = skip; index < fetchLimit; index++) {
-            [resultTemp addObject:[keys objectAtIndex:index]];
+            [resultTemp addObject:keys[index]];
         }
         result = resultTemp;
     });
@@ -828,7 +828,7 @@ NYARU_BURST_LINK NSArray *filterEqual(NSArray *allIndexes, id target, NyaruSchem
     NSRange range = findEqualRange(allIndexes, target, type);
     if (range.length > 0U) {
         // found equal value
-        return [[allIndexes objectAtIndex:range.location] keySet].allObjects;
+        return [allIndexes[range.location] keySet].allObjects;
     }
     
     return [NSMutableArray new];
@@ -849,10 +849,10 @@ NYARU_BURST_LINK NSMutableArray *filterUnequal(NSArray *allIndexes, id target, N
         // found equal value
         NSUInteger max = range.location == NSUIntegerMax ? allIndexes.count : range.location;
         for (NSUInteger index = 0U; index < max; index++) {
-            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+            [result addObjectsFromArray:[allIndexes[index] keySet].allObjects];
         }
         for (NSUInteger index = range.location + range.length; index < allIndexes.count; index++) {
-            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+            [result addObjectsFromArray:[allIndexes[index] keySet].allObjects];
         }
     }
     else {
@@ -884,13 +884,13 @@ NYARU_BURST_LINK NSMutableArray *filterLess(NSArray *allIndexes, id target, Nyar
         NSUInteger max = range.length > 0U ? range.location - 1U : range.location;
         for (NSUInteger index = 0U; index <= max; index++) {
             // add less datas
-            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+            [result addObjectsFromArray:[allIndexes[index] keySet].allObjects];
         }
     }
     
     if (includeEqual && range.length > 0U) {
         // add equal datas
-        [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
+        [result addObjectsFromArray:[allIndexes[range.location] keySet].allObjects];
     }
     
     return result;
@@ -914,19 +914,19 @@ NYARU_BURST_LINK NSArray *filterGreater(NSArray *allIndexes, id target, NyaruSch
         // all data is greater
         for (NSUInteger index = 0U; index < allIndexes.count; index++) {
             // add greater datas
-            [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+            [result addObjectsFromArray:[allIndexes[index] keySet].allObjects];
         }
         return result;
     }
     
     for (NSUInteger index = range.location + 1U; index < allIndexes.count; index++) {
         // add greater datas
-        [result addObjectsFromArray:[[allIndexes objectAtIndex:index] keySet].allObjects];
+        [result addObjectsFromArray:[allIndexes[index] keySet].allObjects];
     }
     
     if (includeEqual && range.length > 0U) {
         // add equal datas
-        [result addObjectsFromArray:[[allIndexes objectAtIndex:range.location] keySet].allObjects];
+        [result addObjectsFromArray:[allIndexes[range.location] keySet].allObjects];
     }
     
     return result;
@@ -971,7 +971,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
         case 0U:
             return NSMakeRange(NSUIntegerMax, 0U);
         case 1U:
-            compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], target, type);
+            compResult = compare([(NyaruIndex *)array[0U] value], target, type);
             // target < array[0]
             if (compResult == NSOrderedDescending) { return NSMakeRange(NSUIntegerMax, 0U); }
             // target == array[0]
@@ -981,7 +981,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     }
     
     // compare the first
-    compResult = compare([(NyaruIndex *)[array objectAtIndex:0U] value], target, type);
+    compResult = compare([(NyaruIndex *)array[0U] value], target, type);
     switch (compResult) {
         case NSOrderedSame:
             // target == array[0]
@@ -1008,7 +1008,7 @@ NYARU_BURST_LINK NSRange findEqualRange(NSArray *array, id target, NyaruSchemaTy
     NSUInteger targetIndex = (upBound + downBound) / 2U;
     
     while (upBound <= downBound) {
-        compResult = compare([(NyaruIndex *)[array objectAtIndex:targetIndex] value], target, type);
+        compResult = compare([(NyaruIndex *)array[targetIndex] value], target, type);
         
         switch (compResult) {
             case NSOrderedSame:
