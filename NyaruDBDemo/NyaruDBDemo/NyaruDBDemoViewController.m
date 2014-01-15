@@ -116,8 +116,8 @@
     NSMutableDictionary *document = [[query fetch:1 skip:indexPath.row] lastObject];
     
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-    cell.textLabel.text = [document objectForKey:@"title"];
-    cell.detailTextLabel.text = [_dateFormatter stringFromDate:[document objectForKey:@"updateTime"]];
+    cell.textLabel.text = document[@"title"];
+    cell.detailTextLabel.text = [_dateFormatter stringFromDate:document[@"updateTime"]];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
     return cell;
@@ -131,7 +131,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NyaruQuery *query = [_co.all orderByDESC:@"updateTime"];
         NSMutableDictionary *document = [[query fetch:1 skip:indexPath.row] lastObject];
-        [_co removeByKey:[document objectForKey:@"key"]];
+        [_co removeByKey:document[@"key"]];
         [tableView beginUpdates];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
         [tableView endUpdates];

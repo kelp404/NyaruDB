@@ -58,18 +58,18 @@
     [co put:doc];
     [co waitForWriting];
     [co clearCache];
-    NSDictionary *check = co.all.fetch.lastObject;
-    XCTAssertEqualObjects([check objectForKey:@"key"], [doc objectForKey:@"key"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"number"], [doc objectForKey:@"number"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"double"], [doc objectForKey:@"double"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"date"], [doc objectForKey:@"date"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"null"], [doc objectForKey:@"null"], @"");
-    XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"sub"], [subDict objectForKey:@"sub"], @"");
-    XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"empty"], [subDict objectForKey:@"empty"], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[0]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[1]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[2]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[3]], @"");
+    NSDictionary *check = [[co all] fetchFirst];
+    XCTAssertEqualObjects(check[@"key"], doc[@"key"], @"");
+    XCTAssertEqualObjects(check[@"number"], doc[@"number"], @"");
+    XCTAssertEqualObjects(check[@"double"], doc[@"double"], @"");
+    XCTAssertEqualObjects(check[@"date"], doc[@"date"], @"");
+    XCTAssertEqualObjects(check[@"null"], doc[@"null"], @"");
+    XCTAssertEqualObjects(check[@"sub"][@"sub"], subDict[@"sub"], @"");
+    XCTAssertEqualObjects(check[@"sub"][@"empty"], subDict[@"empty"], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[0]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[1]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[2]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[3]], @"");
 }
 
 @end

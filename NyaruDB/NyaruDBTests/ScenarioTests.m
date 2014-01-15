@@ -47,13 +47,13 @@
     XCTAssertEqual(collection.count, 0U, @"");
     
     // insert with key
-    NSString *key = [[collection put:@{@"data": @"value", @"key": @"aa" }] objectForKey:@"key"];
+    NSString *key = [collection put:@{@"data": @"value", @"key": @"aa" }][@"key"];
     XCTAssertEqual(collection.count, 1U, @"");
-    XCTAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"data"], @"value", @"");
+    XCTAssertEqualObjects([[collection where:@"key" equal:key] fetchFirst][@"data"], @"value", @"");
     
     // insert without key
-    key = [[collection put:@{@"name": @"Kelp"}] objectForKey:@"key"];
-    XCTAssertEqualObjects([[[[collection where:@"key" equal:key] fetch] lastObject] objectForKey:@"name"], @"Kelp", @"");
+    key = [collection put:@{@"name": @"Kelp"}][@"key"];
+    XCTAssertEqualObjects([[collection where:@"key" equal:key] fetchFirst][@"name"], @"Kelp", @"");
     // then remove it
     [[collection where:@"key" equal:key] remove];
     XCTAssertEqual(collection.count, 1U, @"");
@@ -86,7 +86,7 @@
     [collection put:@{@"name": @"Kelp"}];
     [collection put:@{@"name": @"Kelp X", @"updateTime": time}];
     [collection put:@{@"name": @"Kelp"}];
-    XCTAssertEqualObjects([[collection where:@"updateTime" equal:time].fetch.lastObject objectForKey:@"name"], @"Kelp X", @"");
+    XCTAssertEqualObjects([[collection where:@"updateTime" equal:time] fetchFirst][@"name"], @"Kelp X", @"");
 }
 
 - (void)testInsertAndQueryString
@@ -215,18 +215,18 @@
     [co put:doc];
     [co waitForWriting];
     [co clearCache];
-    NSDictionary *check = co.all.fetch.lastObject;
-    XCTAssertEqualObjects([check objectForKey:@"key"], [doc objectForKey:@"key"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"number"], [doc objectForKey:@"number"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"double"], [doc objectForKey:@"double"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"date"], [doc objectForKey:@"date"], @"");
-    XCTAssertEqualObjects([check objectForKey:@"null"], [doc objectForKey:@"null"], @"");
-    XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"sub"], [subDict objectForKey:@"sub"], @"");
-    XCTAssertEqualObjects([[check objectForKey:@"sub"] objectForKey:@"empty"], [subDict objectForKey:@"empty"], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[0]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[1]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[2]], @"");
-    XCTAssertTrue([[check objectForKey:@"array"] containsObject:array[3]], @"");
+    NSDictionary *check = [[co all] fetchFirst];
+    XCTAssertEqualObjects(check[@"key"], doc[@"key"], @"");
+    XCTAssertEqualObjects(check[@"number"], doc[@"number"], @"");
+    XCTAssertEqualObjects(check[@"double"], doc[@"double"], @"");
+    XCTAssertEqualObjects(check[@"date"], doc[@"date"], @"");
+    XCTAssertEqualObjects(check[@"null"], doc[@"null"], @"");
+    XCTAssertEqualObjects(check[@"sub"][@"sub"], subDict[@"sub"], @"");
+    XCTAssertEqualObjects(check[@"sub"][@"empty"], subDict[@"empty"], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[0]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[1]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[2]], @"");
+    XCTAssertTrue([check[@"array"] containsObject:array[3]], @"");
 }
 
 - (void)testOrder
@@ -240,26 +240,26 @@
     }
     NSNumber *previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderBy:@"number"] fetch]) {
-        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (!doc[@"number"] || [doc[@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
-            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
-                XCTFail(@"%@ --> %@", previous, [doc objectForKey:@"number"]);
+            if ([previous compare:doc[@"number"]] == NSOrderedDescending) {
+                XCTFail(@"%@ --> %@", previous, doc[@"number"]);
             }
         }
-        previous = [doc objectForKey:@"number"];
+        previous = doc[@"number"];
     }
     
     previous = nil;
     for (NSMutableDictionary *doc in [[co.all orderByDESC:@"number"] fetch]) {
-        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (!doc[@"number"] || [doc[@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
-            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedAscending) {
-                XCTFail(@"%@ --> %@", previous, [doc objectForKey:@"number"]);
+            if ([previous compare:doc[@"number"]] == NSOrderedAscending) {
+                XCTFail(@"%@ --> %@", previous, doc[@"number"]);
             }
         }
-        previous = [doc objectForKey:@"number"];
+        previous = doc[@"number"];
     }
 }
 
@@ -279,17 +279,17 @@
     NSArray *documents = [[[[[co where:@"number" greaterEqual:@6] or:@"number" equal:@5] and:@"name" equal:@"kelp"] orderBy:@"number"] fetch];
     XCTAssertEqual(documents.count > 0, true, @"");
     for (NSMutableDictionary *doc in documents) {
-        if (![doc objectForKey:@"number"] || [[doc objectForKey:@"number"] isKindOfClass:NSNull.class]) { continue; }
+        if (!doc[@"number"] || [doc[@"number"] isKindOfClass:NSNull.class]) { continue; }
         
         if (previous) {
-            if ([@4 compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
-                XCTFail(@"4 --> %@", [doc objectForKey:@"number"]);
+            if ([@4 compare:doc[@"number"]] == NSOrderedDescending) {
+                XCTFail(@"4 --> %@", doc[@"number"]);
             }
-            if ([previous compare:[doc objectForKey:@"number"]] == NSOrderedDescending) {
-                XCTFail(@"%@ --> %@", previous, [doc objectForKey:@"number"]);
+            if ([previous compare:doc[@"number"]] == NSOrderedDescending) {
+                XCTFail(@"%@ --> %@", previous, doc[@"number"]);
             }
         }
-        previous = [doc objectForKey:@"number"];
+        previous = doc[@"number"];
     }
 }
 
