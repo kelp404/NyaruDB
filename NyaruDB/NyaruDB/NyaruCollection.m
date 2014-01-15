@@ -175,7 +175,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     
     dispatch_async(_accessQueue, ^{
         // check exist
-        if ([_schemas objectForKey:indexName]) { return; }
+        if (_schemas[indexName]) { return; }
         
         NyaruSchema *lastSchema = getLastSchema(_schemas);
         unsigned previous = 0U;
@@ -208,7 +208,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     }
     
     dispatch_async(_accessQueue, ^{
-        NyaruSchema *schema = [_schemas objectForKey:indexName];
+        NyaruSchema *schema = _schemas[indexName];
         if (schema) {
             NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
             unsigned offset;
@@ -248,9 +248,9 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     }
     
     NSMutableDictionary *doc = [document mutableCopy];
-    if (![doc objectForKey:NYARU_KEY] ||
-        [[doc objectForKey:NYARU_KEY] isKindOfClass:NSNull.class] ||
-        [(NSString *)[doc objectForKey:NYARU_KEY] length] == 0U) {
+    if (!doc[NYARU_KEY] ||
+        [doc[NYARU_KEY] isKindOfClass:NSNull.class] ||
+        [(NSString *)doc[NYARU_KEY] length] == 0U) {
         // If key is missing, null or empty then generate it.
         dispatch_sync(_keyGeneratorQueue, ^{
             // if generate in different dispatches, it may be the same.
@@ -273,14 +273,14 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     // write data with GCD
     dispatch_async(_accessQueue, ^(void) {
         // document key
-        NSString *docKey = [doc objectForKey:NYARU_KEY];
+        NSString *docKey = doc[NYARU_KEY];
         
         // io handle
         NSFileHandle *fileDocument = [NSFileHandle fileHandleForWritingAtPath:_documentFilePath];
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForUpdatingAtPath:_indexFilePath];
         
         // check key is exist
-        NyaruKey *existKey = [((NyaruSchema *)[_schemas objectForKey:NYARU_KEY]).allKeys objectForKey:docKey];
+        NyaruKey *existKey = [(NyaruSchema *)_schemas[NYARU_KEY] allKeys][docKey];
         if (existKey) {
             // remove cache
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:existKey.documentOffset]];
@@ -337,7 +337,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
                 [schema pushNyaruKey:docKey nyaruKey:key];
             }
             else {
-                [schema pushNyaruIndex:docKey value:[doc objectForKey:schema.name]];
+                [schema pushNyaruIndex:docKey value:doc[schema.name]];
             }
         }
         
@@ -366,7 +366,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (void)removeByKey:(NSString *)documentKey
 {
     dispatch_async(_accessQueue, ^(void) {
-        NyaruKey *nyaruKey = [[(NyaruSchema *)[_schemas objectForKey:NYARU_KEY] allKeys] objectForKey:documentKey];
+        NyaruKey *nyaruKey = [(NyaruSchema *)_schemas[NYARU_KEY] allKeys][documentKey];
         if (!nyaruKey) { return; }
         
         // remove cache
@@ -388,11 +388,11 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 {
     dispatch_async(_accessQueue, ^(void) {
         NSArray *documentKeys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
-        NSDictionary *keyMap = [(NyaruSchema *)[_schemas objectForKey:NYARU_KEY] allKeys];
+        NSDictionary *keyMap = [(NyaruSchema *)_schemas[NYARU_KEY] allKeys];
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
         
         for (NSString *documentKey in documentKeys) {
-            NyaruKey *nyaruKey = [keyMap objectForKey:documentKey];
+            NyaruKey *nyaruKey = keyMap[documentKey];
             
             // remove cache
             [_documentCache removeObjectForKey:[NSNumber numberWithUnsignedInt:nyaruKey.documentOffset]];
@@ -547,7 +547,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 {
     __block NSUInteger result;
     dispatch_sync(_accessQueue, ^(void) {
-        result = [[_schemas objectForKey:NYARU_KEY] allKeys].count;
+        result = [_schemas[NYARU_KEY] allKeys].count;
     });
     return result;
 }
@@ -608,21 +608,21 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
     NSArray *keys;
     
     for (NyaruQueryCell *query in queries) {
-        NyaruSchema *schema = [schemas objectForKey:query.schemaName];
+        NyaruSchema *schema = schemas[query.schemaName];
         
         if (query.operation == (NyaruQueryAll | NyaruQueryUnion)) {
             // union all
             if (queries.count == 1U) {
                 // high speed return all NyaruKeys
                 if (isReturnNyaruKey) {
-                    return [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allValues;
+                    return [(NyaruSchema *)schemas[NYARU_KEY] allKeys].allValues;
                 }
                 else {
-                    return [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allKeys;
+                    return [(NyaruSchema *)schemas[NYARU_KEY] allKeys].allKeys;
                 }
             }
             else {
-                [resultKeys addObjectsFromArray:[(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys].allKeys];
+                [resultKeys addObjectsFromArray:[(NyaruSchema *)schemas[NYARU_KEY] allKeys].allKeys];
             }
         }
         else if (!schema) { continue; }
@@ -645,12 +645,12 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
     NSDictionary *keyMap = nil;
     if (isReturnNyaruKey) {
         // return @[NyaruKey]
-        keyMap = [(NyaruSchema *)[schemas objectForKey:NYARU_KEY] allKeys];
+        keyMap = [(NyaruSchema *)schemas[NYARU_KEY] allKeys];
     }
     
     if (sortQuery) {
         // sort result and map document.key to NyaruKey
-        NyaruSchema *nyaruSchema = [schemas objectForKey:sortQuery.schemaName];
+        NyaruSchema *nyaruSchema = schemas[sortQuery.schemaName];
         if (nyaruSchema) {
             NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:resultKeys.count];
             NSArray *sortedMap = nyaruKeysWithSortByIndexValue(nyaruSchema, sortQuery);
@@ -658,7 +658,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
                 // map document.key to NyaruKey
                 for (NSString *key in sortedMap) {
                     if ([resultKeys intersectsSet:[NSSet setWithObject:key]]) {
-                        [result addObject:[keyMap objectForKey:key]];
+                        [result addObject:keyMap[key]];
                     }
                 }
             }
@@ -677,7 +677,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysForNyaruQueries(NSMutableDictionary *schemas,
         // map document.key to NyaruKey
         NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:resultKeys.count];
         for (NSString *key in resultKeys) {
-            [result addObject:[keyMap objectForKey:key]];
+            [result addObject:keyMap[key]];
         }
         return result;
     }
@@ -699,7 +699,7 @@ NYARU_BURST_LINK NSArray *nyaruKeysWithQuery(NyaruSchema *schema, NyaruQueryCell
     // schema.key equal to query.value
     if (schema.unique) {
         if ((query.operation & NyaruQueryEqual) == NyaruQueryEqual) {
-            NyaruKey *key = [schema.allKeys objectForKey:query.value];
+            NyaruKey *key = schema.allKeys[query.value];
             if (key) { [result addObject:query.value]; }
             return result;
         }
@@ -1090,7 +1090,7 @@ NYARU_BURST_LINK NSData *serialize(NSDictionary *document)
         // key of the document should be NSString and not empty
         if (![key isKindOfClass:NSString.class] || key.length == 0U) { continue; }
         
-        value = [document objectForKey:key];
+        value = document[key];
         
         // value of the document should be NSString, NSDate, NSNull or NSNumber
         if ([value isKindOfClass:NSString.class]) {
@@ -1436,7 +1436,7 @@ NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
 {
     NSMutableDictionary *result = [NSMutableDictionary new];
     NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
-    unsigned fileSize = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntValue];
+    unsigned fileSize = [fileInfo[@"NSFileSize"] unsignedIntValue];
     NSFileHandle *file = [NSFileHandle fileHandleForReadingAtPath:path];
     
     [file seekToFileOffset:NYARU_HEADER_LENGTH];
@@ -1479,7 +1479,7 @@ NYARU_BURST_LINK NSMutableDictionary *loadSchema(NSString *path)
 NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *clearedIndexBlock, NSString *indexFilePath, NSString *documentFilePath)
 {
     NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:indexFilePath error:nil];
-    unsigned size = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntValue];
+    unsigned size = [fileInfo[@"NSFileSize"] unsignedIntValue];
     NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:indexFilePath];
     NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:documentFilePath];
     
@@ -1512,10 +1512,10 @@ NYARU_BURST_LINK void loadIndex(NSMutableDictionary *schemas, NSMutableArray *cl
                                                        documentOffset:documentOffset
                                                        documentLength:documentLength
                                                           blockLength:blockLength];
-                [schema pushNyaruKey:[document objectForKey:NYARU_KEY] nyaruKey:key];
+                [schema pushNyaruKey:document[NYARU_KEY] nyaruKey:key];
             }
             else {
-                [schema pushNyaruIndex:[document objectForKey:NYARU_KEY] value:[document objectForKey:schema.name]];
+                [schema pushNyaruIndex:document[NYARU_KEY] value:document[schema.name]];
             }
         }
     }
@@ -1541,7 +1541,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
     }
     
     NSDictionary *fileInfo = [[NSFileManager defaultManager] attributesOfItemAtPath:indexFilePath error:nil];
-    unsigned size = [[fileInfo objectForKey:@"NSFileSize"] unsignedIntValue];
+    unsigned size = [fileInfo[@"NSFileSize"] unsignedIntValue];
     NSFileHandle *fileIndex = [NSFileHandle fileHandleForReadingAtPath:indexFilePath];
     NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:documentFilePath];
     
@@ -1568,7 +1568,7 @@ NYARU_BURST_LINK void loadIndexForSchema(NyaruSchema *schema, NSMutableDictionar
         NSData *documentData = [fileDocument readDataOfLength:documentLength];
         NSDictionary *document = deserialize(documentData);
         
-        [schema pushNyaruIndex:[document objectForKey:NYARU_KEY] value:[document objectForKey:schema.name]];
+        [schema pushNyaruIndex:document[NYARU_KEY] value:document[schema.name]];
     }
     
     [fileIndex closeFile];

@@ -119,7 +119,7 @@ static NyaruDB *_instance;
 {
     if (name.length == 0U) { return nil; }
     
-    NyaruCollection *result = [_collections objectForKey:name];
+    NyaruCollection *result = _collections[name];
     if (result) {
         return result;
     }
@@ -138,7 +138,7 @@ static NyaruDB *_instance;
 }
 - (void)removeCollection:(NSString *)name
 {
-    NyaruCollection *collection = [_collections objectForKey:name];
+    NyaruCollection *collection = _collections[name];
     if (collection) {
         [_collections removeObjectForKey:name];
         [collection close];

@@ -145,7 +145,7 @@ NYARU_BURST_LINK NSComparisonResult compareDate(NSDate *value1, NSDate *value2);
 #pragma mark - push key & index
 - (BOOL)pushNyaruKey:(NSString *)key nyaruKey:(NyaruKey *)nyaruKey;
 {
-    if ([_indexKey objectForKey:key]) {
+    if (_indexKey[key]) {
         // key is exist
         return NO;
     }
