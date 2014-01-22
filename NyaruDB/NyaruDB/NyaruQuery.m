@@ -226,6 +226,12 @@
     }
 }
 
+#pragma mark Fetch Async
+- (void)fetchAsync:(void (^)(NSArray *))handler
+{
+    
+}
+
 
 #pragma mark - Remove
 - (void)remove

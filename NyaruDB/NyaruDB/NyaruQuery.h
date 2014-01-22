@@ -11,9 +11,7 @@
 @class NyaruCollection;
 
 
-@interface NyaruQuery : NSObject {
-    
-}
+@interface NyaruQuery : NSObject
 
 #pragma mark - Properties
 @property (strong, nonatomic, readonly) NyaruCollection *collection;
@@ -28,6 +26,7 @@
 
 
 
+#pragma mark - Extensions
 @interface NyaruQuery (NyaruQueryIn)
 #pragma mark - Intersection
 - (NyaruQuery *)and:(NSString *)indexName equal:(id)value;
@@ -48,12 +47,15 @@
 - (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value;
 - (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value;
 
+
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;
 - (NyaruQuery *)orderByDESC:(NSString *)indexName;
 
+
 #pragma mark - Count
 - (NSUInteger)count;
+
 
 #pragma mark - Fetch
 /**
@@ -79,7 +81,16 @@
  */
 - (NSMutableDictionary *)fetchFirst;
 
+#pragma mark Fetch Async
+/**
+ Async fetch documents.
+ @param handler The result handler.
+ */
+- (void)fetchAsync:(void (^)(NSArray *))handler;
+
+
 #pragma mark - Remove
 - (void)remove;
+
 
 @end
