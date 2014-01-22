@@ -84,9 +84,28 @@
 #pragma mark Fetch Async
 /**
  Async fetch documents.
- @param handler The result handler.
+ @param handler The result handler. It will run in main dispatch.
  */
 - (void)fetchAsync:(void (^)(NSArray *))handler;
+/**
+ Async fetch documents with limit.
+ @param limit The result limit.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)fetch:(NSUInteger)limit async:(void (^)(NSArray *))handler;
+/**
+ Fetch documents with limit and skip.
+ @param limit The result limit.
+ @param skip The result skip.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)fetch:(NSUInteger)limit skip:(NSUInteger)skip async:(void (^)(NSArray *))handler;
+/**
+ Fetch the first document.
+ If result is empty it will return nil.
+ @param handler The result handler. It will run in main dispatch. The result is nil or NSMutableDictionary().
+ */
+- (void)fetchFirstAsync:(void (^)(NSMutableDictionary *))handler;
 
 
 #pragma mark - Remove

@@ -122,13 +122,21 @@
 
 #pragma mark - Fetch
 /**
- Fetch documents by the query.
+ Fetch documents by queries.
  @param queries The nyaru queries.
  @param skip The number of skip data.
  @param limit The number of result documents.
  @return [NSMutableDictionary]
  */
 - (NSArray *)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit;
+/**
+ Async fetch documents by queries.
+ @param queries The nyaru queries.
+ @param skip The number of skip data.
+ @param limit The number of result documents.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit async:(void (^)(NSArray *))handler;
 
 
 #pragma mark - Private methods

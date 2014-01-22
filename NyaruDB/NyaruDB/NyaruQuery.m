@@ -229,7 +229,26 @@
 #pragma mark Fetch Async
 - (void)fetchAsync:(void (^)(NSArray *))handler
 {
-    
+    [_collection fetchByQuery:_queries skip:0 limit:0 async:handler];
+}
+- (void)fetch:(NSUInteger)limit async:(void (^)(NSArray *))handler
+{
+    [_collection fetchByQuery:_queries skip:0 limit:limit async:handler];
+}
+- (void)fetch:(NSUInteger)limit skip:(NSUInteger)skip async:(void (^)(NSArray *))handler
+{
+    [_collection fetchByQuery:_queries skip:skip limit:limit async:handler];
+}
+- (void)fetchFirstAsync:(void (^)(NSMutableDictionary *))handler
+{
+    [_collection fetchByQuery:_queries skip:0 limit:1 async:^(NSArray *documents) {
+        if (documents.count == 0) {
+            handler(nil);
+        }
+        else {
+            handler(documents[0]);
+        }
+    }];
 }
 
 

@@ -468,6 +468,45 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     return result;
 }
 
+- (void)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit async:(void (^)(NSArray *))handler
+{
+    dispatch_async(_accessQueue, ^(void) {
+        NSMutableArray *result;
+        NSMutableDictionary *document;
+        NSUInteger fetchLimit = limit;
+        NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, YES);
+        
+        fetchLimit += skip;
+        if (fetchLimit == 0U) {
+            // fetch all documents
+            fetchLimit = keys.count;
+        }
+        else if (fetchLimit > keys.count) {
+            // limit over bound
+            fetchLimit = keys.count;
+        }
+        
+        // open file handle
+        NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+        
+        result = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
+        for (NSUInteger index = skip; index < fetchLimit; index++) {
+            document = fetchDocumentWithNyaruKey(keys[index], _documentCache, fileDocument);
+            if (document) {
+                [result addObject:document];
+            }
+        }
+        [fileDocument closeFile];
+        
+        // eval callback
+        if (handler) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(result);
+            });
+        }
+    });
+}
+
 
 #pragma mark - Query
 - (NyaruQuery *)query
