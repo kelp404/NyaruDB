@@ -467,30 +467,44 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     
     return result;
 }
-- (NSArray *)fetchKeyByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit
+
+- (void)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit async:(void (^)(NSArray *))handler
 {
-    __block NSArray *result;
-    dispatch_sync(_accessQueue, ^(void) {
-        NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
-        if (skip == 0U && limit == keys.count) {
-            // fetch all
-            result = keys;
-            return;
-        }
-        
+    dispatch_async(_accessQueue, ^(void) {
+        NSMutableArray *result;
+        NSMutableDictionary *document;
         NSUInteger fetchLimit = limit;
-        fetchLimit += skip;
-        if (fetchLimit == 0U) { fetchLimit = keys.count; }
-        else if (fetchLimit > keys.count) { fetchLimit = keys.count; }
+        NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, YES);
         
-        NSMutableArray *resultTemp = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
-        for (NSUInteger index = skip; index < fetchLimit; index++) {
-            [resultTemp addObject:keys[index]];
+        fetchLimit += skip;
+        if (fetchLimit == 0U) {
+            // fetch all documents
+            fetchLimit = keys.count;
         }
-        result = resultTemp;
+        else if (fetchLimit > keys.count) {
+            // limit over bound
+            fetchLimit = keys.count;
+        }
+        
+        // open file handle
+        NSFileHandle *fileDocument = [NSFileHandle fileHandleForReadingAtPath:_documentFilePath];
+        
+        result = [[NSMutableArray alloc] initWithCapacity:fetchLimit];
+        for (NSUInteger index = skip; index < fetchLimit; index++) {
+            document = fetchDocumentWithNyaruKey(keys[index], _documentCache, fileDocument);
+            if (document) {
+                [result addObject:document];
+            }
+        }
+        [fileDocument closeFile];
+        
+        // eval callback
+        if (handler) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                handler(result);
+            });
+        }
     });
-    
-    return result;
 }
 
 

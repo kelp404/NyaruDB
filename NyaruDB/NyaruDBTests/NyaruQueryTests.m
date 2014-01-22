@@ -318,6 +318,40 @@
     XCTAssertNoThrow([collection verify], @"");
 }
 
+#pragma mark Fetch Async
+- (void)testFetchAsync
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    void (^handler)(NSArray *) = ^(__unused NSArray *documents) { };
+    [[collection expect] fetchByQuery:_query.queries skip:0 limit:0 async:handler];
+    [_query and:@"name" equal:@"value"];
+    [_query fetchAsync:handler];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+- (void)testFetchAsyncLimit
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    void (^handler)(NSArray *) = ^(__unused NSArray *documents) { };
+    [[collection expect] fetchByQuery:_query.queries skip:0 limit:10 async:handler];
+    [_query and:@"name" equal:@"value"];
+    [_query fetch:10 async:handler];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
+- (void)testFetchAsyncLimitSkip
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    void (^handler)(NSArray *) = ^(__unused NSArray *documents) { };
+    [[collection expect] fetchByQuery:_query.queries skip:10 limit:2 async:handler];
+    [_query and:@"name" equal:@"value"];
+    [_query fetch:2 skip:10 async:handler];
+    XCTAssertNoThrow([collection verify], @"");
+}
+
 
 #pragma mark - Remove
 - (void)testRemove

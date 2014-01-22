@@ -283,14 +283,27 @@
     XCTAssertEqualObjects(data[0], doc, @"");
 }
 
-- (void)testFetchKeyByQuery
+- (void)testFetchAsyncByQuery
 {
+    dispatch_semaphore_t sync = dispatch_semaphore_create(0);
+    __block BOOL executed = NO;
+    
     _collection = [_db collection:@"collection"];
     [_collection createIndex:@"name"];
     NSDictionary *doc = [_collection put:@{@"name": @"value"}];
     NyaruQuery *query = [_collection where:@"name" equal:@"value"];
-    NSArray *data = [_collection fetchKeyByQuery:query.queries skip:0 limit:0];
-    XCTAssertEqualObjects(data[0], doc[@"key"], @"");
+    [_collection fetchByQuery:query.queries skip:0 limit:0 async:^(NSArray *data) {
+        XCTAssertEqualObjects(data[0], doc, @"");
+        executed = YES;
+        dispatch_semaphore_signal(sync);
+    }];
+    
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    dispatch_semaphore_wait(sync, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+    XCTAssertTrue(executed, @"");
+#if TARGET_OS_IPHONE
+    dispatch_release(sync);
+#endif
 }
 
 
