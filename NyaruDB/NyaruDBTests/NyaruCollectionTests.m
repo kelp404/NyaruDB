@@ -283,16 +283,6 @@
     XCTAssertEqualObjects(data[0], doc, @"");
 }
 
-- (void)testFetchKeyByQuery
-{
-    _collection = [_db collection:@"collection"];
-    [_collection createIndex:@"name"];
-    NSDictionary *doc = [_collection put:@{@"name": @"value"}];
-    NyaruQuery *query = [_collection where:@"name" equal:@"value"];
-    NSArray *data = [_collection fetchKeyByQuery:query.queries skip:0 limit:0];
-    XCTAssertEqualObjects(data[0], doc[@"key"], @"");
-}
-
 
 
 @end

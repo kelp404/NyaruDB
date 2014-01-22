@@ -121,10 +121,14 @@
 - (NSUInteger)countByQuery:(NSArray *)queries;
 
 #pragma mark - Fetch
-// fetch document by query
+/**
+ Fetch documents by the query.
+ @param queries The nyaru queries.
+ @param skip The number of skip data.
+ @param limit The number of result documents.
+ @return [NSMutableDictionary]
+ */
 - (NSArray *)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit;
-// only fetch the field "key" in the document
-- (NSArray *)fetchKeyByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit;
 
 
 #pragma mark - Private methods
