@@ -275,6 +275,15 @@
     [[_query and:@"name" equal:@"value"] count];
     XCTAssertNoThrow([collection verify], @"");
 }
+- (void)testCountAsync
+{
+    id collection = [OCMockObject mockForClass:[NyaruCollection class]];
+    _query = [[NyaruQuery alloc] initWithCollection:collection];
+    void (^handler)(NSUInteger) = ^(__unused NSUInteger count) { };
+    [[collection expect] countByQuery:_query.queries async:handler];
+    [[_query and:@"name" equal:@"value"] countAsync:handler];
+    XCTAssertNoThrow([collection verify], @"");
+}
 
 
 #pragma mark - Fetch

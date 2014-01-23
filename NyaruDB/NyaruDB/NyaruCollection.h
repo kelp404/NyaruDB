@@ -117,8 +117,28 @@
 - (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value;
 
 #pragma mark - Count
+/**
+ Count all documents.
+ @return The number of all documents.
+ */
 - (NSUInteger)count;
+/**
+ Count by queries.
+ @param queries The nyaru queries.
+ @return The count result.
+ */
 - (NSUInteger)countByQuery:(NSArray *)queries;
+/**
+ Count all documents.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)countAsync:(void (^)(NSUInteger))handler;
+/**
+ Count by queries.
+ @param queries The nyaru queries.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)countByQuery:(NSArray *)queries async:(void (^)(NSUInteger))handler;
 
 #pragma mark - Fetch
 /**

@@ -54,7 +54,16 @@
 
 
 #pragma mark - Count
+/**
+ Count documents with queries.
+ @return The number of documents.
+ */
 - (NSUInteger)count;
+/**
+ Count documents with queries.
+ @param handler The result handler. It will run in main dispatch.
+ */
+- (void)countAsync:(void (^)(NSUInteger))handler;
 
 
 #pragma mark - Fetch

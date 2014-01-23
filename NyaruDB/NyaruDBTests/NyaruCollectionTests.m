@@ -271,6 +271,93 @@
     XCTAssertEqual(count, 2U, @"");
 }
 
+- (void)testCountAsync0
+{
+    dispatch_semaphore_t sync = dispatch_semaphore_create(0);
+    __block BOOL executed = NO;
+    
+    _collection = [_db collection:@"collection"];
+    [_collection countAsync:^(NSUInteger count) {
+        XCTAssertEqual(count, 0U, @"");
+        executed = YES;
+        dispatch_semaphore_signal(sync);
+    }];
+    
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    dispatch_semaphore_wait(sync, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+    XCTAssertTrue(executed, @"");
+#if TARGET_OS_IPHONE
+    dispatch_release(sync);
+#endif
+}
+
+- (void)testCountAsync1
+{
+    dispatch_semaphore_t sync = dispatch_semaphore_create(0);
+    __block BOOL executed = NO;
+    
+    _collection = [_db collection:@"collection"];
+    [_collection put:@{@"name": @"value"}];
+    [_collection countAsync:^(NSUInteger count) {
+        XCTAssertEqual(count, 1U, @"");
+        executed = YES;
+        dispatch_semaphore_signal(sync);
+    }];
+    
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    dispatch_semaphore_wait(sync, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+    XCTAssertTrue(executed, @"");
+#if TARGET_OS_IPHONE
+    dispatch_release(sync);
+#endif
+}
+
+- (void)testCountAsync2
+{
+    dispatch_semaphore_t sync = dispatch_semaphore_create(0);
+    __block BOOL executed = NO;
+    
+    _collection = [_db collection:@"collection"];
+    [_collection put:@{@"name": @"value"}];
+    [_collection put:@{@"name": @"value"}];
+    [_collection countAsync:^(NSUInteger count) {
+        XCTAssertEqual(count, 2U, @"");
+        executed = YES;
+        dispatch_semaphore_signal(sync);
+    }];
+    
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+    dispatch_semaphore_wait(sync, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+    XCTAssertTrue(executed, @"");
+#if TARGET_OS_IPHONE
+    dispatch_release(sync);
+#endif
+}
+
+- (void)testCountWithQueryAsync
+{
+    dispatch_semaphore_t sync = dispatch_semaphore_create(0);
+    __block BOOL executed = NO;
+    
+    _collection = [_db collection:@"collection"];
+    [_collection createIndex:@"name"];
+    
+    [_collection put:@{@"name": @1}];
+    [_collection put:@{@"name": @1}];
+    [[_collection where:@"name" equal:@1] countAsync:^(NSUInteger count) {
+        XCTAssertEqual(count, 2U, @"");
+        executed = YES;
+        dispatch_semaphore_signal(sync);
+    }];
+    
+    [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
+    dispatch_semaphore_wait(sync, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+    XCTAssertTrue(executed, @"");
+#if TARGET_OS_IPHONE
+    dispatch_release(sync);
+#endif
+}
+
 
 #pragma mark - Fetch
 - (void)testFetchByQuery
@@ -283,7 +370,7 @@
     XCTAssertEqualObjects(data[0], doc, @"");
 }
 
-- (void)testFetchAsyncByQuery
+- (void)testFetchByQueryAsync
 {
     dispatch_semaphore_t sync = dispatch_semaphore_create(0);
     __block BOOL executed = NO;

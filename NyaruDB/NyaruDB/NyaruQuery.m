@@ -200,6 +200,10 @@
 {
     return [_collection countByQuery:_queries];
 }
+- (void)countAsync:(void (^)(NSUInteger))handler
+{
+    [_collection countByQuery:_queries async:handler];
+}
 
 
 #pragma mark - Fetch
