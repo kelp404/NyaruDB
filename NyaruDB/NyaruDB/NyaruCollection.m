@@ -271,7 +271,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
     }
     
     // write data with GCD
-    dispatch_async(_accessQueue, ^(void) {
+    dispatch_async(_accessQueue, ^{
         // document key
         NSString *docKey = doc[NYARU_KEY];
         
@@ -365,7 +365,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)removeByKey:(NSString *)documentKey
 {
-    dispatch_async(_accessQueue, ^(void) {
+    dispatch_async(_accessQueue, ^{
         NyaruKey *nyaruKey = [(NyaruSchema *)_schemas[NYARU_KEY] allKeys][documentKey];
         if (!nyaruKey) { return; }
         
@@ -386,7 +386,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)removeByQuery:(NSArray *)queries
 {
-    dispatch_async(_accessQueue, ^(void) {
+    dispatch_async(_accessQueue, ^{
         NSArray *documentKeys = nyaruKeysForNyaruQueries(_schemas, queries, NO);
         NSDictionary *keyMap = [(NyaruSchema *)_schemas[NYARU_KEY] allKeys];
         NSFileHandle *fileIndex = [NSFileHandle fileHandleForWritingAtPath:_indexFilePath];
@@ -412,7 +412,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (void)removeAll
 {
     // write data with GCD
-    dispatch_async(_accessQueue, ^(void) {
+    dispatch_async(_accessQueue, ^{
         [_clearedIndexBlock removeAllObjects];
         [_documentCache removeAllObjects];
         for (NyaruSchema *schema in _schemas.allValues) {
@@ -495,7 +495,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (NSUInteger)count
 {
     __block NSUInteger result;
-    dispatch_sync(_accessQueue, ^(void) {
+    dispatch_sync(_accessQueue, ^{
         result = [_schemas[NYARU_KEY] allKeys].count;
     });
     return result;
@@ -503,7 +503,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (NSUInteger)countByQuery:(NSArray *)queries
 {
     __block NSUInteger result;
-    dispatch_sync(_accessQueue, ^(void) {
+    dispatch_sync(_accessQueue, ^{
         result = nyaruKeysForNyaruQueries(_schemas, queries, NO).count;
     });
     return result;
@@ -532,7 +532,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 - (NSArray *)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit
 {
     __block NSMutableArray *result;
-    dispatch_sync(_accessQueue, ^(void) {
+    dispatch_sync(_accessQueue, ^{
         NSUInteger fetchLimit = limit;
         NSArray *keys = nyaruKeysForNyaruQueries(_schemas, queries, YES);
         NSMutableDictionary *item;
@@ -555,7 +555,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 
 - (void)fetchByQuery:(NSArray *)queries skip:(NSUInteger)skip limit:(NSUInteger)limit async:(void (^)(NSArray *))handler
 {
-    dispatch_async(_accessQueue, ^(void) {
+    dispatch_async(_accessQueue, ^{
         NSMutableArray *result;
         NSMutableDictionary *document;
         NSUInteger fetchLimit = limit;
@@ -603,7 +603,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
 }
 - (void)close
 {
-    dispatch_sync(_accessQueue, ^(void) {
+    dispatch_sync(_accessQueue, ^{
         for (NyaruSchema *schema in _schemas.allValues) {
             [schema close];
         }
