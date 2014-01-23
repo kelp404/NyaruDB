@@ -321,6 +321,7 @@ NyaruCollection *co = [db collection:@"collectionName"];
 
 #pragma mark - Count
 - (NSUInteger)count;
+- (void)countAsync:(void (^)(NSUInteger))handler;
 ```
 
 
@@ -350,6 +351,7 @@ NyaruCollection *co = [db collection:@"collectionName"];
 
 #pragma mark - Count
 - (NSUInteger)count;
+- (void)countAsync:(void (^)(NSUInteger))handler;
 
 #pragma mark - Fetch
 - (NSArray *)fetch;
