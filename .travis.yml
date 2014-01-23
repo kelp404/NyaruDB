@@ -1,7 +1,7 @@
 language: objective-c
 
 script:
-  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB -sdk iphonesimulator build
-  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB -sdk iphonesimulator test -test-sdk iphonesimulator7.0
-  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX build
-  - xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX test
+  - submodules/xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB -sdk iphonesimulator build
+  - submodules/xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB -sdk iphonesimulator test -test-sdk iphonesimulator7.0
+  - submodules/xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX build
+  - submodules/xctool/xctool.sh -workspace NyaruDB.xcworkspace -scheme NyaruDB-OSX test
