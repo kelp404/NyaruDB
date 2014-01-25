@@ -4,9 +4,7 @@
 > 2013年4月7日（日）深夜1:05～からテレビ東京ほかにて放送スタート！  
 
 
-Kelp https://twitter.com/kelp404  
-[MIT License][mit]
-[MIT]: http://www.opensource.org/licenses/mit-license.php
+[MIT License](http://www.opensource.org/licenses/mit-license.php)
 
 
 NyaruDB is a simple NoSQL database in Objective-C. It could be run on iOS and OS X.  
@@ -84,8 +82,8 @@ If you want to search data by 'email', you should create a 'email' index before 
 ##Document
 Document is data in the collection.
 
-There is a member named 'key' in the document. Key is unique and datatype is NSString.  
-If the document has no 'key' when inserted, it will be automatically generated.  
+There is a member named `key` in the document. Key is unique and datatype is NSString.
+If the document has no `key` when inserted, it will be automatically generated.
 
 + Normal Field Datatype: `NSNull`, `NSNumber`, `NSDate`, `NSString`, `NSArray`, `NSDictionary`  
 **(items just allow `NSString`, `NSNumber`, `NSDate` and `NSNull` in the `NSArray`)**  
@@ -94,31 +92,33 @@ If the document has no 'key' when inserted, it will be automatically generated.
 
 
 ---
-##Instance
-`[NyaruDB instance]` returns a static NyaruDB instance, and database path is `/your-app/Documents/NyaruDB`. This method is for **iOS**.  
-`[[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"]` this method is for **OS X**.  
+##Access Database
+###Instance
+>
+####iOS
+`[NyaruDB instance]` returns a static NyaruDB instance, and database path is `/your-app/Documents/NyaruDB`.
+```
+NyaruDB *db = [NyaruDB instance];
+```
+####OS X
+`[[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"]`.  
 NyaruDB will scan all documents in collections when `[NyaruDB init]`, so do not call `init` too much.  
 In OS X, you should handle the static instance by yourself.  
+```
+NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
+```
 
 
-##Create Collection
+###Create the collection
+>
 ```objective-c
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *collectioin = [db collection:@"collectionName"];
 ```
 
 
-##Create Index
+###Create the index
+>
 ```objective-c
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *collection = [db collection:@"collectionName"];
 [collection createIndex:@"email"];
 [collection createIndex:@"number"];
@@ -126,14 +126,10 @@ NyaruCollection *collection = [db collection:@"collectionName"];
 ```
 
 
-##Insert Data
+###Insert the document
+>
 If there is a document has the same 'key', it will be replace with the new document. (update document)
 ```objective-c
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *collection = [db collection:@"collectionName"];
 NSDictionary *document = @{@"email": @"kelp@phate.org",
     @"name": @"Kelp",
@@ -145,36 +141,23 @@ NSDictionary *document = @{@"email": @"kelp@phate.org",
 ```
 
 
-##Query    
+###Query
+>
 The field of the document which is `key` or `index` supports search.  
 `key` supports `equal`.  
 `index` supports `equal`, `notEqual`, `less`, `lessEqual`, `greater`, `greaterEqual` and `like`.  
-
-You could use `and`(Intersection) or `or` to append query.  
-
-
+>
+You could use `and`(Intersection) or `or` to append the query.
 ```objective-c
 // search the document the 'key' is equal to 'IjkhMGIT752091136'
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *co = [db collection:@"collectionName"];
 NSArray *documents = [[co where:@"key" equal:@"IjkhMGIT752091136"] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
-
-
 ```objective-c
 // search documents the 'date' is greater than now, and sort by date with DESC
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *co = [db collection:@"collectionName"];
 NSDate *date = [NSDate date];
 NSArray *documents = [[[co where:@"date" greater:date] orderByDESC:@"date"] fetch];
@@ -182,16 +165,9 @@ for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
-
-
 ```objective-c
 // search documents the 'date' is greater than now, and 'type' is equal to 2
 // then sort by date with ASC
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *co = [db collection:@"collectionName"];
 NSDate *date = [NSDate date];
 NSArray *documents = [[[[co where:@"date" greater:date] and:@"type" equal:@2] orderBy:@"date"] fetch];
@@ -199,53 +175,30 @@ for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
-
-
 ```objective-c
 // search documents 'type' == 1 or 'type' == 3
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *co = [db collection:@"collectionName"];
 NSArray *documents = [[[co where:@"type" equal:@1] or:@"type" equal:@3] fetch];
 for (NSMutableDictionary *document in documents) {
     NSLog(@"%@", document);
 }
 ```
-
-
 ```objective-c
 // count documents 'type' == 1
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
 NyaruCollection *co = [db collection:@"collectionName"];
 NSUInteger count = [[co where:@"type" equal:@1] count];
 NSLog(@"%u", count);
 ```
 
 
-
-
-##Delete Data
+###Delete documents
+>
 ```objective-c
-// delete data by key
-/* iOS */
-NyaruDB *db = [NyaruDB instance];
-// /* OS X */
-// NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
-
-// create collection
 NyaruCollection *co = [db collection:@"collectionName"];
 [co createIndex:@"number"];
-[co put:@{@"number" : @100}];
-[co put:@{@"number" : @200}];
-[co put:@{@"number" : @10}];
-
+[co put:@{@"number": @100}];
+[co put:@{@"number": @200}];
+[co put:@{@"number": @10}];
 // remove by query
 [[co where:@"number" equal:@10] remove];
 // remove all
@@ -253,11 +206,61 @@ NyaruCollection *co = [db collection:@"collectionName"];
 ```
 
 
+###Sync & Async
+>
+`put` and `remove` will be run as async mode.  
+`fetch` and `count` will be run as sync mode. But all commands will be processed on a same dispatch.  
+>
+After 1.4.1 NyaruDB has new messages about async fetch and count.  
+`[NyaruQuery fetchAsync:(void (^)(NSArray *))handler]`  
+`[NyaruQuery countAsync:(void (^)(NSUInteger))handler]`  
+>
+If you wount to put documents as sync, you could use `[NyaruCollection waitForWriting]`.
+```Objective-C
+NyaruDB *db = [NyaruDB instance];
+NyaruCollection *collection = [db collection:@"collection"];
+NSDictionary *document = @{@"email": @"kelp@phate.org",
+    @"name": @"Kelp",
+    @"phone": @"0123456789",
+    @"date": [NSDate date],
+    @"text": @"(」・ω・)」",
+    @"number": @100};
+[collection put:document];
+[collection waitForWriting];  // sync
+```
+>
+```Objective-C
+// be Careful
+NyaruDB *db = [NyaruDB instance];
+NyaruCollection *collection = [db collection:@"collection"];
+NSDictionary *document = @{@"email": @"kelp@phate.org",
+    @"name": @"Kelp",
+    @"phone": @"0123456789",
+    @"date": [NSDate date],
+    @"text": @"(」・ω・)」",
+    @"number": @100};
+for (NSUInteger index = 0; index < 1000; index++) {
+    // put 1k documents
+    [collection put:document];
+}
+// cpu will wait for documents write done.
+// if this is main dispatch, it will be locked.
+NSUInteger count = collection.count;
+// you could try this
+[collection countAsync:^(NSUInteger count) {
+    // this block run in main dispatch
+}];
+```
+
+
+
 
 ---
 ##Class
-**NyaruDB interface**
+###NyaruDB interface
+>
 ```Objective-C
+#pragma mark - Instance
 /**
  Get the shared instance for iOS.
  @return NyaruDB shared instance
@@ -268,8 +271,6 @@ NyaruCollection *co = [db collection:@"collectionName"];
  if you init database error, maybe need to call this message.
  */
 + (void)reset;
-
-
 /**
  Init NyaruDB for OS X.
  @param path Database files are in this path.
@@ -281,24 +282,23 @@ NyaruCollection *co = [db collection:@"collectionName"];
  Before release instance you should invoke this method.
  */
 - (void)close;
-
-
+#pragma mark - Collection
 - (NSArray *)collections;
 - (NyaruCollection *)collection:(NSString *)name;
-
+#pragma mark Remove
 - (void)removeCollection:(NSString *)name;
 - (void)removeAllCollections;
 ```
 
 
-**NyaruCollection interface**
+###NyaruCollection interface
+>
 ```Objective-C
 #pragma mark - Index
 - (NSArray *)allIndexes;
 - (void)createIndex:(NSString *)indexName;
 - (void)removeIndex:(NSString *)indexName;
 - (void)removeAllindexes;
-
 #pragma mark - Document
 // put document
 - (NSMutableDictionary *)put:(NSDictionary *)document;
@@ -308,7 +308,6 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (void)waitForWriting;
 // clear cache
 - (void)clearCache;
-
 #pragma mark - Query
 - (NyaruQuery *)all;
 - (NyaruQuery *)where:(NSString *)indexName equal:(id)value;
@@ -318,14 +317,14 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (NyaruQuery *)where:(NSString *)indexName greater:(id)value;
 - (NyaruQuery *)where:(NSString *)indexName greaterEqual:(id)value;
 - (NyaruQuery *)where:(NSString *)indexName like:(NSString *)value;
-
 #pragma mark - Count
 - (NSUInteger)count;
 - (void)countAsync:(void (^)(NSUInteger))handler;
 ```
 
 
-**NyaruQuery interface**
+###NyaruQuery interface
+>
 ```Objective-C
 #pragma mark - Intersection
 - (NyaruQuery *)and:(NSString *)indexName equal:(id)value;
@@ -335,7 +334,6 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (NyaruQuery *)and:(NSString *)indexName greater:(id)value;
 - (NyaruQuery *)and:(NSString *)indexName greaterEqual:(id)value;
 - (NyaruQuery *)and:(NSString *)indexName like:(NSString *)value;
-
 #pragma mark - Union
 - (NyaruQuery *)or:(NSString *)indexName equal:(id)value;
 - (NyaruQuery *)or:(NSString *)indexName notEqual:(id)value;
@@ -344,15 +342,12 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (NyaruQuery *)or:(NSString *)indexName greater:(id)value;
 - (NyaruQuery *)or:(NSString *)indexName greaterEqual:(id)value;
 - (NyaruQuery *)or:(NSString *)indexName like:(NSString *)value;
-
 #pragma mark - Order By
 - (NyaruQuery *)orderBy:(NSString *)indexName;
 - (NyaruQuery *)orderByDESC:(NSString *)indexName;
-
 #pragma mark - Count
 - (NSUInteger)count;
 - (void)countAsync:(void (^)(NSUInteger))handler;
-
 #pragma mark - Fetch
 - (NSArray *)fetch;
 - (NSArray *)fetch:(NSUInteger)limit;
@@ -362,7 +357,6 @@ NyaruCollection *co = [db collection:@"collectionName"];
 - (void)fetch:(NSUInteger)limit async:(void (^)(NSArray *))handler;
 - (void)fetch:(NSUInteger)limit skip:(NSUInteger)skip async:(void (^)(NSArray *))handler;
 - (void)fetchFirstAsync:(void (^)(NSMutableDictionary *))handler;
-
 #pragma mark - Remove
 - (void)remove;
 ```
