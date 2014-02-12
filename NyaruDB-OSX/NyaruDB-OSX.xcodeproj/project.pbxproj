@@ -28,6 +28,7 @@
 		214AD5D0170306D20016B261 /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B3170306890016B261 /* NyaruQuery.h */; };
 		214AD5D1170306D20016B261 /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B5170306890016B261 /* NyaruQueryCell.h */; };
 		214AD5D2170306D20016B261 /* NyaruSchema.h in Headers */ = {isa = PBXBuildFile; fileRef = 214AD5B7170306890016B261 /* NyaruSchema.h */; };
+		214FA48E18ABBA5900087129 /* NyaruDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 214FA48D18ABBA5900087129 /* NyaruDBTests.m */; };
 		21552D6A170307C900616FDA /* SenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21552D69170307C900616FDA /* SenarioTests.m */; };
 		21954EFE188238CD00894E68 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21954EFD188238CD00894E68 /* XCTest.framework */; };
 /* End PBXBuildFile section */
@@ -70,6 +71,7 @@
 		214AD5B6170306890016B261 /* NyaruQueryCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NyaruQueryCell.m; path = ../../NyaruDB/NyaruDB/NyaruQueryCell.m; sourceTree = "<group>"; };
 		214AD5B7170306890016B261 /* NyaruSchema.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NyaruSchema.h; path = ../../NyaruDB/NyaruDB/NyaruSchema.h; sourceTree = "<group>"; };
 		214AD5B8170306890016B261 /* NyaruSchema.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = NyaruSchema.m; path = ../../NyaruDB/NyaruDB/NyaruSchema.m; sourceTree = "<group>"; };
+		214FA48D18ABBA5900087129 /* NyaruDBTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruDBTests.m; sourceTree = "<group>"; };
 		21552D69170307C900616FDA /* SenarioTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SenarioTests.m; sourceTree = "<group>"; };
 		21954EFD188238CD00894E68 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -172,6 +174,7 @@
 		214AD586170305AF0016B261 /* NyaruDB-OSXTests */ = {
 			isa = PBXGroup;
 			children = (
+				214FA48D18ABBA5900087129 /* NyaruDBTests.m */,
 				21552D69170307C900616FDA /* SenarioTests.m */,
 				214AD587170305AF0016B261 /* Supporting Files */,
 			);
@@ -319,6 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				21552D6A170307C900616FDA /* SenarioTests.m in Sources */,
+				214FA48E18ABBA5900087129 /* NyaruDBTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
