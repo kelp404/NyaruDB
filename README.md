@@ -12,7 +12,8 @@ It is a key-valu pair NoSQL database. You could search data by fields of the doc
 
 
 ##Feature
-* More quickly than sqlite.  
+####More quickly than sqlite.  
+>
 NyaruDB use memory cache, <a href="https://developer.apple.com/technologies/mac/core.html#grand-central" target="_blank">GCD</a> and binary tree to optimize performance.
 ```
 NoSQL with SQL:  
@@ -33,7 +34,8 @@ Writing documents to database will be processed in a async dispatch. So your cod
 If next command is reading documents from database, the command will be processed after writing done.  
 
 
-* Clean query syntax.  
+####Clean query syntax.  
+>
 ```objective-c
 // where type == 1 order by update
 NSArray *documents = [[[collection where:@"type" equal:@1] orderBy:@"update"] fetch];
@@ -43,18 +45,22 @@ NSArray *documents = [[[collection where:@"type" equal:@1] orderBy:@"update"] fe
 
 ---
 ##Installation
-1. **git:**
-```
+####git
+
+>
+```bash
 $ git clone git://github.com/kelp404/NyaruDB.git
 ```
 
-2. **<a href="http://cocoapods.org/" target="_blank">CocoadPods</a>:**  
+####<a href="http://cocoapods.org/" target="_blank">CocoadPods</a>:
+
+>
 add `Podfile` in your project path
 ```
 platform :ios
 pod 'NyaruDB'
 ```
-```
+```bash
 $ pod install
 ```
 
