@@ -316,9 +316,7 @@
         }
     });
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-#if TARGET_OS_IPHONE
     dispatch_release(group);
-#endif
     XCTAssertEqual(co.all.count, 1000U, @"");
 }
 
