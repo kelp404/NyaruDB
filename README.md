@@ -103,14 +103,14 @@ If the document has no `key` when inserted, it will be automatically generated.
 >
 ####iOS
 `[NyaruDB instance]` returns a static NyaruDB instance, and database path is `/your-app/Documents/NyaruDB`.
-```
+```objective-c
 NyaruDB *db = [NyaruDB instance];
 ```
 ####OS X
 `[[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"]`.  
 NyaruDB will scan all documents in collections when `[NyaruDB init]`, so do not call `init` too much.  
 In OS X, you should handle the static instance by yourself.  
-```
+```objective-c
 NyaruDB *db = [[NyaruDB alloc] initWithPath:@"/tmp/NyaruDB"];
 ```
 
