@@ -13,4 +13,7 @@
    <FileRef
       location = "group:NyaruDBDemo/NyaruDBDemo.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:submodules/ocmock/Source/OCMock.xcodeproj">
+   </FileRef>
 </Workspace>

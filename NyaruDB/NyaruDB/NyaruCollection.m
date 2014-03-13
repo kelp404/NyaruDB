@@ -185,7 +185,7 @@ NYARU_BURST_LINK void fileDelete(NSString *path);
         
         NSFileHandle *file = [NSFileHandle fileHandleForWritingAtPath:_schemaFilePath];
         NyaruSchema *schema = [[NyaruSchema alloc] initWithName:indexName previousOffser:previous nextOffset:0U];
-        schema.offsetInFile = [file seekToEndOfFile];
+        schema.offsetInFile = (unsigned)[file seekToEndOfFile];
         [file writeData:schema.dataFormate];
         
         if (lastSchema) {
