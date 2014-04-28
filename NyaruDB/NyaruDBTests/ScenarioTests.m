@@ -95,7 +95,7 @@
     [co createIndex:@"string"];
     
     for (NSInteger index = 0; index < 10; index++) {
-        [co put:@{@"string": [NSString stringWithFormat:@"B%i", index], @"data": @"data00"}];
+        [co put:@{@"string": [NSString stringWithFormat:@"B%li", (long)index], @"data": @"data00"}];
     }
     [co put:@{@"string": @"B5", @"data": @"data00"}];
     // count

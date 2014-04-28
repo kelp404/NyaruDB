@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		21248C23187966F0005A15E5 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 21248C22187966F0005A15E5 /* libOCMock.a */; };
 		2148774A18769290008A691E /* NyaruQueryCellTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2148774918769290008A691E /* NyaruQueryCellTests.m */; };
 		2148774C187694D3008A691E /* NyaruQueryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2148774B187694D3008A691E /* NyaruQueryTests.m */; };
 		21544874187A5CAC00103A13 /* NyaruCollectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21544873187A5CAC00103A13 /* NyaruCollectionTests.m */; };
@@ -29,6 +28,7 @@
 		21A877AC16D35ADD00B5DDA8 /* NyaruIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */; };
 		21A877AF16D37E7600B5DDA8 /* NyaruQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */; };
 		21A877B016D37E7600B5DDA8 /* NyaruQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */; };
+		21ADE90C18D1A0C000E2DD06 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 21ADE90B18D1A0C000E2DD06 /* libOCMock.a */; };
 		21CCD81D16D3C2C400168102 /* NyaruQueryCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */; };
 		21CCD81E16D3C2C400168102 /* NyaruQueryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */; };
 		21D91F011879820F002D9190 /* NyaruDBTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 21D91F001879820F002D9190 /* NyaruDBTests.m */; };
@@ -79,6 +79,7 @@
 		21A877AA16D35ADD00B5DDA8 /* NyaruIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruIndex.m; sourceTree = "<group>"; };
 		21A877AD16D37E7600B5DDA8 /* NyaruQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQuery.h; sourceTree = "<group>"; };
 		21A877AE16D37E7600B5DDA8 /* NyaruQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQuery.m; sourceTree = "<group>"; };
+		21ADE90B18D1A0C000E2DD06 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOCMock.a; path = "../submodules/ocmock/Source/build/Debug-iphoneos/libOCMock.a"; sourceTree = "<group>"; };
 		21CCD81B16D3C2C400168102 /* NyaruQueryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NyaruQueryCell.h; sourceTree = "<group>"; };
 		21CCD81C16D3C2C400168102 /* NyaruQueryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruQueryCell.m; sourceTree = "<group>"; };
 		21D91F001879820F002D9190 /* NyaruDBTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NyaruDBTests.m; sourceTree = "<group>"; };
@@ -108,7 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21248C23187966F0005A15E5 /* libOCMock.a in Frameworks */,
+				21ADE90C18D1A0C000E2DD06 /* libOCMock.a in Frameworks */,
 				218D8965187592460086FBE8 /* XCTest.framework in Frameworks */,
 				21EAAD8C15B1003600835B47 /* Foundation.framework in Frameworks */,
 				21EAAD8F15B1003600835B47 /* libNyaruDB.a in Frameworks */,
@@ -150,6 +151,7 @@
 		21EAAD7915B1003600835B47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				21ADE90B18D1A0C000E2DD06 /* libOCMock.a */,
 				21248C22187966F0005A15E5 /* libOCMock.a */,
 				218D8964187592460086FBE8 /* XCTest.framework */,
 				21EAAD7A15B1003600835B47 /* Foundation.framework */,
@@ -283,7 +285,7 @@
 		21EAAD6E15B1003500835B47 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "";
 			};
 			buildConfigurationList = 21EAAD7115B1003500835B47 /* Build configuration list for PBXProject "NyaruDB" */;
@@ -398,7 +400,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 			};

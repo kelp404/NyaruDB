@@ -20,7 +20,6 @@
 		21DC703716D706C800EB0953 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703616D706C800EB0953 /* Default-568h@2x.png */; };
 		21DC703A16D706C800EB0953 /* NyaruDBDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21DC703916D706C800EB0953 /* NyaruDBDemoViewController.m */; };
 		21DC703D16D706C800EB0953 /* NyaruDBDemoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21DC703B16D706C800EB0953 /* NyaruDBDemoViewController.xib */; };
-		21DC704516D706C800EB0953 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC704416D706C800EB0953 /* SenTestingKit.framework */; };
 		21DC704616D706C800EB0953 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702016D706C700EB0953 /* UIKit.framework */; };
 		21DC704716D706C800EB0953 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21DC702216D706C700EB0953 /* Foundation.framework */; };
 		21DC704F16D706C800EB0953 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 21DC704D16D706C800EB0953 /* InfoPlist.strings */; };
@@ -57,8 +56,7 @@
 		21DC703816D706C800EB0953 /* NyaruDBDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDBDemoViewController.h; sourceTree = "<group>"; };
 		21DC703916D706C800EB0953 /* NyaruDBDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NyaruDBDemoViewController.m; sourceTree = "<group>"; };
 		21DC703C16D706C800EB0953 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/NyaruDBDemoViewController.xib; sourceTree = "<group>"; };
-		21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NyaruDBDemoTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
-		21DC704416D706C800EB0953 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		21DC704316D706C800EB0953 /* NyaruDBDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NyaruDBDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		21DC704C16D706C800EB0953 /* NyaruDBDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "NyaruDBDemoTests-Info.plist"; sourceTree = "<group>"; };
 		21DC704E16D706C800EB0953 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		21DC705016D706C800EB0953 /* NyaruDBDemoTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NyaruDBDemoTests.h; sourceTree = "<group>"; };
@@ -82,7 +80,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				21DC704516D706C800EB0953 /* SenTestingKit.framework in Frameworks */,
 				21DC704616D706C800EB0953 /* UIKit.framework in Frameworks */,
 				21DC704716D706C800EB0953 /* Foundation.framework in Frameworks */,
 			);
@@ -105,7 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				21DC701D16D706C700EB0953 /* NyaruDBDemo.app */,
-				21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */,
+				21DC704316D706C800EB0953 /* NyaruDBDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,7 +114,6 @@
 				21DC702016D706C700EB0953 /* UIKit.framework */,
 				21DC702216D706C700EB0953 /* Foundation.framework */,
 				21DC702416D706C700EB0953 /* CoreGraphics.framework */,
-				21DC704416D706C800EB0953 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -206,8 +202,8 @@
 			);
 			name = NyaruDBDemoTests;
 			productName = NyaruDBDemoTests;
-			productReference = 21DC704316D706C800EB0953 /* NyaruDBDemoTests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productReference = 21DC704316D706C800EB0953 /* NyaruDBDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -216,6 +212,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = NyaruDBDemo;
+				LastTestingUpgradeCheck = 0510;
 				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = 21DC701816D706C700EB0953 /* Build configuration list for PBXProject "NyaruDBDemo" */;
@@ -423,13 +420,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
 				INFOPLIST_FILE = "NyaruDBDemoTests/NyaruDBDemoTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
 		};
@@ -440,13 +437,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SDKROOT)/Developer/Library/Frameworks\"",
 					"\"$(DEVELOPER_LIBRARY_DIR)/Frameworks\"",
+					"$(inherited)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NyaruDBDemo/NyaruDBDemo-Prefix.pch";
 				INFOPLIST_FILE = "NyaruDBDemoTests/NyaruDBDemoTests-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;
 		};
