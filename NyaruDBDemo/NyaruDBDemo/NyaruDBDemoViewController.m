@@ -58,7 +58,7 @@
 - (void)clickInsertDocument:(id)sender
 {
     NSInteger random = arc4random() % 100;
-    [_co put:@{@"title": [NSString stringWithFormat:@"Nyaru %i", random],
+    [_co put:@{@"title": [NSString stringWithFormat:@"Nyaru %li", (long)random],
      @"updateTime": [NSDate date]}];
     
     [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
