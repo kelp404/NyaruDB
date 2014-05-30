@@ -381,6 +381,12 @@ NSUInteger count = collection.count;
 + sort query allow only one
 
 
+##Thanks
++ [ニャル子](http://nyaruko.com/)
++ 白い悪魔なのは
++ [LINQ](http://msdn.microsoft.com/en-us//library/bb397897.aspx)
+
+
 ##History
 + 1.3  
 file header -> `nyaruko `  
